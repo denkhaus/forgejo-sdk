@@ -1,3 +1,7 @@
+// Copyright 2024 The Forgjo Authors. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 // Copyright 2014 The Gogs Authors. All rights reserved.
 // Copyright 2017 The Gitea Authors. All rights reserved.
 // Use of this source code is governed by a MIT-style
@@ -24,7 +28,7 @@ type Hook struct {
 	Created time.Time         `json:"created_at"`
 }
 
-// HookType represent all webhook types gitea currently offer
+// HookType represent all webhook types forgejo currently offer
 type HookType string
 
 const (
@@ -32,6 +36,8 @@ const (
 	HookTypeDingtalk HookType = "dingtalk"
 	// HookTypeDiscord webhook that discord understand
 	HookTypeDiscord HookType = "discord"
+	// HookTypeForgejo webhook that forgejo understand
+	HookTypeForgejo HookType = "forgejo"
 	// HookTypeGitea webhook that gitea understand
 	HookTypeGitea HookType = "gitea"
 	// HookTypeGogs webhook that gogs understand

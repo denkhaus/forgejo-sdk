@@ -1,3 +1,7 @@
+// Copyright 2024 The Forgejo Authors. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 // Copyright 2014 The Gogs Authors. All rights reserved.
 // Copyright 2020 The Gitea Authors. All rights reserved.
 // Use of this source code is governed by a MIT-style
@@ -28,7 +32,7 @@ func Version() string {
 	return "0.16.0"
 }
 
-// Client represents a thread-safe Gitea API client.
+// Client represents a thread-safe Forgejo API client.
 type Client struct {
 	url            string
 	accessToken    string
@@ -44,10 +48,10 @@ type Client struct {
 	mutex          sync.RWMutex
 	serverVersion  *version.Version
 	getVersionOnce sync.Once
-	ignoreVersion  bool // only set by SetGiteaVersion so don't need a mutex lock
+	ignoreVersion  bool // only set by SetForgejoVersion so don't need a mutex lock
 }
 
-// Response represents the gitea response
+// Response represents the forgejo response
 type Response struct {
 	*http.Response
 
@@ -61,7 +65,7 @@ type Response struct {
 type ClientOption func(*Client) error
 
 // NewClient initializes and returns a API client.
-// Usage of all gitea.Client methods is concurrency-safe.
+// Usage of all forgejo.Client methods is concurrency-safe.
 func NewClient(url string, options ...ClientOption) (*Client, error) {
 	client := &Client{
 		url:    strings.TrimSuffix(url, "/"),
@@ -347,7 +351,7 @@ func (c *Client) doRequest(method, path string, header http.Header, body io.Read
 		req.Header.Set("Authorization", "token "+c.accessToken)
 	}
 	if len(c.otp) != 0 {
-		req.Header.Set("X-GITEA-OTP", c.otp)
+		req.Header.Set("X-FORGEJO-OTP", c.otp)
 	}
 	if len(c.username) != 0 {
 		req.SetBasicAuth(c.username, c.password)

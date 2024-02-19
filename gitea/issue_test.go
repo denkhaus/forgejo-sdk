@@ -1,3 +1,7 @@
+// Copyright 2024 The Forgjo Authors. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 // Copyright 2020 The Gitea Authors. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
@@ -18,7 +22,7 @@ func TestIssue(t *testing.T) {
 	c := newTestClient()
 
 	createIssue(t, c)
-	// Little sleep in order to give some time for gitea to properly store all information on database. Without this sleep, CI is a bit unstable
+	// Little sleep in order to give some time for forgejo to properly store all information on database. Without this sleep, CI is a bit unstable
 	time.Sleep(100 * time.Millisecond)
 	editIssues(t, c)
 	listIssues(t, c)

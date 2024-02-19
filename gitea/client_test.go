@@ -1,3 +1,7 @@
+// Copyright 2024 The Forgejo Authors. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 // Copyright 2023 The Gitea Authors. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
@@ -12,6 +16,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// TODO: change urls to something suitable for Forgejo
 func TestParsedPaging(t *testing.T) {
 	resp := newResponse(&http.Response{
 		Header: http.Header{

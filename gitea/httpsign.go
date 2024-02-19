@@ -1,3 +1,7 @@
+// Copyright 2024 The Forgjo Authors. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 // Copyright 2022 The Gitea Authors. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
@@ -180,7 +184,7 @@ func (c *Client) SignRequest(r *http.Request) error {
 	}
 
 	// sign the request, use the fingerprint if we don't have a certificate
-	keyID := "gitea"
+	keyID := "forgejo"
 	if !c.httpsigner.cert {
 		keyID = ssh.FingerprintSHA256(c.httpsigner.Signer.PublicKey())
 	}

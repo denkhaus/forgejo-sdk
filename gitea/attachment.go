@@ -1,8 +1,12 @@
+// Copyright 2024 The Forgejo Authors. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 // Copyright 2017 The Gitea Authors. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-package forgejo // import "code.gitea.io/sdk/gitea"
+package forgejo // import "code.codeberg.org/mvdkleijn/forgejo-sdk"
 import (
 	"bytes"
 	"encoding/json"

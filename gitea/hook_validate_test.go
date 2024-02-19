@@ -1,3 +1,7 @@
+// Copyright 2024 The Forgjo Authors. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 // Copyright 2022 The Gitea Authors. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
@@ -114,7 +118,7 @@ func TestVerifyWebhookSignatureHandler(t *testing.T) {
 			assert.NoError(t, err, "should create request")
 
 			if tc.Signature != "" {
-				req.Header.Set("X-Gitea-Signature", tc.Signature)
+				req.Header.Set("X-Forgejo-Signature", tc.Signature)
 			}
 
 			resp, err := http.DefaultClient.Do(req)

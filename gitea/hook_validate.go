@@ -1,3 +1,7 @@
+// Copyright 2024 The Forgjo Authors. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 // Copyright 2022 The Gitea Authors. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
@@ -13,7 +17,7 @@ import (
 	"net/http"
 )
 
-// VerifyWebhookSignature verifies that a payload matches the X-Gitea-Signature based on a secret
+// VerifyWebhookSignature verifies that a payload matches the X-Forgejo-Signature based on a secret
 func VerifyWebhookSignature(secret, expected string, payload []byte) (bool, error) {
 	hash := hmac.New(sha256.New, []byte(secret))
 	if _, err := hash.Write(payload); err != nil {
@@ -26,7 +30,7 @@ func VerifyWebhookSignature(secret, expected string, payload []byte) (bool, erro
 	return hmac.Equal(hash.Sum(nil), expectedSum), nil
 }
 
-// VerifyWebhookSignatureMiddleware is a http.Handler for verifying X-Gitea-Signature on incoming webhooks
+// VerifyWebhookSignatureMiddleware is a http.Handler for verifying X-Forgejo-Signature on incoming webhooks
 func VerifyWebhookSignatureMiddleware(secret string) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -36,7 +40,7 @@ func VerifyWebhookSignatureMiddleware(secret string) func(http.Handler) http.Han
 				return
 			}
 
-			expected := r.Header.Get("X-Gitea-Signature")
+			expected := r.Header.Get("X-Forgejo-Signature")
 			if expected == "" {
 				http.Error(w, "no signature found", http.StatusBadRequest)
 				return
