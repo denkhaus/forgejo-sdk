@@ -4,7 +4,7 @@
 
 //go:build !windows
 
-package gitea
+package forgejo
 
 import (
 	"fmt"

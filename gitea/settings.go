@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-package gitea
+package forgejo
 
 // GlobalUISettings represent the global ui settings of a gitea instance witch is exposed by API
 type GlobalUISettings struct {
