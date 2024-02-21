@@ -2,38 +2,38 @@ GO ?= go
 
 WORK_DIR   := $(shell pwd)
 
-GITEA_SDK_TEST_URL ?= http://localhost:3000
-GITEA_SDK_TEST_USERNAME ?= test01
-GITEA_SDK_TEST_PASSWORD ?= test01
+FORGEJO_SDK_TEST_URL ?= http://localhost:3000
+FORGEJO_SDK_TEST_USERNAME ?= test01
+FORGEJO_SDK_TEST_PASSWORD ?= test01
 
-PACKAGE := code.gitea.io/sdk/gitea
+PACKAGE := code.codeberg.org/mvdkleijn/forgejo-sdk
 
 GOFUMPT_PACKAGE ?= mvdan.cc/gofumpt@v0.4.0
 GOLANGCI_LINT_PACKAGE ?= github.com/golangci/golangci-lint/cmd/golangci-lint@v1.51.0
 GITEA_VET_PACKAGE ?= code.gitea.io/gitea-vet@v0.2.1
 
-GITEA_VERSION := 1.21.1
-GITEA_DL := https://dl.gitea.com/gitea/$(GITEA_VERSION)/gitea-$(GITEA_VERSION)-
+FORGEJO_VERSION := 1.21.1
+FORGEJO_DL := https://dl.gitea.com/gitea/$(FORGEJO_VERSION)/gitea-$(FORGEJO_VERSION)-
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
-  GITEA_DL := $(GITEA_DL)linux-
+  FORGEJO_DL := $(FORGEJO_DL)linux-
 
   UNAME_P := $(shell uname -p)
   ifeq ($(UNAME_P),unknown)
-   GITEA_DL := $(GITEA_DL)amd64
+   FORGEJO_DL := $(FORGEJO_DL)amd64
   endif
   ifeq ($(UNAME_P),x86_64)
-   GITEA_DL := $(GITEA_DL)amd64
+   FORGEJO_DL := $(FORGEJO_DL)amd64
   endif
   ifneq ($(filter %86,$(UNAME_P)),)
-   GITEA_DL := $(GITEA_DL)386
+   FORGEJO_DL := $(FORGEJO_DL)386
   endif
   ifneq ($(filter arm%,$(UNAME_P)),)
-    GITEA_DL := $(GITEA_DL)arm-5
+    FORGEJO_DL := $(FORGEJO_DL)arm-5
   endif
 endif
 ifeq ($(UNAME_S),Darwin)
-  GITEA_DL := $(GITEA_DL)darwin-10.12-amd64
+  FORGEJO_DL := $(FORGEJO_DL)darwin-10.12-amd64
 endif
 
 .PHONY: all
@@ -48,32 +48,32 @@ help:
 	@echo " - fmt               format the code"
 	@echo " - lint              run golint"
 	@echo " - vet               examines Go source code and reports"
-	@echo " - test              run unit tests (need a running gitea)"
-	@echo " - test-instance     start a gitea instance for test"
+	@echo " - test              run unit tests (need a running forgejo)"
+	@echo " - test-instance     start a forgejo instance for test"
 
 
 .PHONY: clean
 clean:
 	rm -r -f test
-	cd gitea && $(GO) clean -i ./...
+	cd forgejo && $(GO) clean -i ./...
 
 .PHONY: fmt
 fmt:
 	find . -name "*.go" -type f | xargs gofmt -s -w; \
-	$(GO) run $(GOFUMPT_PACKAGE) -extra -w ./gitea
+	$(GO) run $(GOFUMPT_PACKAGE) -extra -w ./forgejo
 
 .PHONY: vet
 vet:
 	# Default vet
-	cd gitea && $(GO) vet $(PACKAGE)
+	cd forgejo && $(GO) vet $(PACKAGE)
 	# Custom vet
-	cd gitea && $(GO) get $(GITEA_VET_PACKAGE)
-	cd gitea && $(GO) build code.gitea.io/gitea-vet
-	cd gitea && $(GO) vet -vettool=gitea-vet $(PACKAGE)
+	cd forgejo && $(GO) get $(GITEA_VET_PACKAGE)
+	cd forgejo && $(GO) build code.gitea.io/gitea-vet
+	cd forgejo && $(GO) vet -vettool=gitea-vet $(PACKAGE)
 
 .PHONY: ci-lint
 ci-lint: 
-	@cd gitea/; echo -n "gofumpt ...";\
+	@cd forgejo/; echo -n "gofumpt ...";\
 	diff=$$($(GO) run $(GOFUMPT_PACKAGE) -extra -l .); \
 	if [ -n "$$diff" ]; then \
 		echo; echo "Not gofumpt-ed"; \

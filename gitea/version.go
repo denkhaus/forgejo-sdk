@@ -1,3 +1,7 @@
+// Copyright 2024 The Forgjo Authors. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 // Copyright 2020 The Gitea Authors. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
@@ -35,15 +39,15 @@ func (c *Client) CheckServerVersionConstraint(constraint string) error {
 		c.mutex.RLock()
 		url := c.url
 		c.mutex.RUnlock()
-		return fmt.Errorf("gitea server at %s does not satisfy version constraint %s", url, constraint)
+		return fmt.Errorf("forgejo server at %s does not satisfy version constraint %s", url, constraint)
 	}
 	return nil
 }
 
-// SetGiteaVersion configures the Client to assume the given version of the
-// Gitea server, instead of querying the server for it when initializing.
+// SetForgejoVersion configures the Client to assume the given version of the
+// Forgejo server, instead of querying the server for it when initializing.
 // Use "" to skip all canonical ways in the SDK to check for versions
-func SetGiteaVersion(v string) ClientOption {
+func SetForgejoVersion(v string) ClientOption {
 	if v == "" {
 		return func(c *Client) error {
 			c.ignoreVersion = true
@@ -100,7 +104,7 @@ func (c *Client) checkServerVersionGreaterThanOrEqual(v *version.Version) error 
 		c.mutex.RLock()
 		url := c.url
 		c.mutex.RUnlock()
-		return fmt.Errorf("gitea server at %s is older than %s", url, v.Original())
+		return fmt.Errorf("forgejo server at %s is older than %s", url, v.Original())
 	}
 	return nil
 }

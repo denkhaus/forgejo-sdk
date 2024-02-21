@@ -1,3 +1,7 @@
+// Copyright 2024 The Forgjo Authors. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 // Copyright 2016 The Gogs Authors. All rights reserved.
 // Copyright 2019 The Gitea Authors. All rights reserved.
 // Use of this source code is governed by a MIT-style
@@ -198,7 +202,7 @@ func (opt EditPullRequestOption) Validate(c *Client) error {
 	}
 	if len(opt.Base) != 0 {
 		if err := c.checkServerVersionGreaterThanOrEqual(version1_12_0); err != nil {
-			return fmt.Errorf("can not change base gitea to old")
+			return fmt.Errorf("can not change base forgejo to old")
 		}
 	}
 	return nil
@@ -321,7 +325,7 @@ func (c *Client) GetPullRequestPatch(owner, repo string, index int64) ([]byte, *
 	return c.getPullRequestDiffOrPatch(owner, repo, pullRequestDiffTypePatch, index, PullRequestDiffOptions{})
 }
 
-// GetPullRequestDiff gets the diff of a PR. For Gitea >= 1.16, you must set includeBinary to get an applicable diff
+// GetPullRequestDiff gets the diff of a PR. For Forgejo >= 1.16, you must set includeBinary to get an applicable diff
 func (c *Client) GetPullRequestDiff(owner, repo string, index int64, opts PullRequestDiffOptions) ([]byte, *Response, error) {
 	return c.getPullRequestDiffOrPatch(owner, repo, pullRequestDiffTypeDiff, index, opts)
 }
@@ -347,7 +351,7 @@ func (c *Client) ListPullRequestCommits(owner, repo string, index int64, opt Lis
 // fixPullHeadSha is a workaround for https://github.com/go-gitea/gitea/issues/12675
 // When no head sha is available, this is because the branch got deleted in the base repo.
 // pr.Head.Ref points in this case not to the head repo branch name, but the base repo ref,
-// which stays available to resolve the commit sha. This is fixed for gitea >= 1.14.0
+// which stays available to resolve the commit sha. This is fixed for forgejo >= 1.14.0
 func fixPullHeadSha(client *Client, pr *PullRequest) error {
 	if pr.Base != nil && pr.Base.Repository != nil && pr.Base.Repository.Owner != nil &&
 		pr.Head != nil && pr.Head.Ref != "" && pr.Head.Sha == "" {

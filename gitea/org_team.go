@@ -1,3 +1,7 @@
+// Copyright 2024 The Forgjo Authors. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 // Copyright 2019 The Gitea Authors. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
@@ -23,7 +27,7 @@ type Team struct {
 	Units                   []RepoUnitType `json:"units"`
 }
 
-// RepoUnitType represent all unit types of a repo gitea currently offer
+// RepoUnitType represent all unit types of a repo forgejo currently offer
 type RepoUnitType string
 
 const (
@@ -113,7 +117,7 @@ func (c *Client) SearchOrgTeams(org string, opt *SearchTeamsOptions) ([]*Team, *
 		return nil, resp, err
 	}
 	if !responseBody.OK {
-		return nil, resp, fmt.Errorf("gitea error: %v", responseBody.Error)
+		return nil, resp, fmt.Errorf("forgejo error: %v", responseBody.Error)
 	}
 	return responseBody.Data, resp, err
 }

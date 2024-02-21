@@ -1,3 +1,7 @@
+// Copyright 2024 The Forgjo Authors. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 // Copyright 2014 The Gogs Authors. All rights reserved.
 // Copyright 2019 The Gitea Authors. All rights reserved.
 // Use of this source code is governed by a MIT-style
@@ -264,7 +268,7 @@ func (c *Client) DeleteFile(owner, repo, filepath string, opt DeleteFileOptions)
 
 func (c *Client) setDefaultBranchForOldVersions(owner, repo, branch string) (string, error) {
 	if len(branch) == 0 {
-		// Gitea >= 1.12.0 Use DefaultBranch on "", mimic this for older versions
+		// Forgejo >= 1.12.0 Use DefaultBranch on "", mimic this for older versions
 		if c.checkServerVersionGreaterThanOrEqual(version1_12_0) != nil {
 			r, _, err := c.GetRepo(owner, repo)
 			if err != nil {

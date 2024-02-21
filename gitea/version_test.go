@@ -1,3 +1,7 @@
+// Copyright 2024 The Forgjo Authors. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 // Copyright 2020 The Gitea Authors. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
@@ -26,7 +30,7 @@ func TestVersion(t *testing.T) {
 	c.ignoreVersion = true
 	assert.NoError(t, c.checkServerVersionGreaterThanOrEqual(version1_15_0))
 
-	c, err = NewClient(getGiteaURL(), newTestClientAuth(), SetGiteaVersion("1.12.123"))
+	c, err = NewClient(getForgejoURL(), newTestClientAuth(), SetForgejoVersion("1.12.123"))
 	assert.NoError(t, err)
 	assert.NoError(t, c.CheckServerVersionConstraint("=1.12.123"))
 }

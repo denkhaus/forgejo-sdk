@@ -1,3 +1,7 @@
+// Copyright 2024 The Forgjo Authors. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 // Copyright 2020 The Gitea Authors. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
@@ -19,7 +23,7 @@ func TestMyUser(t *testing.T) {
 
 	assert.EqualValues(t, 1, user.ID)
 	assert.EqualValues(t, "test01", user.UserName)
-	assert.EqualValues(t, "test01@gitea.io", user.Email)
+	assert.EqualValues(t, "test01@forgejo.org", user.Email)
 	assert.EqualValues(t, "", user.FullName)
 	assert.EqualValues(t, "https://secure.gravatar.com/avatar/d794373e882a68fb173cef817fb6180a?d=identicon", user.AvatarURL)
 	assert.True(t, user.IsAdmin)
@@ -32,7 +36,7 @@ func TestUserApp(t *testing.T) {
 	result, _, err := c.ListAccessTokens(ListAccessTokensOptions{})
 	assert.NoError(t, err)
 	assert.Len(t, result, 1)
-	assert.EqualValues(t, "gitea-admin", result[0].Name)
+	assert.EqualValues(t, "forgejo-admin", result[0].Name)
 
 	t1, _, err := c.CreateAccessToken(CreateAccessTokenOption{Name: "TestCreateAccessToken"})
 	assert.NoError(t, err)
@@ -144,7 +148,7 @@ func TestUserEmail(t *testing.T) {
 	el, _, err := c.ListEmails(ListEmailsOptions{})
 	assert.NoError(t, err)
 	assert.Len(t, el, 1)
-	assert.EqualValues(t, "testuseremail@gitea.io", el[0].Email)
+	assert.EqualValues(t, "testuseremail@forgejo.org", el[0].Email)
 	assert.True(t, el[0].Primary)
 
 	// AddEmail
@@ -202,7 +206,7 @@ func createTestUser(t *testing.T, username string, client *Client) *User {
 	if user.ID != 0 {
 		return user
 	}
-	user, _, err := client.AdminCreateUser(CreateUserOption{Username: username, Password: username + "!1234", Email: username + "@gitea.io", MustChangePassword: OptionalBool(false), SendNotify: false})
+	user, _, err := client.AdminCreateUser(CreateUserOption{Username: username, Password: username + "!1234", Email: username + "@forgejo.org", MustChangePassword: OptionalBool(false), SendNotify: false})
 	assert.NoError(t, err)
 	return user
 }

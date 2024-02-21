@@ -1,17 +1,21 @@
+// Copyright 2024 The Forgjo Authors. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 // Copyright 2020 The Gitea Authors. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
 package forgejo
 
-// GlobalUISettings represent the global ui settings of a gitea instance witch is exposed by API
+// GlobalUISettings represent the global ui settings of a forgejo instance witch is exposed by API
 type GlobalUISettings struct {
 	DefaultTheme     string   `json:"default_theme"`
 	AllowedReactions []string `json:"allowed_reactions"`
 	CustomEmojis     []string `json:"custom_emojis"`
 }
 
-// GlobalRepoSettings represent the global repository settings of a gitea instance witch is exposed by API
+// GlobalRepoSettings represent the global repository settings of a forgejo instance witch is exposed by API
 type GlobalRepoSettings struct {
 	MirrorsDisabled      bool `json:"mirrors_disabled"`
 	HTTPGitDisabled      bool `json:"http_git_disabled"`

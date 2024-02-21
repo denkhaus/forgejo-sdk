@@ -1,3 +1,7 @@
+// Copyright 2024 The Forgjo Authors. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 // Copyright 2017 The Gitea Authors. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
@@ -99,7 +103,7 @@ func (c *Client) GetCombinedStatus(owner, repo, ref string) (*CombinedStatus, *R
 	status := new(CombinedStatus)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/commits/%s/status", owner, repo, ref), jsonHeader, nil, status)
 
-	// gitea api return empty body if nothing here jet
+	// forgejo api return empty body if nothing here jet
 	if resp != nil && resp.StatusCode == 200 && err != nil {
 		return status, resp, nil
 	}

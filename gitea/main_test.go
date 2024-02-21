@@ -1,3 +1,7 @@
+// Copyright 2024 The Forgjo Authors. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 // Copyright 2020 The Gitea Authors. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
@@ -18,41 +22,42 @@ import (
 	"testing"
 )
 
-func getGiteaURL() string {
-	return os.Getenv("GITEA_SDK_TEST_URL")
+func getForgejoURL() string {
+	return os.Getenv("FORGEJO_SDK_TEST_URL")
 }
 
-func getGiteaToken() string {
-	return os.Getenv("GITEA_SDK_TEST_TOKEN")
+func getForgejoToken() string {
+	return os.Getenv("FORGEJO_SDK_TEST_TOKEN")
 }
 
-func getGiteaUsername() string {
-	return os.Getenv("GITEA_SDK_TEST_USERNAME")
+func getForgejoUsername() string {
+	return os.Getenv("FORGEJO_SDK_TEST_USERNAME")
 }
 
-func getGiteaPassword() string {
-	return os.Getenv("GITEA_SDK_TEST_PASSWORD")
+func getForgejoPassword() string {
+	return os.Getenv("FORGEJO_SDK_TEST_PASSWORD")
 }
 
-func enableRunGitea() bool {
-	r, _ := strconv.ParseBool(os.Getenv("GITEA_SDK_TEST_RUN_GITEA"))
+func enableRunForgejo() bool {
+	r, _ := strconv.ParseBool(os.Getenv("FORGEJO_SDK_TEST_RUN_FORGEJO"))
 	return r
 }
 
 func newTestClient() *Client {
-	c, _ := NewClient(getGiteaURL(), newTestClientAuth())
+	c, _ := NewClient(getForgejoURL(), newTestClientAuth())
 	return c
 }
 
 func newTestClientAuth() ClientOption {
-	token := getGiteaToken()
+	token := getForgejoToken()
 	if token == "" {
-		return SetBasicAuth(getGiteaUsername(), getGiteaPassword())
+		return SetBasicAuth(getForgejoUsername(), getForgejoPassword())
 	}
-	return SetToken(getGiteaToken())
+	return SetToken(getForgejoToken())
 }
 
-func giteaMasterPath() string {
+// TODO: replace with proper forgejo path
+func forgejoMasterPath() string {
 	switch runtime.GOOS {
 	case "darwin":
 		return fmt.Sprintf("https://dl.gitea.io/gitea/master/gitea-master-darwin-10.6-%s", runtime.GOARCH)
@@ -64,15 +69,15 @@ func giteaMasterPath() string {
 	return ""
 }
 
-func downGitea() (string, error) {
+func downForgejo() (string, error) {
 	for i := 3; i > 0; i-- {
-		resp, err := http.Get(giteaMasterPath())
+		resp, err := http.Get(forgejoMasterPath())
 		if err != nil {
 			continue
 		}
 		defer resp.Body.Close()
 
-		f, err := ioutil.TempFile(os.TempDir(), "gitea")
+		f, err := ioutil.TempFile(os.TempDir(), "forgejo")
 		if err != nil {
 			continue
 		}
@@ -89,18 +94,18 @@ func downGitea() (string, error) {
 		return f.Name(), nil
 	}
 
-	return "", fmt.Errorf("Download gitea from %v failed", giteaMasterPath())
+	return "", fmt.Errorf("Download forgejo from %v failed", forgejoMasterPath())
 }
 
-func runGitea() (*os.Process, error) {
-	log.Println("Downloading Gitea from", giteaMasterPath())
-	p, err := downGitea()
+func runForgejo() (*os.Process, error) {
+	log.Println("Downloading Forgejo from", forgejoMasterPath())
+	p, err := downForgejo()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	giteaDir := filepath.Dir(p)
-	cfgDir := filepath.Join(giteaDir, "custom", "conf")
+	forgejoDir := filepath.Dir(p)
+	cfgDir := filepath.Join(forgejoDir, "custom", "conf")
 	err = os.MkdirAll(cfgDir, os.ModePerm)
 	if err != nil {
 		log.Fatal(err)
@@ -127,27 +132,27 @@ ROUTER = ,`)
 		log.Fatal(err)
 	}
 
-	log.Println("Run gitea migrate", p)
+	log.Println("Run forgejo migrate", p)
 	err = exec.Command(p, "migrate").Run()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	log.Println("Run gitea admin", p)
-	err = exec.Command(p, "admin", "create-user", "--username=test01", "--password=test01", "--email=test01@gitea.io", "--admin=true", "--must-change-password=false", "--access-token").Run()
+	log.Println("Run forgejo admin", p)
+	err = exec.Command(p, "admin", "create-user", "--username=test01", "--password=test01", "--email=test01@forgejo.org", "--admin=true", "--must-change-password=false", "--access-token").Run()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	log.Println("Start Gitea", p)
+	log.Println("Start Forgejo", p)
 	return os.StartProcess(filepath.Base(p), []string{}, &os.ProcAttr{
-		Dir: giteaDir,
+		Dir: forgejoDir,
 	})
 }
 
 func TestMain(m *testing.M) {
-	if enableRunGitea() {
-		p, err := runGitea()
+	if enableRunForgejo() {
+		p, err := runForgejo()
 		if err != nil {
 			log.Fatal(err)
 			return
@@ -158,7 +163,7 @@ func TestMain(m *testing.M) {
 			}
 		}()
 	}
-	log.Printf("testing with %v, %v, %v\n", getGiteaURL(), getGiteaUsername(), getGiteaPassword())
+	log.Printf("testing with %v, %v, %v\n", getForgejoURL(), getForgejoUsername(), getForgejoPassword())
 	exitCode := m.Run()
 	os.Exit(exitCode)
 }

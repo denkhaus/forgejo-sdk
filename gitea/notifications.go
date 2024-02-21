@@ -1,3 +1,7 @@
+// Copyright 2024 The Forgjo Authors. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 // Copyright 2020 The Gitea Authors. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
@@ -160,7 +164,7 @@ func (c *Client) GetNotification(id int64) (*NotificationThread, *Response, erro
 
 // ReadNotification mark notification thread as read by ID
 // It optionally takes a second argument if status has to be set other than 'read'
-// The relevant notification will be returned as the first parameter when the Gitea server is 1.16.0 or higher.
+// The relevant notification will be returned as the first parameter when the Forgejo server is 1.16.0 or higher.
 func (c *Client) ReadNotification(id int64, status ...NotifyStatus) (*NotificationThread, *Response, error) {
 	if err := c.checkServerVersionGreaterThanOrEqual(version1_12_0); err != nil {
 		return nil, nil, err
@@ -194,7 +198,7 @@ func (c *Client) ListNotifications(opt ListNotificationOptions) ([]*Notification
 }
 
 // ReadNotifications mark notification threads as read
-// The relevant notifications will only be returned as the first parameter when the Gitea server is 1.16.0 or higher.
+// The relevant notifications will only be returned as the first parameter when the Forgejo server is 1.16.0 or higher.
 func (c *Client) ReadNotifications(opt MarkNotificationOptions) ([]*NotificationThread, *Response, error) {
 	if err := c.checkServerVersionGreaterThanOrEqual(version1_12_0); err != nil {
 		return nil, nil, err
@@ -233,7 +237,7 @@ func (c *Client) ListRepoNotifications(owner, repo string, opt ListNotificationO
 }
 
 // ReadRepoNotifications mark notification threads as read on a specific repo
-// The relevant notifications will only be returned as the first parameter when the Gitea server is 1.16.0 or higher.
+// The relevant notifications will only be returned as the first parameter when the Forgejo server is 1.16.0 or higher.
 func (c *Client) ReadRepoNotifications(owner, repo string, opt MarkNotificationOptions) ([]*NotificationThread, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err

@@ -1,3 +1,7 @@
+// Copyright 2024 The Forgjo Authors. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 // Copyright 2020 The Gitea Authors. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
@@ -20,6 +24,8 @@ const (
 	GitServiceGithub GitServiceType = "github"
 	// GitServiceGitlab represents a gitlab service
 	GitServiceGitlab GitServiceType = "gitlab"
+	// GitServiceForgejo represents a forgejo service
+	GitServiceForgejo GitServiceType = "forgejo"
 	// GitServiceGitea represents a gitea service
 	GitServiceGitea GitServiceType = "gitea"
 	// GitServiceGogs represents a gogs service
@@ -63,28 +69,28 @@ func (opt *MigrateRepoOption) Validate(c *Client) error {
 		return fmt.Errorf("RepoName to long")
 	}
 	if len(opt.Description) > 2048 {
-		return fmt.Errorf("Description to long")
+		return fmt.Errorf("description to long")
 	}
 	switch opt.Service {
 	case GitServiceGithub:
 		if len(opt.AuthToken) == 0 {
 			return fmt.Errorf("github requires token authentication")
 		}
-	case GitServiceGitlab, GitServiceGitea:
+	case GitServiceGitlab, GitServiceGitea, GitServiceForgejo:
 		if len(opt.AuthToken) == 0 {
 			return fmt.Errorf("%s requires token authentication", opt.Service)
 		}
 		// Gitlab is supported since 1.12.0 but api cant handle it until 1.13.0
 		// https://github.com/go-gitea/gitea/pull/12672
 		if c.checkServerVersionGreaterThanOrEqual(version1_13_0) != nil {
-			return fmt.Errorf("migrate from service %s need gitea >= 1.13.0", opt.Service)
+			return fmt.Errorf("migrate from service %s need forgejo >= 1.13.0", opt.Service)
 		}
 	case GitServiceGogs:
 		if len(opt.AuthToken) == 0 {
 			return fmt.Errorf("gogs requires token authentication")
 		}
 		if c.checkServerVersionGreaterThanOrEqual(version1_14_0) != nil {
-			return fmt.Errorf("migrate from service gogs need gitea >= 1.14.0")
+			return fmt.Errorf("migrate from service gogs need forgejo >= 1.14.0")
 		}
 	}
 	return nil
@@ -101,19 +107,19 @@ func (c *Client) MigrateRepo(opt MigrateRepoOption) (*Repository, *Response, err
 
 	if err := c.checkServerVersionGreaterThanOrEqual(version1_13_0); err != nil {
 		if len(opt.AuthToken) != 0 {
-			// gitea <= 1.12 dont understand AuthToken
+			// forgejo <= 1.12 dont understand AuthToken
 			opt.AuthUsername = opt.AuthToken
 			opt.AuthPassword, opt.AuthToken = "", ""
 		}
 		if len(opt.RepoOwner) != 0 {
-			// gitea <= 1.12 dont understand RepoOwner
+			// forgejo <= 1.12 dont understand RepoOwner
 			u, _, err := c.GetUserInfo(opt.RepoOwner)
 			if err != nil {
 				return nil, nil, err
 			}
 			opt.RepoOwnerID = u.ID
 		} else if opt.RepoOwnerID == 0 {
-			// gitea <= 1.12 require RepoOwnerID
+			// forgejo <= 1.12 require RepoOwnerID
 			u, _, err := c.GetMyUserInfo()
 			if err != nil {
 				return nil, nil, err

@@ -1,3 +1,7 @@
+// Copyright 2024 The Forgjo Authors. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 // Copyright 2020 The Gitea Authors. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
@@ -23,7 +27,7 @@ func TestRepoTopics(t *testing.T) {
 	assert.NoError(t, err)
 	_, err = c.AddRepoTopic(repo.Owner.UserName, repo.Name, "git")
 	assert.NoError(t, err)
-	_, err = c.AddRepoTopic(repo.Owner.UserName, repo.Name, "gitea")
+	_, err = c.AddRepoTopic(repo.Owner.UserName, repo.Name, "forgejo")
 	assert.NoError(t, err)
 	_, err = c.AddRepoTopic(repo.Owner.UserName, repo.Name, "drone")
 	assert.NoError(t, err)

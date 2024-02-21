@@ -1,3 +1,7 @@
+// Copyright 2024 The Forgjo Authors. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 // Copyright 2020 The Gitea Authors. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
@@ -44,6 +48,7 @@ func TestRepoMigrateAndLanguages(t *testing.T) {
 		_, _ = c.DeleteRepo(user.UserName, "sdk-mirror")
 	}
 
+	// TODO: replace by proper url for forgejo
 	repoM, _, err := c.MigrateRepo(MigrateRepoOption{
 		CloneAddr:   "https://gitea.com/gitea/go-sdk.git",
 		RepoName:    "sdk-mirror",
@@ -179,7 +184,7 @@ func createTestRepo(t *testing.T, name string, c *Client) (*Repository, error) {
 	assert.NoError(t, uErr)
 	repo, _, err := c.GetRepo(user.UserName, name)
 	// We need to check that the received repo is not a
-	// redirected one, it could be the case that gitea redirect us
+	// redirected one, it could be the case that forgejo redirect us
 	// to a new repo(because it e.g. was transferred or renamed).
 	if err == nil && repo.Owner.UserName == user.UserName {
 		_, _ = c.DeleteRepo(user.UserName, name)

@@ -1,3 +1,7 @@
+// Copyright 2024 The Forgjo Authors. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 // Copyright 2023 The Gitea Authors. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
@@ -28,14 +32,14 @@ func createTestPackage(t *testing.T, c *Client) error {
 
 	reader := bytes.NewReader([]byte("Hello world!"))
 
-	url := fmt.Sprintf("%s/api/packages/PackageOrg/generic/MyPackage/v1/file1.txt", os.Getenv("GITEA_SDK_TEST_URL"))
+	url := fmt.Sprintf("%s/api/packages/PackageOrg/generic/MyPackage/v1/file1.txt", os.Getenv("FORGEJO_SDK_TEST_URL"))
 	req, err := http.NewRequest(http.MethodPut, url, reader)
 	if err != nil {
 		log.Println(err)
 		return err
 	}
 
-	req.SetBasicAuth(os.Getenv("GITEA_SDK_TEST_USERNAME"), os.Getenv("GITEA_SDK_TEST_PASSWORD"))
+	req.SetBasicAuth(os.Getenv("FORGEJO_SDK_TEST_USERNAME"), os.Getenv("FORGEJO_SDK_TEST_PASSWORD"))
 	response, err := client.Do(req)
 	if err != nil {
 		return err

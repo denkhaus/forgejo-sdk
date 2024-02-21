@@ -1,3 +1,7 @@
+// Copyright 2024 The Forgjo Authors. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 // Copyright 2014 The Gogs Authors. All rights reserved.
 // Copyright 2020 The Gitea Authors. All rights reserved.
 // Use of this source code is governed by a MIT-style
@@ -284,10 +288,10 @@ func (c *Client) SearchRepos(opt SearchRepoOptions) ([]*Repository, *Response, e
 		link.RawQuery = opt.RawQuery
 	} else {
 		link.RawQuery = opt.QueryEncode()
-		// IsPrivate only works on gitea >= 1.12.0
+		// IsPrivate only works on forgejo >= 1.12.0
 		if err := c.checkServerVersionGreaterThanOrEqual(version1_12_0); err != nil && opt.IsPrivate != nil {
 			if *opt.IsPrivate {
-				// private repos only not supported on gitea <= 1.11.x
+				// private repos only not supported on forgejo <= 1.11.x
 				return nil, nil, err
 			}
 			newQuery := link.Query()
@@ -504,7 +508,7 @@ func (c *Client) GetRepoLanguages(owner, repo string) (map[string]int64, *Respon
 	return langMap, resp, nil
 }
 
-// ArchiveType represent supported archive formats by gitea
+// ArchiveType represent supported archive formats by forgejo
 type ArchiveType string
 
 const (

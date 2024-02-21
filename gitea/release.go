@@ -1,3 +1,7 @@
+// Copyright 2024 The Forgjo Authors. All rights reserved.
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 // Copyright 2016 The Gitea Authors. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
@@ -193,7 +197,7 @@ func (c *Client) DeleteReleaseByTag(user, repo, tag string) (*Response, error) {
 	return resp, err
 }
 
-// fallbackGetReleaseByTag is fallback for old gitea installations ( < 1.13.0 )
+// fallbackGetReleaseByTag is fallback for old forgejo installations ( < 1.13.0 )
 func (c *Client) fallbackGetReleaseByTag(owner, repo, tag string) (*Release, *Response, error) {
 	for i := 1; ; i++ {
 		rl, resp, err := c.ListReleases(owner, repo, ListReleasesOptions{ListOptions: ListOptions{Page: i}})
