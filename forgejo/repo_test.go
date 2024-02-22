@@ -50,7 +50,7 @@ func TestRepoMigrateAndLanguages(t *testing.T) {
 
 	// TODO: replace by proper url for forgejo
 	repoM, _, err := c.MigrateRepo(MigrateRepoOption{
-		CloneAddr:   "https://gitea.com/gitea/go-sdk.git",
+		CloneAddr:   "https://codeberg.org/mvdkleijn/forgejo-sdk.git",
 		RepoName:    "sdk-mirror",
 		RepoOwner:   user.UserName,
 		Mirror:      true,
