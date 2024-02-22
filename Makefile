@@ -6,14 +6,14 @@ FORGEJO_SDK_TEST_URL ?= http://localhost:3000
 FORGEJO_SDK_TEST_USERNAME ?= test01
 FORGEJO_SDK_TEST_PASSWORD ?= test01
 
-PACKAGE := code.codeberg.org/mvdkleijn/forgejo-sdk
+PACKAGE := codeberg.org/mvdkleijn/forgejo-sdk
 
 GOFUMPT_PACKAGE ?= mvdan.cc/gofumpt@v0.4.0
 GOLANGCI_LINT_PACKAGE ?= github.com/golangci/golangci-lint/cmd/golangci-lint@v1.51.0
 GITEA_VET_PACKAGE ?= code.gitea.io/gitea-vet@v0.2.1
 
-FORGEJO_VERSION := 1.21.1
-FORGEJO_DL := https://dl.gitea.com/gitea/$(FORGEJO_VERSION)/gitea-$(FORGEJO_VERSION)-
+FORGEJO_VERSION := 1.21.6-0
+FORGEJO_DL := https://codeberg.org/forgejo/forgejo/releases/download/v$(FORGEJO_VERSION)/forgejo-$(FORGEJO_VERSION)-
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
   FORGEJO_DL := $(FORGEJO_DL)linux-
@@ -88,17 +88,17 @@ ci-lint:
 
 .PHONY: test
 test:
-	@export GITEA_SDK_TEST_URL=${GITEA_SDK_TEST_URL}; export GITEA_SDK_TEST_USERNAME=${GITEA_SDK_TEST_USERNAME}; export GITEA_SDK_TEST_PASSWORD=${GITEA_SDK_TEST_PASSWORD}; \
-	if [ -z "$(shell curl --noproxy "*" "${GITEA_SDK_TEST_URL}/api/v1/version" 2> /dev/null)" ]; then \echo "No test-instance detected!"; exit 1; else \
-	    cd gitea && $(GO) test -race -cover -coverprofile coverage.out; \
+	@export FORGEJO_SDK_TEST_URL=${FORGEJO_SDK_TEST_URL}; export FORGEJO_SDK_TEST_USERNAME=${FORGEJO_SDK_TEST_USERNAME}; export FORGEJO_SDK_TEST_PASSWORD=${FORGEJO_SDK_TEST_PASSWORD}; \
+	if [ -z "$(shell curl --noproxy "*" "${FORGEJO_SDK_TEST_URL}/api/v1/version" 2> /dev/null)" ]; then \echo "No test-instance detected!"; exit 1; else \
+	    cd forgejo && $(GO) test -race -cover -coverprofile coverage.out; \
 	fi
 
 .PHONY: test-instance
 test-instance:
 	rm -f -r ${WORK_DIR}/test 2> /dev/null; \
 	mkdir -p ${WORK_DIR}/test/conf/ ${WORK_DIR}/test/data/
-	wget ${GITEA_DL} -O ${WORK_DIR}/test/gitea-main; \
-	chmod +x ${WORK_DIR}/test/gitea-main; \
+	wget ${FORGEJO_DL} -O ${WORK_DIR}/test/forgejo-main; \
+	chmod +x ${WORK_DIR}/test/forgejo-main; \
 	echo "[security]" > ${WORK_DIR}/test/conf/app.ini; \
 	echo "INTERNAL_TOKEN = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1NTg4MzY4ODB9.LoKQyK5TN_0kMJFVHWUW0uDAyoGjDP6Mkup4ps2VJN4" >> ${WORK_DIR}/test/conf/app.ini; \
 	echo "INSTALL_LOCK   = true" >> ${WORK_DIR}/test/conf/app.ini; \
@@ -109,16 +109,16 @@ test-instance:
 	echo "[repository]" >> ${WORK_DIR}/test/conf/app.ini; \
 	echo "ROOT = ${WORK_DIR}/test/data/" >> ${WORK_DIR}/test/conf/app.ini; \
 	echo "[server]" >> ${WORK_DIR}/test/conf/app.ini; \
-	echo "ROOT_URL = ${GITEA_SDK_TEST_URL}" >> ${WORK_DIR}/test/conf/app.ini; \
-	${WORK_DIR}/test/gitea-main migrate -c ${WORK_DIR}/test/conf/app.ini; \
-	${WORK_DIR}/test/gitea-main admin user create --username=${GITEA_SDK_TEST_USERNAME} --password=${GITEA_SDK_TEST_PASSWORD} --email=test01@gitea.io --admin=true --must-change-password=false --access-token -c ${WORK_DIR}/test/conf/app.ini; \
-	${WORK_DIR}/test/gitea-main web -c ${WORK_DIR}/test/conf/app.ini
+	echo "ROOT_URL = ${FORGEJO_SDK_TEST_URL}" >> ${WORK_DIR}/test/conf/app.ini; \
+	${WORK_DIR}/test/forgejo-main migrate -c ${WORK_DIR}/test/conf/app.ini; \
+	${WORK_DIR}/test/forgejo-main admin user create --username=${FORGEJO_SDK_TEST_USERNAME} --password=${FORGEJO_SDK_TEST_PASSWORD} --email=test01@forgejo.org --admin=true --must-change-password=false --access-token -c ${WORK_DIR}/test/conf/app.ini; \
+	${WORK_DIR}/test/forgejo-main web -c ${WORK_DIR}/test/conf/app.ini
 
 .PHONY: bench
 bench:
-	cd gitea && $(GO) test -run=XXXXXX -benchtime=10s -bench=. || exit 1
+	cd forgejo && $(GO) test -run=XXXXXX -benchtime=10s -bench=. || exit 1
 
 .PHONY: build
 build:
-	cd gitea && $(GO) build
+	cd forgejo && $(GO) build
 
