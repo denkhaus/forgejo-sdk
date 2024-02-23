@@ -1,36 +1,30 @@
 # Contribution Guidelines
 
-## Introduction
-
-This document explains how to contribute changes to the Gitea project. It assumes you have followed the [installation instructions](https://docs.gitea.io/en-us/install-from-binary/). Sensitive security-related issues should be reported to [security@gitea.io](mailto:security@gitea.io).
-
 ## Bug reports
 
 Please search the issues on the issue tracker with a variety of keywords to ensure your bug is not already reported.
 
-If unique, [open an issue](https://gitea.com/gitea/go-sdk/issues/new) and answer the questions so we can understand and reproduce the problematic behavior.
+If unique, [open an issue](https://codeberg.org/mvdkleijn/forgejo-sdk/issues/new) and answer the questions so we can understand and reproduce the problematic behavior.
 
-To show us that the issue you are having is in Gitea itself, please write clear, concise instructions so we can reproduce the behavior (even if it seems obvious). The more detailed and specific you are, the faster we can fix the issue. Check out [How to Report Bugs Effectively](http://www.chiark.greenend.org.uk/~sgtatham/bugs.html).
+To show us that the issue you are having is in Forgejo SDK itself, please write clear, concise instructions so we can reproduce the behavior (even if it seems obvious). The more detailed and specific you are, the faster we can fix the issue.
 
-Please be kind, remember that Gitea comes at no cost to you, and you're getting free help.
+Please be kind, remember that Forgejo SDK comes at no cost to you, and you're getting free help.
 
 ## Discuss your design
 
-The project welcomes submissions but please let everyone know what you're working on if you want to change or add something to the Gitea repositories.
+The project welcomes submissions but please let everyone know what you're working on if you want to change or add something to the Forgejo SDK repository.
 
-Before starting to write something new for the Gitea project, please [file an issue](https://gitea.com/gitea/go-sdk/issues/new). Significant changes must go through the [change proposal process](https://github.com/go-gitea/proposals) before they can be accepted.
-
-This process gives everyone a chance to validate the design, helps prevent duplication of effort, and ensures that the idea fits inside the goals for the project and tools. It also checks that the design is sound before code is written; the code review tool is not the place for high-level discussions.
+Before starting to write something new for the Forgejo SDK project, please [file an issue](https://coderberg.org/mvdkleijn/forgejo-sdk/issues/new).
 
 ## Testing redux
 
-Before sending code out for review, run all the tests for the whole tree to make sure the changes don't break other usage and keep the compatibility on upgrade. To make sure you are running the test suite exactly like we do, you should install the CLI for [Drone CI](https://github.com/drone/drone), as we are using the server for continous testing, following [these instructions](https://exec-runner.docs.drone.io/installation/). After that you can simply call `drone exec` within your working directory and it will try to run the test suite locally.
+Before sending code out for review, run all the tests using `make test`, to make sure the changes don't break other usage. In order to run the test, you'll need a test instance. You can create one using `make test-instance`.
 
 ## Code review
 
-Changes to Gitea must be reviewed before they are accepted, no matter who makes the change even if it is an owner or a maintainer. We use GitHub's pull request workflow to do that and we also use [LGTM](http://lgtm.co) to ensure every PR is reviewed by at least 2 maintainers.
+Changes must be reviewed before they are accepted, no matter who makes the change even if it is an owner or a maintainer.
 
-Please try to make your pull request easy to review for us. Please read the "[How to get faster PR reviews](https://github.com/kubernetes/community/blob/master/contributors/devel/faster_reviews.md)" guide, it has lots of useful tips for any project you may want to contribute. Some of the key points:
+Please try to make your pull request easy to review for us. Some of the key points:
 
 * Make small pull requests. The smaller, the faster to review and the more likely it will be merged soon.
 * Don't make changes unrelated to your PR. Maybe there are typos on some comments, maybe refactoring would be welcome on a function... but if that is not related to your PR, please make *another* PR for that.
@@ -44,51 +38,14 @@ The sign-off is a simple line at the end of the explanation for the patch. Your 
 Signed-off-by: Joe Smith <joe.smith@email.com>
 ```
 
-Please use your real name, we really dislike pseudonyms or anonymous contributions. We are in the open-source world without secrets. If you set your `user.name` and `user.email` git configs, you can sign your commit automatically with `git commit -s`.
-
-## Maintainers
-
-To make sure every PR is checked, we have [team maintainers](https://github.com/orgs/go-gitea/teams/maintainers). Every PR **MUST** be reviewed by at least two maintainers (or owners) before it can get merged. A maintainer should be a contributor of Gitea (or Gogs) and contributed at least 4 accepted PRs. A contributor should apply as a maintainer in the [Gitter develop channel](https://gitter.im/go-gitea/develop). The owners or the team maintainers may invite the contributor. A maintainer should spend some time on code reviews. If a maintainer has no time to do that, they should apply to leave the maintainers team and we will give them the honor of being a member of the [advisors team](https://github.com/orgs/go-gitea/teams/advisors). Of course, if an advisor has time to code review, we will gladly welcome them back to the maintainers team. If a maintainer is inactive for more than 3 months and forgets to leave the maintainers team, the owners may move him or her from the maintainers team to the advisors team.
-
-## Owners
-
-Since Gitea is a pure community organization without any company support, to keep the development healthy we will elect three owners every year. All contributors may vote to elect up to three candidates, one of which will be the main owner, and the other two the assistant owners. When the new owners have been elected, the old owners will give up ownership to the newly elected owners. If an owner is unable to do so, the other owners will assist in ceding ownership to the newly elected owners.
-
-After the election, the new owners should proactively agree with our [CONTRIBUTING](CONTRIBUTING.md) requirements in the [Discord](https://discord.gg/NsatcWJ) #general channel. Below are the words to speak:
-
-```
-I'm honored to having been elected an owner of Gitea, I agree with [CONTRIBUTING](CONTRIBUTING.md). I will spend part of my time on Gitea and lead the development of Gitea.
-```
-
-To honor the past owners, here's the history of the owners and the time they served:
-
-* 2016-11-04 ~ 2017-12-31
-  * [Lunny Xiao](https://gitea.com/lunny) <xiaolunwen@gmail.com>
-  * [Thomas Boerger](https://github.com/tboerger) <thomas@webhippie.de>
-  * [Kim Carlbäcker](https://github.com/bkcsoft) <kim.carlbacker@gmail.com>
-
-* 2018-01-01 ~ 2018-12-31
-  * [Lunny Xiao](https://gitea.com/lunny) <xiaolunwen@gmail.com>
-  * [Lauris Bukšis-Haberkorns](https://github.com/lafriks) <lauris@nix.lv>
-  * [Kim Carlbäcker](https://github.com/bkcsoft) <kim.carlbacker@gmail.com>
-
-* 2019-01-01 ~ 2019-12-31
-  * [Lunny Xiao](https://gitea.com/lunny) <xiaolunwen@gmail.com>
-  * [Lauris Bukšis-Haberkorns](https://github.com/lafriks) <lauris@nix.lv>
-  * [Matti Ranta](https://github.com/techknowlogick) <matti@mdranta.net>
-
-## Versions
-
-Gitea has the `master` branch as a tip branch and has version branches such as `v0.9`. `v0.9` is a release branch and we will tag `v0.9.0` for binary download. If `v0.9.0` has bugs, we will accept pull requests on the `v0.9` branch and publish a `v0.9.1` tag, after bringing the bug fix also to the master branch.
-
-Since the `master` branch is a tip version, if you wish to use Gitea in production, please download the latest release tag version. All the branches will be protected via GitHub, all the PRs to every branch must be reviewed by two maintainers and must pass the automatic tests.
+Please use your real name. If you set your `user.name` and `user.email` git configs, you can sign your commit automatically with `git commit -s`.
 
 ## Copyright
 
 Code that you contribute should use the standard copyright header:
 
 ```
-// Copyright 2019 The Gitea Authors. All rights reserved.
+// Copyright 2024 The Forgejo Authors. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 ```
