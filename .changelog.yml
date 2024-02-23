@@ -1,12 +1,12 @@
 # The full repository name
-repo: gitea/go-sdk
+repo: mvdkleijn/forgejo-sdk
 
-# Service type (gitea or github)
-service: gitea
+# Service type (forgejo or github)
+service: forgejo
 
 # Base URL for Gitea instance if using gitea service type (optional)
-# Default: https://gitea.com
-base-url: https://gitea.com
+# Default: https://forgejo.org
+base-url: https://forgejo.org
 
 # Changelog groups and which labeled PRs to add to each group
 groups:
