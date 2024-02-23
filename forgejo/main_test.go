@@ -11,7 +11,6 @@ package forgejo
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -60,11 +59,11 @@ func newTestClientAuth() ClientOption {
 func forgejoMasterPath() string {
 	switch runtime.GOOS {
 	case "darwin":
-		return fmt.Sprintf("https://dl.gitea.io/gitea/master/gitea-master-darwin-10.6-%s", runtime.GOARCH)
+		return fmt.Sprintf("https://codeberg.org/forgejo/forgejo/releases/download/v1.21.6-0/forgejo-1.21.6-0-%s", runtime.GOARCH)
 	case "linux":
 		return fmt.Sprintf("https://codeberg.org/forgejo/forgejo/releases/download/v1.21.6-0/forgejo-1.21.6-0-linux-%s", runtime.GOARCH)
 	case "windows":
-		return fmt.Sprintf("https://dl.gitea.io/gitea/master/gitea-master-windows-4.0-%s.exe", runtime.GOARCH)
+		return fmt.Sprintf("https://codeberg.org/forgejo/forgejo/releases/download/v1.21.6-0/forgejo-1.21.6-0-%s.exe", runtime.GOARCH)
 	}
 	return ""
 }
@@ -77,7 +76,7 @@ func downForgejo() (string, error) {
 		}
 		defer resp.Body.Close()
 
-		f, err := ioutil.TempFile(os.TempDir(), "forgejo")
+		f, err := os.CreateTemp(os.TempDir(), "forgejo")
 		if err != nil {
 			continue
 		}

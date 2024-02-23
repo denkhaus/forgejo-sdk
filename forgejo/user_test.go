@@ -25,7 +25,7 @@ func TestMyUser(t *testing.T) {
 	assert.EqualValues(t, "test01", user.UserName)
 	assert.EqualValues(t, "test01@forgejo.org", user.Email)
 	assert.EqualValues(t, "", user.FullName)
-	assert.EqualValues(t, "https://secure.gravatar.com/avatar/d794373e882a68fb173cef817fb6180a?d=identicon", user.AvatarURL)
+	assert.EqualValues(t, "https://secure.gravatar.com/avatar/90e9f0102fc2832d69ae59a1214601c0?d=identicon", user.AvatarURL)
 	assert.True(t, user.IsAdmin)
 }
 
@@ -36,7 +36,8 @@ func TestUserApp(t *testing.T) {
 	result, _, err := c.ListAccessTokens(ListAccessTokensOptions{})
 	assert.NoError(t, err)
 	assert.Len(t, result, 1)
-	assert.EqualValues(t, "forgejo-admin", result[0].Name)
+	// the gitea-admin name for the token is hardcoded in forgejo itself, until it's changed this will need to do
+	assert.EqualValues(t, "gitea-admin", result[0].Name)
 
 	t1, _, err := c.CreateAccessToken(CreateAccessTokenOption{Name: "TestCreateAccessToken"})
 	assert.NoError(t, err)

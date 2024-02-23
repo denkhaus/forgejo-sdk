@@ -85,7 +85,7 @@ func (e ErrUnknownVersion) Error() string {
 	return fmt.Sprintf("unknown version: %s", e.raw)
 }
 
-func (_ ErrUnknownVersion) Is(target error) bool {
+func (ErrUnknownVersion) Is(target error) bool {
 	_, ok1 := target.(*ErrUnknownVersion)
 	_, ok2 := target.(ErrUnknownVersion)
 	return ok1 || ok2
