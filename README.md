@@ -1,7 +1,7 @@
 # Forgejo SDK for Go
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Go Report Card](https://goreportcard.com/badge/codeberg.org/mvdkleijn/forgejo-sdk)](https://goreportcard.com/report/codeberg.org/mvdkleijn/forgejo-sdk)
+[![Go Report Card](https://goreportcard.com/badge/codeberg.org/mvdkleijn/forgejo-sdk/forgejo)](https://goreportcard.com/report/codeberg.org/mvdkleijn/forgejo-sdk/forgejo)
 [![GoDoc](https://godoc.org/codeberg.org/mvdkleijn/forgejo-sdk/forgejo?status.svg)](https://godoc.org/codeberg.org/mvdkleijn/forgejo-sdk/forgejo)
 
 This project acts as a client SDK implementation written in Go to interact with the Forgejo API implementation. For further informations take a look at the current [documentation](https://pkg.go.dev/codeberg.org/mvdkleijn/forgejo-sdk/forgejo).
@@ -15,7 +15,7 @@ import "codeberg.org/mvdkleijn/forgejo-sdk/forgejo"
 ```
 
 ## Version Requirements
- * go >= 1.13
+ * go >= 1.21
  * forgejo >= 1.11
 
 ## Contributing
