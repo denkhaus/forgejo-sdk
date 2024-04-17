@@ -1,4 +1,4 @@
-// Copyright 2024 The Forgjo Authors. All rights reserved.
+// Copyright 2024 The Forgejo Authors. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
@@ -73,6 +73,7 @@ var (
 	version1_15_0 = version.Must(version.NewVersion("1.15.0"))
 	version1_16_0 = version.Must(version.NewVersion("1.16.0"))
 	version1_17_0 = version.Must(version.NewVersion("1.17.0"))
+	version1_22_0 = version.Must(version.NewVersion("1.22.0"))
 )
 
 // ErrUnknownVersion is an unknown version from the API
