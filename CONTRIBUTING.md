@@ -14,7 +14,7 @@ Please be kind, remember that Forgejo SDK comes at no cost to you, and you're ge
 
 The project welcomes submissions but please let everyone know what you're working on if you want to change or add something to the Forgejo SDK repository.
 
-Before starting to write something new for the Forgejo SDK project, please [file an issue](https://coderberg.org/mvdkleijn/forgejo-sdk/issues/new).
+Before starting to write something new for the Forgejo SDK project, please [file an issue](https://codeberg.org/mvdkleijn/forgejo-sdk/issues/new).
 
 ## Testing redux
 

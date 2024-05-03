@@ -36,7 +36,7 @@ func TestUserApp(t *testing.T) {
 	result, _, err := c.ListAccessTokens(ListAccessTokensOptions{})
 	assert.NoError(t, err)
 	assert.Len(t, result, 1)
-	// the gitea-admin name for the token is hardcoded in forgejo itself, until it's changed this will need to do
+	// TODO: the gitea-admin name for the token is hardcoded in forgejo itself, until it's changed this will need to do
 	assert.EqualValues(t, "gitea-admin", result[0].Name)
 
 	t1, _, err := c.CreateAccessToken(CreateAccessTokenOption{Name: "TestCreateAccessToken"})

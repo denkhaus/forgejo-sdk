@@ -4,7 +4,7 @@ repo: mvdkleijn/forgejo-sdk
 # Service type (forgejo or github)
 service: forgejo
 
-# Base URL for Gitea instance if using gitea service type (optional)
+# Base URL for Forgejo instance if using forgejo service type (optional)
 # Default: https://forgejo.org
 base-url: https://forgejo.org
 
