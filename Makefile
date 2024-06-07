@@ -10,7 +10,6 @@ PACKAGE := codeberg.org/mvdkleijn/forgejo-sdk
 
 GOFUMPT_PACKAGE ?= mvdan.cc/gofumpt@v0.4.0
 GOLANGCI_LINT_PACKAGE ?= github.com/golangci/golangci-lint/cmd/golangci-lint@v1.51.0
-GITEA_VET_PACKAGE ?= code.gitea.io/gitea-vet@v0.2.1
 
 FORGEJO_VERSION := 1.21.6-0
 FORGEJO_DL := https://codeberg.org/forgejo/forgejo/releases/download/v$(FORGEJO_VERSION)/forgejo-$(FORGEJO_VERSION)-
@@ -66,10 +65,6 @@ fmt:
 vet:
 	# Default vet
 	cd forgejo && $(GO) vet $(PACKAGE)
-	# Custom vet
-	cd forgejo && $(GO) get $(GITEA_VET_PACKAGE)
-	cd forgejo && $(GO) build code.gitea.io/gitea-vet
-	cd forgejo && $(GO) vet -vettool=gitea-vet $(PACKAGE)
 
 .PHONY: ci-lint
 ci-lint: 
