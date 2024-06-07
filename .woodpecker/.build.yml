@@ -1,0 +1,15 @@
+variables:
+  - &golang_image 'golang:1.22'
+
+when:
+  - branch: main
+    event: push
+
+steps:
+  - name: build
+    image: *golang_image
+    commands:
+      - make build
+
+depends_on:
+  - lint
