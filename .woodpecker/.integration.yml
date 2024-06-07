@@ -23,6 +23,7 @@ steps:
   - name: verify_connection
     image: *golang_image
     commands:
+      - sleep 20
       - curl --noproxy "*" http://forgejo:3000/api/v1/version
 
   - name: test
