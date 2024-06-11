@@ -6,20 +6,6 @@ when:
     event: push
 
 steps:
-  - name: setup
-    image: *golang_image
-    environment:
-      GOPROXY: "https://goproxy.io"
-      GO111MODULE: "on"
-      HTTP_PROXY: ""
-      FORGEJO_SDK_TEST_URL: "http://forgejo:3000"
-      FORGEJO_SDK_TEST_USERNAME: "test01"
-      FORGEJO_SDK_TEST_PASSWORD: "test01"
-    commands:
-      - git checkout ${CI_COMMIT_SHA}
-      - go version
-      - make clean
-
   - name: verify_connection
     image: *golang_image
     commands:
