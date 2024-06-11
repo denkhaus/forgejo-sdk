@@ -5,6 +5,11 @@ when:
   - event: [push, pull_request, manual]
 
 steps:
+  - name: vendor
+    image: *golang_image
+    commands:
+      - go mod vendor
+
   - name: vet
     image: *golang_image
     commands:
