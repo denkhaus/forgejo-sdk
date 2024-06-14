@@ -65,74 +65,17 @@ func NewHTTPSignWithCert(principal, sshKey, passphrase string) (*HTTPSign, error
 // Depending on the configuration it will either use a certificate or a public key
 func newHTTPSign(config *HTTPSignConfig) (*HTTPSign, error) {
 	var signer ssh.Signer
+	var err error
 
 	if config.sshKey != "" {
-		priv, err := os.ReadFile(config.sshKey)
+		signer, err = getSignerFromFile(config)
 		if err != nil {
 			return nil, err
-		}
-
-		if config.passphrase == "" {
-			signer, err = ssh.ParsePrivateKey(priv)
-			if err != nil {
-				return nil, err
-			}
-		} else {
-			signer, err = ssh.ParsePrivateKeyWithPassphrase(priv, []byte(config.passphrase))
-			if err != nil {
-				return nil, err
-			}
-		}
-
-		if config.cert {
-			certbytes, err := os.ReadFile(config.sshKey + "-cert.pub")
-			if err != nil {
-				return nil, err
-			}
-
-			pub, _, _, _, err := ssh.ParseAuthorizedKey(certbytes)
-			if err != nil {
-				return nil, err
-			}
-
-			cert, ok := pub.(*ssh.Certificate)
-			if !ok {
-				return nil, fmt.Errorf("failed to parse certificate")
-			}
-
-			signer, err = ssh.NewCertSigner(cert, signer)
-			if err != nil {
-				return nil, err
-			}
 		}
 	} else {
-		// if no sshKey is specified, check if we have a ssh-agent and use it
-		agent, err := GetAgent()
+		signer, err = getSignerFromAgent(config)
 		if err != nil {
 			return nil, err
-		}
-
-		signers, err := agent.Signers()
-		if err != nil {
-			return nil, err
-		}
-
-		if len(signers) == 0 {
-			return nil, fmt.Errorf("no signers found")
-		}
-
-		if config.cert {
-			signer = findCertSigner(signers, config.principal)
-			if signer == nil {
-				return nil, fmt.Errorf("no certificate found for %s", config.principal)
-			}
-		}
-
-		if config.pubkey {
-			signer = findPubkeySigner(signers, config.fingerprint)
-			if signer == nil {
-				return nil, fmt.Errorf("no public key found for %s", config.fingerprint)
-			}
 		}
 	}
 
@@ -140,6 +83,88 @@ func newHTTPSign(config *HTTPSignConfig) (*HTTPSign, error) {
 		Signer: signer,
 		cert:   config.cert,
 	}, nil
+}
+
+// getSignerFromFile gets a signer from a given file
+func getSignerFromFile(config *HTTPSignConfig) (ssh.Signer, error) {
+	var signer ssh.Signer
+	var err error
+
+	priv, err := os.ReadFile(config.sshKey)
+	if err != nil {
+		return nil, err
+	}
+
+	if config.passphrase == "" {
+		signer, err = ssh.ParsePrivateKey(priv)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		signer, err = ssh.ParsePrivateKeyWithPassphrase(priv, []byte(config.passphrase))
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if config.cert {
+		certbytes, err := os.ReadFile(config.sshKey + "-cert.pub")
+		if err != nil {
+			return nil, err
+		}
+
+		pub, _, _, _, err := ssh.ParseAuthorizedKey(certbytes)
+		if err != nil {
+			return nil, err
+		}
+
+		cert, ok := pub.(*ssh.Certificate)
+		if !ok {
+			return nil, fmt.Errorf("failed to parse certificate")
+		}
+
+		signer, err = ssh.NewCertSigner(cert, signer)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return signer, nil
+}
+
+// getSignerFromAgent checks if we have an ssh-agent and uses it
+func getSignerFromAgent(config *HTTPSignConfig) (ssh.Signer, error) {
+	var signer ssh.Signer
+
+	agent, err := GetAgent()
+	if err != nil {
+		return nil, err
+	}
+
+	signers, err := agent.Signers()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(signers) == 0 {
+		return nil, fmt.Errorf("no signers found")
+	}
+
+	if config.cert {
+		signer = findCertSigner(signers, config.principal)
+		if signer == nil {
+			return nil, fmt.Errorf("no certificate found for %s", config.principal)
+		}
+	}
+
+	if config.pubkey {
+		signer = findPubkeySigner(signers, config.fingerprint)
+		if signer == nil {
+			return nil, fmt.Errorf("no public key found for %s", config.fingerprint)
+		}
+	}
+
+	return signer, nil
 }
 
 // SignRequest signs a HTTP request
