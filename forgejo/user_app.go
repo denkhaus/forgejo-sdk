@@ -35,11 +35,11 @@ const (
 	AccessTokenScopeWritePublicKey AccessTokenScope = "write:public_key"
 	AccessTokenScopeReadPublicKey  AccessTokenScope = "read:public_key"
 
-	AccessTokenScopeAdminRepoHook AccessTokenScope = "admin:repo_hook"
-	AccessTokenScopeWriteRepoHook AccessTokenScope = "write:repo_hook"
-	AccessTokenScopeReadRepoHook  AccessTokenScope = "read:repo_hook"
+	AccessTokenScopeAdminRepoHook AccessTokenScope = "admin:repo_hook" //#nosec G101 -- False positive
+	AccessTokenScopeWriteRepoHook AccessTokenScope = "write:repo_hook" //#nosec G101 -- False positive
+	AccessTokenScopeReadRepoHook  AccessTokenScope = "read:repo_hook"  //#nosec G101 -- False positive
 
-	AccessTokenScopeAdminOrgHook AccessTokenScope = "admin:org_hook"
+	AccessTokenScopeAdminOrgHook AccessTokenScope = "admin:org_hook" //#nosec G101 -- False positive
 
 	AccessTokenScopeAdminUserHook AccessTokenScope = "admin:user_hook"
 
@@ -57,12 +57,12 @@ const (
 	AccessTokenScopeReadPackage   AccessTokenScope = "read:package"
 	AccessTokenScopeDeletePackage AccessTokenScope = "delete:package"
 
-	AccessTokenScopeAdminGPGKey AccessTokenScope = "admin:gpg_key"
-	AccessTokenScopeWriteGPGKey AccessTokenScope = "write:gpg_key"
-	AccessTokenScopeReadGPGKey  AccessTokenScope = "read:gpg_key"
+	AccessTokenScopeAdminGPGKey AccessTokenScope = "admin:gpg_key" //#nosec G101 -- False positive
+	AccessTokenScopeWriteGPGKey AccessTokenScope = "write:gpg_key" //#nosec G101 -- False positive
+	AccessTokenScopeReadGPGKey  AccessTokenScope = "read:gpg_key"  //#nosec G101 -- False positive
 
-	AccessTokenScopeAdminApplication AccessTokenScope = "admin:application"
-	AccessTokenScopeWriteApplication AccessTokenScope = "write:application"
+	AccessTokenScopeAdminApplication AccessTokenScope = "admin:application" //#nosec G101 -- False positive
+	AccessTokenScopeWriteApplication AccessTokenScope = "write:application" //#nosec G101 -- False positive
 	AccessTokenScopeReadApplication  AccessTokenScope = "read:application"
 
 	AccessTokenScopeSudo AccessTokenScope = "sudo"
