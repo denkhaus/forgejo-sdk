@@ -6,7 +6,7 @@ FORGEJO_SDK_TEST_URL ?= http://localhost:3000
 FORGEJO_SDK_TEST_USERNAME ?= test01
 FORGEJO_SDK_TEST_PASSWORD ?= test01
 
-PACKAGE := codeberg.org/mvdkleijn/forgejo-sdk
+PACKAGE := codeberg.org/mvdkleijn/forgejo-sdk/forgejo
 
 GOFUMPT_PACKAGE ?= mvdan.cc/gofumpt@v0.4.0
 GOLANGCI_LINT_PACKAGE ?= github.com/golangci/golangci-lint/cmd/golangci-lint@v1.51.0
