@@ -10,6 +10,7 @@ package forgejo
 
 import (
 	"log"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -17,6 +18,14 @@ import (
 
 func TestMyUser(t *testing.T) {
 	log.Println("== TestMyUser ==")
+
+	var expectedAvatarURL string
+	if os.Getenv("CI") == "woodpecker" {
+		expectedAvatarURL = "http://forgejo:3000/avatars/90e9f0102fc2832d69ae59a1214601c0"
+	} else {
+		expectedAvatarURL = "http://localhost:3000/avatars/90e9f0102fc2832d69ae59a1214601c0"
+	}
+
 	c := newTestClient()
 	user, _, err := c.GetMyUserInfo()
 	assert.NoError(t, err)
@@ -25,7 +34,7 @@ func TestMyUser(t *testing.T) {
 	assert.EqualValues(t, "test01", user.UserName)
 	assert.EqualValues(t, "test01@forgejo.org", user.Email)
 	assert.EqualValues(t, "", user.FullName)
-	assert.EqualValues(t, "http://localhost:3000/avatars/90e9f0102fc2832d69ae59a1214601c0", user.AvatarURL)
+	assert.EqualValues(t, expectedAvatarURL, user.AvatarURL)
 	assert.True(t, user.IsAdmin)
 }
 
