@@ -4,6 +4,8 @@ variables:
 when:
   - branch: main
     event: push
+    path:
+      exclude: ['*.md', 'docs/**']
 
 steps:
   - name: verify_connection
