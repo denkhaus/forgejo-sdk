@@ -23,7 +23,7 @@ func TestIssue(t *testing.T) {
 
 	createIssue(t, c)
 	// Little sleep in order to give some time for forgejo to properly store all information on database. Without this sleep, CI is a bit unstable
-	time.Sleep(100 * time.Millisecond)
+	time.Sleep(200 * time.Millisecond)
 	editIssues(t, c)
 	listIssues(t, c)
 	deleteIssue(t, c)
