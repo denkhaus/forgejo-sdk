@@ -13,10 +13,12 @@ steps:
 
   - name: vet
     image: *golang_image
+    depends_on: [vendor]
     commands:
       - make vet
 
   - name: lint
     image: *golang_image
+    depends_on: [vendor]
     commands:
       - make ci-lint
