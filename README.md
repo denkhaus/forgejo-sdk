@@ -1,6 +1,7 @@
 # Forgejo SDK for Go
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Release](https://raster.shields.io/badge/dynamic/json.svg?label=release&url=https://codeberg.org/api/v1/repos/mvdkleijn/forgejo-sdk/releases&query=$[0].tag_name)](https://codeberg.org/mvdkleijn/forgejo-sdk/releases)
 [![Go Report Card](https://goreportcard.com/badge/codeberg.org/mvdkleijn/forgejo-sdk/forgejo)](https://goreportcard.com/report/codeberg.org/mvdkleijn/forgejo-sdk/forgejo)
 [![GoDoc](https://godoc.org/codeberg.org/mvdkleijn/forgejo-sdk/forgejo?status.svg)](https://godoc.org/codeberg.org/mvdkleijn/forgejo-sdk/forgejo)
 [![status-badge](https://ci.codeberg.org/api/badges/13417/status.svg)](https://ci.codeberg.org/repos/13417)
