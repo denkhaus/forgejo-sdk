@@ -25,7 +25,7 @@ func TestMyUser(t *testing.T) {
 	assert.EqualValues(t, "test01", user.UserName)
 	assert.EqualValues(t, "test01@forgejo.org", user.Email)
 	assert.EqualValues(t, "", user.FullName)
-	assert.EqualValues(t, "https://secure.gravatar.com/avatar/90e9f0102fc2832d69ae59a1214601c0?d=identicon", user.AvatarURL)
+	assert.EqualValues(t, "http://localhost:3000/avatars/90e9f0102fc2832d69ae59a1214601c0", user.AvatarURL)
 	assert.True(t, user.IsAdmin)
 }
 
@@ -149,14 +149,14 @@ func TestUserEmail(t *testing.T) {
 	el, _, err := c.ListEmails(ListEmailsOptions{})
 	assert.NoError(t, err)
 	assert.Len(t, el, 1)
-	assert.EqualValues(t, "testuseremail@forgejo.org", el[0].Email)
+	assert.EqualValues(t, "TestUserEmail@forgejo.org", el[0].Email)
 	assert.True(t, el[0].Primary)
 
 	// AddEmail
 	mails := []string{"wow@mail.send", "speed@mail.me"}
 	el, _, err = c.AddEmail(CreateEmailOption{Emails: mails})
 	assert.NoError(t, err)
-	assert.Len(t, el, 2)
+	assert.Len(t, el, 3)
 	_, _, err = c.AddEmail(CreateEmailOption{Emails: []string{mails[1]}})
 	assert.Error(t, err)
 	el, _, err = c.ListEmails(ListEmailsOptions{})
