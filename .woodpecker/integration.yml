@@ -6,6 +6,9 @@ when:
     event: push
     path:
       exclude: ['*.md', 'docs/**']
+  - event: [pull_request]
+    path:
+      exclude: ['*.md', 'docs/**']
 
 steps:
   - name: verify_connection
