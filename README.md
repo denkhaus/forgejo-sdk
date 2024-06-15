@@ -16,7 +16,7 @@ import "codeberg.org/mvdkleijn/forgejo-sdk/forgejo"
 ```
 
 ## Version Requirements
- * go >= 1.21
+ * go >= 1.22
  * forgejo >= 1.11
 
 ## Contributing
