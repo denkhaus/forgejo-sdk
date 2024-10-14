@@ -59,11 +59,11 @@ func newTestClientAuth() ClientOption {
 func forgejoMasterPath() string {
 	switch runtime.GOOS {
 	case "darwin":
-		return fmt.Sprintf("https://codeberg.org/forgejo/forgejo/releases/download/v1.21.6-0/forgejo-1.21.6-0-%s", runtime.GOARCH)
+		return fmt.Sprintf("https://codeberg.org/forgejo/forgejo/releases/download/v8.0.3/forgejo-8.0.3-%s", runtime.GOARCH)
 	case "linux":
-		return fmt.Sprintf("https://codeberg.org/forgejo/forgejo/releases/download/v1.21.6-0/forgejo-1.21.6-0-linux-%s", runtime.GOARCH)
+		return fmt.Sprintf("https://codeberg.org/forgejo/forgejo/releases/download/v8.0.3/forgejo-8.0.3-linux-%s", runtime.GOARCH)
 	case "windows":
-		return fmt.Sprintf("https://codeberg.org/forgejo/forgejo/releases/download/v1.21.6-0/forgejo-1.21.6-0-%s.exe", runtime.GOARCH)
+		return fmt.Sprintf("https://codeberg.org/forgejo/forgejo/releases/download/v8.0.3/forgejo-8.0.3-%s.exe", runtime.GOARCH)
 	}
 	return ""
 }
