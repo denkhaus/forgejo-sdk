@@ -11,7 +11,7 @@ PACKAGE := codeberg.org/mvdkleijn/forgejo-sdk/forgejo
 GOFUMPT_PACKAGE ?= mvdan.cc/gofumpt@v0.7.0
 GOLANGCI_LINT_PACKAGE ?= github.com/golangci/golangci-lint/cmd/golangci-lint@v1.61.0
 
-FORGEJO_VERSION := 7.0.4
+FORGEJO_VERSION := 8.0.3
 FORGEJO_DL := https://codeberg.org/forgejo/forgejo/releases/download/v$(FORGEJO_VERSION)/forgejo-$(FORGEJO_VERSION)-
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
