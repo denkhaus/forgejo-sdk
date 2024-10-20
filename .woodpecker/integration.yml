@@ -34,7 +34,7 @@ depends_on:
 
 services:
   - name: forgejo
-    image: codeberg.org/forgejo/forgejo:7.0.4
+    image: codeberg.org/forgejo/forgejo:8.0.3
     commands:
       - mkdir -p /tmp/conf/
       - mkdir -p /tmp/data/
