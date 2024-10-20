@@ -23,7 +23,11 @@ func TestListRepoCommits(t *testing.T) {
 	repo, err := createTestRepo(t, "ListRepoCommits", c)
 	assert.NoError(t, err)
 
-	l, _, err := c.ListRepoCommits(repo.Owner.UserName, repo.Name, ListCommitOptions{})
+	l, _, err := c.ListRepoCommits(repo.Owner.UserName, repo.Name, ListCommitOptions{
+		ListOptions:  ListOptions{},
+		Stat:         true,
+		Verification: true,
+	})
 	assert.NoError(t, err)
 	assert.Len(t, l, 1)
 
