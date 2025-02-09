@@ -32,17 +32,29 @@ type GitTreeResponse struct {
 	TotalCount int        `json:"total_count"`
 }
 
+// GetTreesOptions options for listing a repository's trees
+type GetTreesOptions struct {
+	Recursive bool
+	ListOptions
+}
+
 // GetTrees downloads a file of repository, ref can be branch/tag/commit.
-// e.g.: ref -> master, tree -> macaron.go(no leading slash)
-func (c *Client) GetTrees(user, repo, ref string, recursive bool) (*GitTreeResponse, *Response, error) {
+// e.g.: ref -> main, tree -> macaron.go(no leading slash)
+func (c *Client) GetTrees(user, repo, ref string, opt GetTreesOptions) (*GitTreeResponse, *Response, error) {
 	if err := escapeValidatePathSegments(&user, &repo, &ref); err != nil {
 		return nil, nil, err
 	}
+	opt.setDefaults()
+
 	trees := new(GitTreeResponse)
-	path := fmt.Sprintf("/repos/%s/%s/git/trees/%s", user, repo, ref)
-	if recursive {
-		path += "?recursive=1"
+	recInt := 0
+	if opt.Recursive {
+		recInt = 1
 	}
-	resp, err := c.getParsedResponse("GET", path, nil, nil, trees)
+	perPage := opt.PageSize // workaround for api endpoint using per_page instead of limit
+	path := fmt.Sprintf("/repos/%s/%s/git/trees/%s?recursive=%d&per_page=%d&%s", user, repo, ref, recInt, perPage, opt.getURLQuery().Encode())
+
+	resp, err := c.getParsedResponse("GET", path, nil, nil, &trees)
+
 	return trees, resp, err
 }
