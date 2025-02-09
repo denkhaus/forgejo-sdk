@@ -37,7 +37,7 @@ jobs:
       - run: make test
     services:
       forgejo:
-        image: codeberg.org/forgejo/forgejo:8.0.3
+        image: codeberg.org/forgejo/forgejo:9.0.3
         cmd:
           - bash
           - -c
