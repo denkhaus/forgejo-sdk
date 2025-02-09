@@ -48,7 +48,7 @@ func TestUserApp(t *testing.T) {
 	// TODO: the gitea-admin name for the token is hardcoded in forgejo itself, until it's changed this will need to do
 	assert.EqualValues(t, "gitea-admin", result[0].Name)
 
-	t1, _, err := c.CreateAccessToken(CreateAccessTokenOption{Name: "TestCreateAccessToken"})
+	t1, _, err := c.CreateAccessToken(CreateAccessTokenOption{Name: "TestCreateAccessToken", Scopes: []AccessTokenScope{AccessTokenScopeRepositoryRead}})
 	assert.NoError(t, err)
 	assert.EqualValues(t, "TestCreateAccessToken", t1.Name)
 	result, _, _ = c.ListAccessTokens(ListAccessTokensOptions{})

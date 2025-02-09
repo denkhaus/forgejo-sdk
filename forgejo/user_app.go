@@ -21,51 +21,30 @@ import (
 type AccessTokenScope string
 
 const (
-	AccessTokenScopeAll AccessTokenScope = "all"
+	// specials
+	AccessTokenScopeAll        AccessTokenScope = "all"
+	AccessTokenScopePublicOnly AccessTokenScope = "public-only"
+	AccessTokenScopeSudo       AccessTokenScope = "sudo"
 
-	AccessTokenScopeRepo       AccessTokenScope = "repo"
-	AccessTokenScopeRepoStatus AccessTokenScope = "repo:status"
-	AccessTokenScopePublicRepo AccessTokenScope = "public_repo"
-
-	AccessTokenScopeAdminOrg AccessTokenScope = "admin:org"
-	AccessTokenScopeWriteOrg AccessTokenScope = "write:org"
-	AccessTokenScopeReadOrg  AccessTokenScope = "read:org"
-
-	AccessTokenScopeAdminPublicKey AccessTokenScope = "admin:public_key"
-	AccessTokenScopeWritePublicKey AccessTokenScope = "write:public_key"
-	AccessTokenScopeReadPublicKey  AccessTokenScope = "read:public_key"
-
-	AccessTokenScopeAdminRepoHook AccessTokenScope = "admin:repo_hook" //#nosec G101 -- False positive
-	AccessTokenScopeWriteRepoHook AccessTokenScope = "write:repo_hook" //#nosec G101 -- False positive
-	AccessTokenScopeReadRepoHook  AccessTokenScope = "read:repo_hook"  //#nosec G101 -- False positive
-
-	AccessTokenScopeAdminOrgHook AccessTokenScope = "admin:org_hook" //#nosec G101 -- False positive
-
-	AccessTokenScopeAdminUserHook AccessTokenScope = "admin:user_hook"
-
-	AccessTokenScopeNotification AccessTokenScope = "notification"
-
-	AccessTokenScopeUser       AccessTokenScope = "user"
-	AccessTokenScopeReadUser   AccessTokenScope = "read:user"
-	AccessTokenScopeUserEmail  AccessTokenScope = "user:email"
-	AccessTokenScopeUserFollow AccessTokenScope = "user:follow"
-
-	AccessTokenScopeDeleteRepo AccessTokenScope = "delete_repo"
-
-	AccessTokenScopePackage       AccessTokenScope = "package"
-	AccessTokenScopeWritePackage  AccessTokenScope = "write:package"
-	AccessTokenScopeReadPackage   AccessTokenScope = "read:package"
-	AccessTokenScopeDeletePackage AccessTokenScope = "delete:package"
-
-	AccessTokenScopeAdminGPGKey AccessTokenScope = "admin:gpg_key" //#nosec G101 -- False positive
-	AccessTokenScopeWriteGPGKey AccessTokenScope = "write:gpg_key" //#nosec G101 -- False positive
-	AccessTokenScopeReadGPGKey  AccessTokenScope = "read:gpg_key"  //#nosec G101 -- False positive
-
-	AccessTokenScopeAdminApplication AccessTokenScope = "admin:application" //#nosec G101 -- False positive
-	AccessTokenScopeWriteApplication AccessTokenScope = "write:application" //#nosec G101 -- False positive
-	AccessTokenScopeReadApplication  AccessTokenScope = "read:application"
-
-	AccessTokenScopeSudo AccessTokenScope = "sudo"
+	// normal scopes
+	AccessTokenScopeActivitypubRead   AccessTokenScope = "read:activitypub"
+	AccessTokenScopeActivitypubWrite  AccessTokenScope = "write:activitypub"
+	AccessTokenScopeAdminRead         AccessTokenScope = "read:admin"
+	AccessTokenScopeAdminWrite        AccessTokenScope = "write:admin"
+	AccessTokenScopeIssueRead         AccessTokenScope = "read:issue"
+	AccessTokenScopeIssueWrite        AccessTokenScope = "write:issue"
+	AccessTokenScopeMiscRead          AccessTokenScope = "read:misc"
+	AccessTokenScopeMiscWrite         AccessTokenScope = "write:misc"
+	AccessTokenScopeNotificationRead  AccessTokenScope = "read:notification"
+	AccessTokenScopeNotificationWrite AccessTokenScope = "write:notification"
+	AccessTokenScopeOrganizationRead  AccessTokenScope = "read:organization"
+	AccessTokenScopeOrganizationWrite AccessTokenScope = "write:organization"
+	AccessTokenScopePackageRead       AccessTokenScope = "read:package"
+	AccessTokenScopePackageWrite      AccessTokenScope = "write:package"
+	AccessTokenScopeRepositoryRead    AccessTokenScope = "read:repository"
+	AccessTokenScopeRepositoryWrite   AccessTokenScope = "write:repository"
+	AccessTokenScopeUserRead          AccessTokenScope = "read:user"
+	AccessTokenScopeUserWrite         AccessTokenScope = "write:user"
 )
 
 // AccessToken represents an API access token.
