@@ -1,5 +1,5 @@
-name-template: 'v$RESOLVED_VERSION 🌈'
-tag-template: 'v$RESOLVED_VERSION'
+name-template: 'forgejo/v$RESOLVED_VERSION 🌈'
+tag-template: 'forgejo/v$RESOLVED_VERSION'
 exclude-labels:
   - 'skip-changelog'
 replacers:
