@@ -53,7 +53,7 @@ help:
 
 .PHONY: clean
 clean:
-	rm -r -f test
+	rm -r -f test test-cache
 	cd forgejo && $(GO) clean -i ./...
 
 .PHONY: fmt
@@ -91,8 +91,9 @@ test:
 .PHONY: test-instance
 test-instance:
 	rm -f -r ${WORK_DIR}/test 2> /dev/null; \
-	mkdir -p ${WORK_DIR}/test/conf/ ${WORK_DIR}/test/data/
-	wget ${FORGEJO_DL} -O ${WORK_DIR}/test/forgejo-main; \
+	mkdir -p ${WORK_DIR}/test/conf/ ${WORK_DIR}/test/data/ ${WORK_DIR}/test-cache
+	[ -f ${WORK_DIR}/test-cache/forgejo-main ] || { wget ${FORGEJO_DL} -O ${WORK_DIR}/test-cache/forgejo-main; }
+	cp ${WORK_DIR}/test-cache/forgejo-main ${WORK_DIR}/test/forgejo-main; \
 	chmod +x ${WORK_DIR}/test/forgejo-main; \
 	echo "[security]" > ${WORK_DIR}/test/conf/app.ini; \
 	echo "INTERNAL_TOKEN = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1NTg4MzY4ODB9.LoKQyK5TN_0kMJFVHWUW0uDAyoGjDP6Mkup4ps2VJN4" >> ${WORK_DIR}/test/conf/app.ini; \
