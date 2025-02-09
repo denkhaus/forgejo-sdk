@@ -20,7 +20,7 @@ func TestMyUser(t *testing.T) {
 	log.Println("== TestMyUser ==")
 
 	var expectedAvatarURL string
-	if os.Getenv("CI") == "woodpecker" {
+	if os.Getenv("CI") != "" {
 		expectedAvatarURL = "http://forgejo:3000/avatars/90e9f0102fc2832d69ae59a1214601c0"
 	} else {
 		expectedAvatarURL = "http://localhost:3000/avatars/90e9f0102fc2832d69ae59a1214601c0"
