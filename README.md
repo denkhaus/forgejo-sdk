@@ -1,10 +1,14 @@
 # Forgejo SDK for Go
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Release](https://raster.shields.io/badge/dynamic/json.svg?label=release&url=https://codeberg.org/api/v1/repos/mvdkleijn/forgejo-sdk/releases&query=$[0].tag_name)](https://codeberg.org/mvdkleijn/forgejo-sdk/releases)
+![release-badge](https://codeberg.org/mvdkleijn/forgejo-sdk/badges/release.svg)
+![status-badge](https://codeberg.org/mvdkleijn/forgejo-sdk/badges/workflows/integration.yml/badge.svg)
+
+![stars-badge](https://codeberg.org/mvdkleijn/forgejo-sdk/badges/stars.svg)
+![issues-badge](https://codeberg.org/mvdkleijn/forgejo-sdk/badges/issues/open.svg)
+![prs-badge](https://codeberg.org/mvdkleijn/forgejo-sdk/badges/pulls/closed.svg)
 [![Go Report Card](https://goreportcard.com/badge/codeberg.org/mvdkleijn/forgejo-sdk/forgejo)](https://goreportcard.com/report/codeberg.org/mvdkleijn/forgejo-sdk/forgejo)
 [![GoDoc](https://godoc.org/codeberg.org/mvdkleijn/forgejo-sdk/forgejo?status.svg)](https://godoc.org/codeberg.org/mvdkleijn/forgejo-sdk/forgejo)
-[![status-badge](https://ci.codeberg.org/api/badges/13417/status.svg)](https://ci.codeberg.org/repos/13417)
 
 This project acts as a client SDK implementation written in Go to interact with the Forgejo API implementation. For further informations take a look at the current [documentation](https://pkg.go.dev/codeberg.org/mvdkleijn/forgejo-sdk/forgejo).
 
