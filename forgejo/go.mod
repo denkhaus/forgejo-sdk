@@ -1,4 +1,4 @@
-module codeberg.org/mvdkleijn/forgejo-sdk/forgejo
+module codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2
 
 go 1.22
 
