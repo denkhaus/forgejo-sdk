@@ -13,6 +13,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func createTestOrgTeams(t *testing.T, c *Client, org, name string, accessMode AccessMode, units []RepoUnitType) (*Team, error) {
@@ -24,7 +25,7 @@ func createTestOrgTeams(t *testing.T, c *Client, org, name string, accessMode Ac
 		IncludesAllRepositories: false,
 		Units:                   units,
 	})
-	assert.NoError(t, e)
+	require.NoError(t, e)
 	assert.NotNil(t, team)
 	return team, e
 }
@@ -44,7 +45,7 @@ func TestTeamSearch(t *testing.T) {
 		_, _ = c.DeleteOrg(orgName)
 	}()
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	if _, err = createTestOrgTeams(t, c, orgName, "Admins", AccessModeAdmin, []RepoUnitType{RepoUnitCode, RepoUnitIssues, RepoUnitPulls, RepoUnitReleases}); err != nil {
 		return
@@ -53,7 +54,7 @@ func TestTeamSearch(t *testing.T) {
 	teams, _, err := c.SearchOrgTeams(orgName, &SearchTeamsOptions{
 		Query: "Admins",
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	if assert.Len(t, teams, 1) {
 		assert.Equal(t, "Admins", teams[0].Name)
 	}

@@ -13,27 +13,28 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestVersion(t *testing.T) {
 	log.Printf("== TestVersion ==")
 	c := newTestClient()
 	rawVersion, _, err := c.ServerVersion()
-	assert.NoError(t, err)
-	assert.True(t, true, rawVersion != "")
+	require.NoError(t, err)
+	assert.NotEqual(t, "", rawVersion)
 
-	assert.NoError(t, c.checkServerVersionGreaterThanOrEqual(version8_0_3))
-	assert.Error(t, c.CheckServerVersionConstraint("< 8.0.3"))
+	require.NoError(t, c.checkServerVersionGreaterThanOrEqual(version8_0_3))
+	require.Error(t, c.CheckServerVersionConstraint("< 8.0.3"))
 
-	assert.NoError(t, c.checkServerVersionGreaterThanOrEqual(version1_11_0))
-	assert.Error(t, c.CheckServerVersionConstraint("< 1.11.0"))
+	require.NoError(t, c.checkServerVersionGreaterThanOrEqual(version1_11_0))
+	require.Error(t, c.CheckServerVersionConstraint("< 1.11.0"))
 
 	c.serverVersion = version1_11_0
-	assert.Error(t, c.checkServerVersionGreaterThanOrEqual(version1_15_0))
+	require.Error(t, c.checkServerVersionGreaterThanOrEqual(version1_15_0))
 	c.ignoreVersion = true
-	assert.NoError(t, c.checkServerVersionGreaterThanOrEqual(version1_15_0))
+	require.NoError(t, c.checkServerVersionGreaterThanOrEqual(version1_15_0))
 
 	c, err = NewClient(getForgejoURL(), newTestClientAuth(), SetForgejoVersion("1.12.123"))
-	assert.NoError(t, err)
-	assert.NoError(t, c.CheckServerVersionConstraint("=1.12.123"))
+	require.NoError(t, err)
+	require.NoError(t, c.CheckServerVersionConstraint("=1.12.123"))
 }

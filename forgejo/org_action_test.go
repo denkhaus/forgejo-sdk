@@ -14,6 +14,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCreateOrgActionSecret(t *testing.T) {
@@ -23,21 +24,21 @@ func TestCreateOrgActionSecret(t *testing.T) {
 	user := createTestUser(t, "org_action_user", c)
 	c.SetSudo(user.UserName)
 	newOrg, _, err := c.CreateOrg(CreateOrgOption{Name: "ActionOrg"})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, newOrg)
 
 	// create secret
 	resp, err := c.CreateOrgActionSecret(newOrg.UserName, CreateSecretOption{Name: "test", Data: "test"})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, http.StatusCreated, resp.StatusCode)
 
 	// update secret
 	resp, err = c.CreateOrgActionSecret(newOrg.UserName, CreateSecretOption{Name: "test", Data: "test2"})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
 
 	// list secrets
 	secrets, _, err := c.ListOrgActionSecret(newOrg.UserName, ListOrgActionSecretOption{})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, secrets, 1)
 }

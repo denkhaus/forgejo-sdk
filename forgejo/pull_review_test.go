@@ -13,6 +13,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestPullReview(t *testing.T) {
@@ -30,7 +31,7 @@ func TestPullReview(t *testing.T) {
 		State: ReviewStateComment,
 		Body:  "I'll have a look at it later",
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	if assert.NotNil(t, r1) {
 		assert.EqualValues(t, ReviewStateComment, r1.State)
 		assert.EqualValues(t, 1, r1.Reviewer.ID)
@@ -41,12 +42,12 @@ func TestPullReview(t *testing.T) {
 		State: ReviewStateApproved,
 		Body:  "lgtm it myself",
 	})
-	assert.Error(t, err)
+	require.Error(t, err)
 	r2, _, err := c.CreatePullReview(repo.Owner.UserName, repo.Name, pull.Index, CreatePullReviewOptions{
 		State: ReviewStateComment,
 		Body:  "no seriously please have a look at it",
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, r2)
 
 	c.SetSudo(reviewer.UserName)
@@ -61,13 +62,13 @@ func TestPullReview(t *testing.T) {
 			},
 		},
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, r3)
 
 	// ListPullReviews
 	c.SetSudo("")
 	rl, _, err := c.ListPullReviews(repo.Owner.UserName, repo.Name, pull.Index, ListPullReviewsOptions{})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, rl, 3)
 	for i := range rl {
 		assert.EqualValues(t, pull.HTMLURL, rl[i].HTMLPullURL)
@@ -78,15 +79,15 @@ func TestPullReview(t *testing.T) {
 
 	// GetPullReview
 	rNew, _, err := c.GetPullReview(repo.Owner.UserName, repo.Name, pull.Index, r3.ID)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.EqualValues(t, r3, rNew)
 
 	// DeletePullReview
 	c.SetSudo(submitter.UserName)
 	_, err = c.DeletePullReview(repo.Owner.UserName, repo.Name, pull.Index, r2.ID)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	_, err = c.DeletePullReview(repo.Owner.UserName, repo.Name, pull.Index, r3.ID)
-	assert.Error(t, err)
+	require.Error(t, err)
 
 	// SubmitPullReview
 	c.SetSudo("")
@@ -100,7 +101,7 @@ func TestPullReview(t *testing.T) {
 			},
 		},
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, resp)
 	r5, _, err := c.CreatePullReview(repo.Owner.UserName, repo.Name, pull.Index, CreatePullReviewOptions{
 		Body: "...",
@@ -112,21 +113,21 @@ func TestPullReview(t *testing.T) {
 			},
 		},
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.EqualValues(t, r4.ID, r5.ID)
 
 	r, _, err := c.SubmitPullReview(repo.Owner.UserName, repo.Name, pull.Index, r4.ID, SubmitPullReviewOptions{
 		State: ReviewStateRequestChanges,
 		Body:  "one nit",
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.EqualValues(t, r4.ID, r.ID)
 	assert.EqualValues(t, ReviewStateRequestChanges, r.State)
 
 	// ListPullReviewComments
 	rcl, _, err := c.ListPullReviewComments(repo.Owner.UserName, repo.Name, pull.Index, r.ID)
-	assert.NoError(t, err)
-	assert.EqualValues(t, r.CodeCommentsCount, len(rcl))
+	require.NoError(t, err)
+	assert.Len(t, rcl, r.CodeCommentsCount)
 	for _, rc := range rcl {
 		assert.EqualValues(t, pull.HTMLURL, rc.HTMLPullURL)
 		if rc.LineNum == 3 {
@@ -138,12 +139,12 @@ func TestPullReview(t *testing.T) {
 	}
 
 	r, _, err = c.GetPullReview(repo.Owner.UserName, repo.Name, pull.Index, r.ID)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.False(t, r.Dismissed)
 
 	// DismissPullReview
 	resp, err = c.DismissPullReview(repo.Owner.UserName, repo.Name, pull.Index, r.ID, DismissPullReviewOptions{Message: "stale"})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	if assert.NotNil(t, resp) {
 		assert.EqualValues(t, 200, resp.StatusCode)
 	}
@@ -152,7 +153,7 @@ func TestPullReview(t *testing.T) {
 
 	// UnDismissPullReview
 	resp, err = c.UnDismissPullReview(repo.Owner.UserName, repo.Name, pull.Index, r.ID)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	if assert.NotNil(t, resp) {
 		assert.EqualValues(t, 200, resp.StatusCode)
 	}
@@ -160,12 +161,12 @@ func TestPullReview(t *testing.T) {
 	assert.False(t, r.Dismissed)
 
 	rl, _, err = c.ListPullReviews(repo.Owner.UserName, repo.Name, pull.Index, ListPullReviewsOptions{})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, rl, 3)
 
 	c.SetSudo(submitter.UserName)
 	resp, err = c.CreateReviewRequests(repo.Owner.UserName, repo.Name, pull.Index, PullReviewRequestOptions{Reviewers: []string{reviewer.UserName}})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, resp)
 
 	rl, _, _ = c.ListPullReviews(repo.Owner.UserName, repo.Name, pull.Index, ListPullReviewsOptions{})
@@ -175,7 +176,7 @@ func TestPullReview(t *testing.T) {
 
 	c.SetSudo(reviewer.UserName)
 	resp, err = c.DeleteReviewRequests(repo.Owner.UserName, repo.Name, pull.Index, PullReviewRequestOptions{Reviewers: []string{reviewer.UserName}})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, resp)
 
 	rl, _, _ = c.ListPullReviews(repo.Owner.UserName, repo.Name, pull.Index, ListPullReviewsOptions{})
@@ -183,14 +184,14 @@ func TestPullReview(t *testing.T) {
 
 	c.SetSudo("")
 	_, err = c.AdminDeleteUser(reviewer.UserName)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	_, err = c.AdminDeleteUser(submitter.UserName)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 }
 
 func preparePullReviewTest(t *testing.T, c *Client, repoName string) (*Repository, *PullRequest, *User, *User, bool) {
 	repo, err := createTestRepo(t, repoName, c)
-	if !assert.NoError(t, err) {
+	if !assert.NoError(t, err) { //nolint
 		return nil, nil, nil, nil, false
 	}
 
@@ -199,7 +200,7 @@ func preparePullReviewTest(t *testing.T, c *Client, repoName string) (*Repositor
 	_, err = c.AddCollaborator(repo.Owner.UserName, repo.Name, pullSubmitter.UserName, AddCollaboratorOption{
 		Permission: &write,
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	c.SetSudo("pull_submitter")
 
@@ -212,7 +213,7 @@ func preparePullReviewTest(t *testing.T, c *Client, repoName string) (*Repositor
 		},
 	})
 
-	if !assert.NoError(t, err) || !assert.NotNil(t, newFile) {
+	if !assert.NoError(t, err) || !assert.NotNil(t, newFile) { //nolint
 		return nil, nil, nil, nil, false
 	}
 
@@ -221,7 +222,7 @@ func preparePullReviewTest(t *testing.T, c *Client, repoName string) (*Repositor
 		Head:  "new_file",
 		Title: "Creat a NewFile",
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, pull)
 
 	c.SetSudo("")
@@ -231,7 +232,7 @@ func preparePullReviewTest(t *testing.T, c *Client, repoName string) (*Repositor
 	_, err = c.AddCollaborator(repo.Owner.UserName, repo.Name, pullSubmitter.UserName, AddCollaboratorOption{
 		Permission: &admin,
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	return repo, pull, pullSubmitter, reviewer, pull.Poster.ID == pullSubmitter.ID
 }

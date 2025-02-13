@@ -18,6 +18,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // create an org with a single package for testing purposes
@@ -53,7 +54,7 @@ func TestListPackages(t *testing.T) {
 	log.Println("== TestListPackages ==")
 	c := newTestClient()
 	err := createTestPackage(t, c)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	packagesList, _, err := c.ListPackages("PackageOrg", ListPackagesOptions{
 		ListOptions{
@@ -61,7 +62,7 @@ func TestListPackages(t *testing.T) {
 			PageSize: 1000,
 		},
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, packagesList, 1)
 }
 
@@ -69,13 +70,13 @@ func TestGetPackage(t *testing.T) {
 	log.Println("== TestGetPackage ==")
 	c := newTestClient()
 	err := createTestPackage(t, c)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	pkg, _, err := c.GetPackage("PackageOrg", "generic", "MyPackage", "v1")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, pkg)
-	assert.True(t, pkg.Name == "MyPackage")
-	assert.True(t, pkg.Version == "v1")
+	assert.Equal(t, "MyPackage", pkg.Name)
+	assert.Equal(t, "v1", pkg.Version)
 	assert.NotEmpty(t, pkg.CreatedAt)
 }
 
@@ -83,10 +84,10 @@ func TestDeletePackage(t *testing.T) {
 	log.Println("== TestDeletePackage ==")
 	c := newTestClient()
 	err := createTestPackage(t, c)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	_, err = c.DeletePackage("PackageOrg", "generic", "MyPackage", "v1")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	// no packages should be listed following deletion
 	packagesList, _, err := c.ListPackages("PackageOrg", ListPackagesOptions{
@@ -95,18 +96,18 @@ func TestDeletePackage(t *testing.T) {
 			PageSize: 1000,
 		},
 	})
-	assert.NoError(t, err)
-	assert.Len(t, packagesList, 0)
+	require.NoError(t, err)
+	assert.Empty(t, packagesList)
 }
 
 func TestListPackageFiles(t *testing.T) {
 	log.Println("== TestListPackageFiles ==")
 	c := newTestClient()
 	err := createTestPackage(t, c)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	packageFiles, _, err := c.ListPackageFiles("PackageOrg", "generic", "MyPackage", "v1")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, packageFiles, 1)
-	assert.True(t, packageFiles[0].Name == "file1.txt")
+	assert.Equal(t, "file1.txt", packageFiles[0].Name)
 }

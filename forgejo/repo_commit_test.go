@@ -14,6 +14,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestListRepoCommits(t *testing.T) {
@@ -21,14 +22,14 @@ func TestListRepoCommits(t *testing.T) {
 	c := newTestClient()
 
 	repo, err := createTestRepo(t, "ListRepoCommits", c)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	l, _, err := c.ListRepoCommits(repo.Owner.UserName, repo.Name, ListCommitOptions{
 		ListOptions:  ListOptions{},
 		Stat:         true,
 		Verification: true,
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, l, 1)
 
 	// Ensure RepoCommit and Verification are not nil
@@ -45,7 +46,7 @@ func TestGetCommitDiffOrPatch(t *testing.T) {
 	c := newTestClient()
 
 	repo, err := createTestRepo(t, "TestGetCommitDiffOrPatch", c)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	// Add a new simple small commit to the repository.
 	fileResponse, _, err := c.CreateFile(repo.Owner.UserName, repo.Name, "NOT_A_LICENSE", CreateFileOptions{
@@ -58,16 +59,16 @@ func TestGetCommitDiffOrPatch(t *testing.T) {
 			},
 		},
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	// Test the diff output.
 	diffOutput, _, err := c.GetCommitDiff(repo.Owner.UserName, repo.Name, fileResponse.Commit.SHA)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.EqualValues(t, "diff --git a/NOT_A_LICENSE b/NOT_A_LICENSE\nnew file mode 100644\nindex 0000000..f27a20a\n--- /dev/null\n+++ b/NOT_A_LICENSE\n@@ -0,0 +1 @@\n+But is it?\n", string(diffOutput))
 
 	// Test the patch output.
 	patchOutput, _, err := c.GetCommitPatch(repo.Owner.UserName, repo.Name, fileResponse.Commit.SHA)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	// Use contains, because we cannot include the first part, because of dates + non-static CommitID..
 	assert.Contains(t, string(patchOutput), "Subject: [PATCH] Ensure people know it's not a license!\n\n---\n NOT_A_LICENSE | 1 +\n 1 file changed, 1 insertion(+)\n create mode 100644 NOT_A_LICENSE\n\ndiff --git a/NOT_A_LICENSE b/NOT_A_LICENSE\nnew file mode 100644\nindex 0000000..f27a20a\n--- /dev/null\n+++ b/NOT_A_LICENSE\n@@ -0,0 +1 @@\n+But is it?\n")
 }

@@ -11,14 +11,15 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestRepoTrees(t *testing.T) {
 	log.Println("== TestRepoTrees ==")
 	c := newTestClient()
 	rawVersion, _, err := c.ServerVersion()
-	assert.NoError(t, err)
-	assert.True(t, true, rawVersion != "")
+	require.NoError(t, err)
+	assert.NotEqual(t, "", rawVersion)
 
 	repoName := "gettrees"
 	repo := prepareTreeTest(t, c, repoName)
@@ -29,13 +30,13 @@ func TestRepoTrees(t *testing.T) {
 
 	// test without recursive option set
 	tl, _, err := c.GetTrees(repo.Owner.UserName, repo.Name, "main", GetTreesOptions{Recursive: false})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, tl.Entries, 4)
 
 	// test with recursive option set
 	tl, _, err = c.GetTrees(repo.Owner.UserName, repo.Name, "main", GetTreesOptions{Recursive: true})
-	assert.NoError(t, err)
-	assert.Equal(t, false, tl.Truncated)
+	require.NoError(t, err)
+	assert.False(t, tl.Truncated)
 	assert.Len(t, tl.Entries, 24)
 
 	// test with recursive option set and page size set to 3
@@ -43,9 +44,9 @@ func TestRepoTrees(t *testing.T) {
 		Recursive:   true,
 		ListOptions: ListOptions{Page: 1, PageSize: 3},
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, tl.Entries, 3)
-	assert.Equal(t, true, tl.Truncated)
+	assert.True(t, tl.Truncated)
 	assert.Equal(t, 24, tl.TotalCount)
 
 	// test with recursive option set and page size set to 3, making sure page 4 also has 3 entries
@@ -53,9 +54,9 @@ func TestRepoTrees(t *testing.T) {
 		Recursive:   true,
 		ListOptions: ListOptions{Page: 4, PageSize: 3},
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, tl.Entries, 3)
-	assert.Equal(t, true, tl.Truncated)
+	assert.True(t, tl.Truncated)
 	assert.Equal(t, 4, tl.Page)
 	assert.Equal(t, 24, tl.TotalCount)
 }
@@ -75,7 +76,7 @@ func prepareTreeTest(t *testing.T, c *Client, repoName string) *Repository {
 				BranchName: "main",
 			},
 		})
-		if !assert.NoError(t, err) || !assert.NotNil(t, newFile) {
+		if !assert.NoError(t, err) || !assert.NotNil(t, newFile) { //nolint:testifylint
 			return nil
 		}
 	}

@@ -13,6 +13,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestGetGlobalSettings(t *testing.T) {
@@ -20,12 +21,12 @@ func TestGetGlobalSettings(t *testing.T) {
 	c := newTestClient()
 
 	uiSettings, _, err := c.GetGlobalUISettings()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	expectedAllowedReactions := []string{"+1", "-1", "laugh", "hooray", "confused", "heart", "rocket", "eyes"}
 	assert.ElementsMatch(t, expectedAllowedReactions, uiSettings.AllowedReactions)
 
 	repoSettings, _, err := c.GetGlobalRepoSettings()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.EqualValues(t, &GlobalRepoSettings{
 		HTTPGitDisabled: false,
 		MirrorsDisabled: false,
@@ -33,7 +34,7 @@ func TestGetGlobalSettings(t *testing.T) {
 	}, repoSettings)
 
 	apiSettings, _, err := c.GetGlobalAPISettings()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.EqualValues(t, &GlobalAPISettings{
 		MaxResponseItems:       50,
 		DefaultPagingNum:       30,
@@ -42,7 +43,7 @@ func TestGetGlobalSettings(t *testing.T) {
 	}, apiSettings)
 
 	attachSettings, _, err := c.GetGlobalAttachmentSettings()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	if assert.NotEmpty(t, attachSettings.AllowedTypes) {
 		attachSettings.AllowedTypes = ""
 	}

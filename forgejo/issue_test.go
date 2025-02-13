@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // TestIssue is main func witch call all Tests for Issue API
@@ -33,7 +34,7 @@ func createIssue(t *testing.T, c *Client) {
 	log.Println("== TestCreateIssues ==")
 
 	user, _, err := c.GetMyUserInfo()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	repo, _ := createTestRepo(t, "IssueTestsRepo", c)
 
 	nowTime := time.Now()
@@ -56,20 +57,20 @@ func deleteIssue(t *testing.T, c *Client) {
 	log.Println("== TestDeleteIssues ==")
 
 	user, _, err := c.GetMyUserInfo()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	repo, _ := createTestRepo(t, "IssueTestsRepo", c)
 
 	issue := createTestIssue(t, c, repo.Name, "Deleteable Issue", "", nil, nil, 0, nil, false, false)
 	_, err = c.DeleteIssue(user.UserName, repo.Name, issue.Index)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 }
 
 func editIssues(t *testing.T, c *Client) {
 	log.Println("== TestEditIssues ==")
 	il, _, err := c.ListIssues(ListIssueOption{KeyWord: "soon!"})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	issue, _, err := c.GetIssue(il[0].Poster.UserName, il[0].Repository.Name, il[0].Index)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	state := StateClosed
 	issueNew, _, err := c.EditIssue(issue.Poster.UserName, issue.Repository.Name, issue.Index, EditIssueOption{
@@ -78,7 +79,7 @@ func editIssues(t *testing.T, c *Client) {
 		State: &state,
 		Ref:   OptionalString("main"),
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.EqualValues(t, issue.ID, issueNew.ID)
 	assert.EqualValues(t, "123 test and go", issueNew.Body)
 	assert.EqualValues(t, "Edited", issueNew.Title)
@@ -93,7 +94,7 @@ func listIssues(t *testing.T, c *Client) {
 		KeyWord: "",
 		State:   "all",
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, issues, 1)
 
 	issues, _, err = c.ListIssues(ListIssueOption{
@@ -101,14 +102,14 @@ func listIssues(t *testing.T, c *Client) {
 		KeyWord: "Done",
 		State:   "all",
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, issues, 1)
 
 	issues, _, err = c.ListRepoIssues("test01", "IssueTestsRepo", ListIssueOption{
 		Milestones: []string{"mile1"},
 		State:      "all",
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, issues, 3)
 	for i := range issues {
 		if assert.NotNil(t, issues[i].Milestone) {
@@ -117,13 +118,13 @@ func listIssues(t *testing.T, c *Client) {
 	}
 
 	issues, _, err = c.ListRepoIssues("test01", "IssueTestsRepo", ListIssueOption{})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, issues, 3)
 }
 
 func createTestIssue(t *testing.T, c *Client, repoName, title, body string, assignees []string, deadline *time.Time, milestone int64, labels []int64, closed, shouldFail bool) *Issue {
 	user, _, err := c.GetMyUserInfo()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	issue, _, e := c.CreateIssue(user.UserName, repoName, CreateIssueOption{
 		Title:     title,
 		Body:      body,
@@ -134,10 +135,10 @@ func createTestIssue(t *testing.T, c *Client, repoName, title, body string, assi
 		Closed:    closed,
 	})
 	if shouldFail {
-		assert.Error(t, e)
+		require.Error(t, e)
 		return nil
 	}
-	assert.NoError(t, e)
+	require.NoError(t, e)
 	assert.NotEmpty(t, issue)
 	assert.EqualValues(t, title, issue.Title)
 	assert.EqualValues(t, body, issue.Body)

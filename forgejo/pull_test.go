@@ -13,13 +13,14 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestPull(t *testing.T) {
 	log.Println("== TestPull ==")
 	c := newTestClient()
 	user, _, err := c.GetMyUserInfo()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	repoName := "repo_pull_test"
 	forkOrg := "ForkOrg"
@@ -29,15 +30,15 @@ func TestPull(t *testing.T) {
 
 	// ListRepoPullRequests list PRs of one repository
 	pulls, _, err := c.ListRepoPullRequests(user.UserName, repoName, ListPullRequestsOptions{})
-	assert.NoError(t, err)
-	assert.Len(t, pulls, 0)
+	require.NoError(t, err)
+	assert.Empty(t, pulls)
 
 	pullUpdateFile, _, err := c.CreatePullRequest(c.username, repoName, CreatePullRequestOption{
 		Base:  "main",
 		Head:  forkOrg + ":overwrite_licence",
 		Title: "overwrite a file",
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, pullUpdateFile)
 
 	pullNewFile, _, err := c.CreatePullRequest(c.username, repoName, CreatePullRequestOption{
@@ -45,7 +46,7 @@ func TestPull(t *testing.T) {
 		Head:  forkOrg + ":new_file",
 		Title: "create a file",
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, pullNewFile)
 
 	pullConflict, _, err := c.CreatePullRequest(c.username, repoName, CreatePullRequestOption{
@@ -53,30 +54,30 @@ func TestPull(t *testing.T) {
 		Head:  forkOrg + ":will_conflict",
 		Title: "this pull will conflict",
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, pullConflict)
 
 	pulls, _, err = c.ListRepoPullRequests(user.UserName, repoName, ListPullRequestsOptions{})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, pulls, 3)
 
 	diff, _, err := c.GetPullRequestDiff(c.username, repoName, pullUpdateFile.Index, PullRequestDiffOptions{
 		Binary: true,
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.True(t, len(diff) > 1100 && len(diff) < 1300)
 	patch, _, err := c.GetPullRequestPatch(c.username, repoName, pullUpdateFile.Index)
-	assert.NoError(t, err)
-	assert.True(t, len(patch) > len(diff))
+	require.NoError(t, err)
+	assert.Greater(t, len(patch), len(diff))
 
 	commits, _, err := c.ListPullRequestCommits(c.username, repoName, pullUpdateFile.Index, ListPullRequestCommitsOptions{})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	if assert.Len(t, commits, 1) && assert.Len(t, commits[0].Files, 1) {
 		assert.EqualValues(t, "LICENSE", commits[0].Files[0].Filename)
 	}
 
 	files, _, err := c.ListPullRequestFiles(c.username, repoName, pullUpdateFile.Index, ListPullRequestFilesOptions{})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, files, 1)
 	file := files[0]
 	assert.EqualValues(t, "LICENSE", file.Filename)
@@ -87,7 +88,7 @@ func TestPull(t *testing.T) {
 
 	// test Update pull
 	pr, _, err := c.GetPullRequest(user.UserName, repoName, pullUpdateFile.Index)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, pr)
 	assert.False(t, pullUpdateFile.HasMerged)
 	assert.True(t, pullUpdateFile.Mergeable)
@@ -96,13 +97,13 @@ func TestPull(t *testing.T) {
 		Title:   pullUpdateFile.Title,
 		Message: "squash: " + pullUpdateFile.Title,
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.True(t, merged)
 	merged, _, err = c.IsPullRequestMerged(user.UserName, repoName, pullUpdateFile.Index)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.True(t, merged)
 	pr, _, err = c.GetPullRequest(user.UserName, repoName, pullUpdateFile.Index)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.EqualValues(t, pullUpdateFile.Head.Name, pr.Head.Name)
 	assert.EqualValues(t, pullUpdateFile.Base.Name, pr.Base.Name)
 	assert.NotEqual(t, pullUpdateFile.Base.Sha, pr.Base.Sha)
@@ -111,7 +112,7 @@ func TestPull(t *testing.T) {
 
 	// test conflict pull
 	pr, _, err = c.GetPullRequest(user.UserName, repoName, pullConflict.Index)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.False(t, pr.HasMerged)
 	assert.False(t, pr.Mergeable)
 	merged, _, err = c.MergePullRequest(user.UserName, repoName, pullConflict.Index, MergePullRequestOption{
@@ -119,13 +120,13 @@ func TestPull(t *testing.T) {
 		Title:   "pullConflict",
 		Message: "pullConflict Msg",
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.False(t, merged)
 	merged, _, err = c.IsPullRequestMerged(user.UserName, repoName, pullConflict.Index)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.False(t, merged)
 	pr, _, err = c.GetPullRequest(user.UserName, repoName, pullConflict.Index)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Nil(t, pr.MergedCommitID)
 	assert.False(t, pr.HasMerged)
 
@@ -134,14 +135,14 @@ func TestPull(t *testing.T) {
 		Title: "confl",
 		State: &state,
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.EqualValues(t, state, pr.State)
 
 	pulls, _, err = c.ListRepoPullRequests(user.UserName, repoName, ListPullRequestsOptions{
 		State: StateClosed,
 		Sort:  "leastupdate",
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, pulls, 2)
 }
 
@@ -151,17 +152,17 @@ func preparePullTest(t *testing.T, c *Client, repoName, forkOrg string) bool {
 	_, _ = c.DeleteOrg(forkOrg)
 
 	origRepo, err := createTestRepo(t, repoName, c)
-	if !assert.NoError(t, err) {
+	if !assert.NoError(t, err) { //nolint:testifylint
 		return false
 	}
 	org, _, err := c.CreateOrg(CreateOrgOption{Name: forkOrg})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	forkRepo, _, err := c.CreateFork(origRepo.Owner.UserName, origRepo.Name, CreateForkOption{Organization: &org.UserName})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, forkRepo)
 
 	mainLicense, _, err := c.GetContents(forkRepo.Owner.UserName, forkRepo.Name, "main", "LICENSE")
-	if !assert.NoError(t, err) || !assert.NotNil(t, mainLicense) {
+	if !assert.NoError(t, err) || !assert.NotNil(t, mainLicense) { //nolint:testifylint
 		return false
 	}
 
@@ -174,7 +175,7 @@ func preparePullTest(t *testing.T, c *Client, repoName, forkOrg string) bool {
 		SHA:     mainLicense.SHA,
 		Content: "Tk9USElORyBJUyBIRVJFIEFOWU1PUkUKSUYgWU9VIExJS0UgVE8gRklORCBTT01FVEhJTkcKV0FJVCBGT1IgVEhFIEZVVFVSRQo=",
 	})
-	if !assert.NoError(t, err) || !assert.NotNil(t, updatedFile) {
+	if !assert.NoError(t, err) || !assert.NotNil(t, updatedFile) { //nolint:testifylint
 		return false
 	}
 
@@ -186,7 +187,7 @@ func preparePullTest(t *testing.T, c *Client, repoName, forkOrg string) bool {
 			NewBranchName: "new_file",
 		},
 	})
-	if !assert.NoError(t, err) || !assert.NotNil(t, newFile) {
+	if !assert.NoError(t, err) || !assert.NotNil(t, newFile) { //nolint:testifylint
 		return false
 	}
 
@@ -197,7 +198,7 @@ func preparePullTest(t *testing.T, c *Client, repoName, forkOrg string) bool {
 			BranchName: "main",
 		},
 	})
-	if !assert.NoError(t, err) || !assert.NotNil(t, conflictFile1) {
+	if !assert.NoError(t, err) || !assert.NotNil(t, conflictFile1) { //nolint:testifylint
 		return false
 	}
 
@@ -209,7 +210,7 @@ func preparePullTest(t *testing.T, c *Client, repoName, forkOrg string) bool {
 			NewBranchName: "will_conflict",
 		},
 	})
-	if !assert.NoError(t, err) || !assert.NotNil(t, conflictFile2) {
+	if !assert.NoError(t, err) || !assert.NotNil(t, conflictFile2) { //nolint:testifylint
 		return false
 	}
 

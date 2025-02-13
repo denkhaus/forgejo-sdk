@@ -18,6 +18,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // Hashers are based on https://github.com/go-gitea/gitea/blob/0dfc2e55ea258d2b1a3cd86e2b6f27a481e495ff/services/webhook/deliver.go#L105-L116
@@ -59,8 +60,8 @@ func TestVerifyWebhookSignature(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.Name, func(t *testing.T) {
 			ok, err := VerifyWebhookSignature(tc.Secret, sig, []byte(tc.Payload))
-			assert.NoError(t, err, "verification should not error")
-			assert.True(t, ok == tc.Succeed, "verification should be %t", tc.Succeed)
+			require.NoError(t, err, "verification should not error")
+			assert.Equal(t, ok, tc.Succeed, "verification should be %t", tc.Succeed)
 		})
 	}
 }
@@ -115,15 +116,15 @@ func TestVerifyWebhookSignatureHandler(t *testing.T) {
 			defer server.Close()
 
 			req, err := http.NewRequest(http.MethodPost, server.URL, strings.NewReader(tc.Payload))
-			assert.NoError(t, err, "should create request")
+			require.NoError(t, err, "should create request")
 
 			if tc.Signature != "" {
 				req.Header.Set("X-Forgejo-Signature", tc.Signature)
 			}
 
 			resp, err := http.DefaultClient.Do(req)
-			assert.NoError(t, err, "request should be delivered")
-			assert.True(t, resp.StatusCode == tc.Status, "status should be %d, but got %d", tc.Status, resp.StatusCode)
+			require.NoError(t, err, "request should be delivered")
+			assert.Equal(t, resp.StatusCode, tc.Status, "status should be %d, but got %d", tc.Status, resp.StatusCode)
 		})
 	}
 }

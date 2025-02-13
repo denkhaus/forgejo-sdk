@@ -12,6 +12,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func createTestOrgRepo(t *testing.T, c *Client, name string) (func(), *Repository, error) {
@@ -24,7 +25,7 @@ func createTestOrgRepo(t *testing.T, c *Client, name string) (func(), *Repositor
 		Visibility:                VisibleTypePublic,
 		RepoAdminChangeTeamAccess: true,
 	})
-	if !assert.NoError(t, err) {
+	if !assert.NoError(t, err) { //nolint
 		return nil, nil, err
 	}
 
@@ -43,7 +44,7 @@ func createTestOrgRepo(t *testing.T, c *Client, name string) (func(), *Repositor
 		IssueLabels: "Default",
 		Private:     false,
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, repo)
 
 	return func() {

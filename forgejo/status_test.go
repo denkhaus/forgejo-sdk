@@ -13,17 +13,18 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCommitStatus(t *testing.T) {
 	log.Println("== TestCommitStatus ==")
 	c := newTestClient()
 	user, _, err := c.GetMyUserInfo()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	repoName := "CommitStatuses"
 	origRepo, err := createTestRepo(t, repoName, c)
-	if !assert.NoError(t, err) {
+	if !assert.NoError(t, err) { //nolint:testifylint
 		return
 	}
 
@@ -37,16 +38,16 @@ func TestCommitStatus(t *testing.T) {
 	sha := commits[0].SHA
 
 	combiStats, resp, err := c.GetCombinedStatus(user.UserName, repoName, sha)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, resp)
 	assert.NotNil(t, combiStats)
 	assert.EqualValues(t, 0, combiStats.TotalCount)
 
 	statuses, resp, err := c.ListStatuses(user.UserName, repoName, sha, ListStatusesOption{})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, resp)
 	assert.NotNil(t, statuses)
-	assert.Len(t, statuses, 0)
+	assert.Empty(t, statuses)
 
 	createStatus(t, c, user.UserName, repoName, sha, "http://dummy.test", "start testing", "ultraCI", StatusPending)
 	createStatus(t, c, user.UserName, repoName, sha, "https://more.secure", "just a warning", "warn/bot", StatusWarning)
@@ -55,13 +56,13 @@ func TestCommitStatus(t *testing.T) {
 	createStatus(t, c, user.UserName, repoName, sha, "http://dummy.test", "test passed", "ultraCI", StatusSuccess)
 
 	statuses, resp, err = c.ListStatuses(user.UserName, repoName, sha, ListStatusesOption{})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, resp)
 	assert.NotNil(t, statuses)
 	assert.Len(t, statuses, 5)
 
 	combiStats, resp, err = c.GetCombinedStatus(user.UserName, repoName, sha)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, resp)
 	assert.NotNil(t, combiStats)
 	assert.EqualValues(t, 2, combiStats.TotalCount)
@@ -69,14 +70,14 @@ func TestCommitStatus(t *testing.T) {
 	assert.Len(t, combiStats.Statuses, 2)
 }
 
-func createStatus(t *testing.T, c *Client, userName, repoName, sha, url, desc, context string, state StatusState) {
+func createStatus(t *testing.T, c *Client, userName, repoName, sha, url, desc, context string, state StatusState) { //nolint
 	stats, resp, err := c.CreateStatus(userName, repoName, sha, CreateStatusOption{
 		State:       state,
 		TargetURL:   url,
 		Description: desc,
 		Context:     context,
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, resp)
 	assert.NotNil(t, stats)
 	assert.EqualValues(t, state, stats.State)

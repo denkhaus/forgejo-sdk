@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCreateRepoActionSecret(t *testing.T) {
@@ -21,21 +22,21 @@ func TestCreateRepoActionSecret(t *testing.T) {
 	newRepo, _, err := c.CreateRepo(CreateRepoOption{
 		Name: "test",
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, newRepo)
 
 	// create secret
 	resp, err := c.CreateRepoActionSecret(newRepo.Owner.UserName, newRepo.Name, CreateSecretOption{Name: "test", Data: "test"})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, http.StatusCreated, resp.StatusCode)
 
 	// update secret
 	resp, err = c.CreateRepoActionSecret(newRepo.Owner.UserName, newRepo.Name, CreateSecretOption{Name: "test", Data: "test2"})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
 
 	// list secrets
 	secrets, _, err := c.ListRepoActionSecret(newRepo.Owner.UserName, newRepo.Name, ListRepoActionSecretOption{})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, secrets, 1)
 }

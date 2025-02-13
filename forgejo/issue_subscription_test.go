@@ -13,6 +13,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // TestIssue is main func witch call all Tests for Issue API
@@ -25,13 +26,13 @@ func TestIssueSubscription(t *testing.T) {
 	createTestIssue(t, c, repo.Name, "First Issue", "", nil, nil, 0, nil, false, false)
 
 	wi, _, err := c.CheckIssueSubscription(repo.Owner.UserName, repo.Name, 1)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.True(t, wi.Subscribed)
 
 	_, err = c.UnWatchRepo(repo.Owner.UserName, repo.Name)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	wi, _, err = c.CheckIssueSubscription(repo.Owner.UserName, repo.Name, 1)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.True(t, wi.Subscribed)
 
 	_, err = c.IssueSubscribe(repo.Owner.UserName, repo.Name, 1)
@@ -39,18 +40,18 @@ func TestIssueSubscription(t *testing.T) {
 		assert.EqualValues(t, "already subscribed", err.Error())
 	}
 	wi, _, err = c.CheckIssueSubscription(repo.Owner.UserName, repo.Name, 1)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.True(t, wi.Subscribed)
 
 	_, err = c.IssueUnSubscribe(repo.Owner.UserName, repo.Name, 1)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	wi, _, err = c.CheckIssueSubscription(repo.Owner.UserName, repo.Name, 1)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.False(t, wi.Subscribed)
 
 	_, err = c.WatchRepo(repo.Owner.UserName, repo.Name)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	wi, _, err = c.CheckIssueSubscription(repo.Owner.UserName, repo.Name, 1)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.False(t, wi.Subscribed)
 }

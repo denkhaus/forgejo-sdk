@@ -13,6 +13,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestRepoTeamManagement(t *testing.T) {
@@ -37,42 +38,42 @@ func TestRepoTeamManagement(t *testing.T) {
 
 	// test
 	teams, _, err := c.GetRepoTeams(repo.Owner.UserName, repo.Name)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	if !assert.Len(t, teams, 1) {
 		return
 	}
 	assert.EqualValues(t, AccessModeOwner, teams[0].Permission)
 
 	team, _, err := c.CheckRepoTeam(repo.Owner.UserName, repo.Name, "Admins")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Nil(t, team)
 
 	resp, err := c.AddRepoTeam(repo.Owner.UserName, repo.Name, "Admins")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.EqualValues(t, 204, resp.StatusCode)
 	resp, err = c.AddRepoTeam(repo.Owner.UserName, repo.Name, "CodeManager")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.EqualValues(t, 204, resp.StatusCode)
 	resp, err = c.AddRepoTeam(repo.Owner.UserName, repo.Name, "IssueManager")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.EqualValues(t, 204, resp.StatusCode)
 
 	team, _, err = c.CheckRepoTeam(repo.Owner.UserName, repo.Name, "Admins")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	if assert.NotNil(t, team) {
 		assert.EqualValues(t, "Admins", team.Name)
 		assert.EqualValues(t, AccessModeAdmin, team.Permission)
 	}
 
 	teams, _, err = c.GetRepoTeams(repo.Owner.UserName, repo.Name)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, teams, 4)
 
 	resp, err = c.RemoveRepoTeam(repo.Owner.UserName, repo.Name, "IssueManager")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.EqualValues(t, 204, resp.StatusCode)
 
 	team, _, err = c.CheckRepoTeam(repo.Owner.UserName, repo.Name, "IssueManager")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Nil(t, team)
 }

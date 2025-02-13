@@ -13,6 +13,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestUserSettings(t *testing.T) {
@@ -20,7 +21,7 @@ func TestUserSettings(t *testing.T) {
 	c := newTestClient()
 
 	userConf, _, err := c.GetUserSettings()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, userConf)
 	assert.EqualValues(t, UserSettings{
 		Theme:        "forgejo-auto",
@@ -33,7 +34,7 @@ func TestUserSettings(t *testing.T) {
 		Language:  OptionalString("de_de"),
 		HideEmail: OptionalBool(true),
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, userConf)
 	assert.EqualValues(t, UserSettings{
 		FullName:     "Admin User on Test",
@@ -48,5 +49,5 @@ func TestUserSettings(t *testing.T) {
 		Language:  OptionalString(""),
 		HideEmail: OptionalBool(false),
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 }

@@ -16,13 +16,14 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCreateRepo(t *testing.T) {
 	log.Println("== TestCreateRepo ==")
 	c := newTestClient()
 	user, _, err := c.GetMyUserInfo()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	repoName := "test1"
 	_, _, err = c.GetRepo(user.UserName, repoName)
@@ -30,19 +31,19 @@ func TestCreateRepo(t *testing.T) {
 		repo, _, err := c.CreateRepo(CreateRepoOption{
 			Name: repoName,
 		})
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.NotNil(t, repo)
 	}
 
 	_, err = c.DeleteRepo(user.UserName, repoName)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 }
 
 func TestRepoMigrateAndLanguages(t *testing.T) {
 	log.Println("== TestMigrateRepo ==")
 	c := newTestClient()
 	user, _, uErr := c.GetMyUserInfo()
-	assert.NoError(t, uErr)
+	require.NoError(t, uErr)
 	_, _, err := c.GetRepo(user.UserName, "sdk-mirror")
 	if err == nil {
 		_, _ = c.DeleteRepo(user.UserName, "sdk-mirror")
@@ -57,10 +58,10 @@ func TestRepoMigrateAndLanguages(t *testing.T) {
 		Private:     false,
 		Description: "mirror sdk",
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	repoG, _, err := c.GetRepo(repoM.Owner.UserName, repoM.Name)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.EqualValues(t, repoM.ID, repoG.ID)
 	assert.EqualValues(t, "main", repoG.DefaultBranch)
 	assert.True(t, repoG.Mirror)
@@ -72,9 +73,9 @@ func TestRepoMigrateAndLanguages(t *testing.T) {
 	log.Println("== TestRepoLanguages ==")
 	time.Sleep(time.Second * 2)
 	lang, _, err := c.GetRepoLanguages(repoM.Owner.UserName, repoM.Name)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Len(t, lang, 2)
-	assert.True(t, 217441 < lang["Go"])
+	assert.Less(t, int64(217441), lang["Go"])
 	assert.True(t, 3614 < lang["Makefile"] && 6000 > lang["Makefile"])
 }
 
@@ -83,22 +84,22 @@ func TestSearchRepo(t *testing.T) {
 	c := newTestClient()
 
 	repo, err := createTestRepo(t, "RepoSearch1", c)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	_, err = c.AddRepoTopic(repo.Owner.UserName, repo.Name, "TestTopic1")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	_, err = c.AddRepoTopic(repo.Owner.UserName, repo.Name, "TestTopic2")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	repo, err = createTestRepo(t, "RepoSearch2", c)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	_, err = c.AddRepoTopic(repo.Owner.UserName, repo.Name, "TestTopic1")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	repos, _, err := c.SearchRepos(SearchRepoOptions{
 		Keyword:              "Search1",
 		KeywordInDescription: true,
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, repos)
 	assert.Len(t, repos, 1)
 
@@ -106,7 +107,7 @@ func TestSearchRepo(t *testing.T) {
 		Keyword:              "Search",
 		KeywordInDescription: true,
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, repos)
 	assert.Len(t, repos, 2)
 
@@ -114,7 +115,7 @@ func TestSearchRepo(t *testing.T) {
 		Keyword:              "TestTopic1",
 		KeywordInDescription: true,
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, repos)
 	assert.Len(t, repos, 2)
 
@@ -122,12 +123,12 @@ func TestSearchRepo(t *testing.T) {
 		Keyword:              "TestTopic2",
 		KeywordInDescription: true,
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, repos)
 	assert.Len(t, repos, 1)
 
 	_, err = c.DeleteRepo(repo.Owner.UserName, repo.Name)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 }
 
 func TestDeleteRepo(t *testing.T) {
@@ -135,7 +136,7 @@ func TestDeleteRepo(t *testing.T) {
 	c := newTestClient()
 	repo, _ := createTestRepo(t, "TestDeleteRepo", c)
 	_, err := c.DeleteRepo(repo.Owner.UserName, repo.Name)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 }
 
 func TestGetArchive(t *testing.T) {
@@ -144,7 +145,7 @@ func TestGetArchive(t *testing.T) {
 	repo, _ := createTestRepo(t, "ToDownload", c)
 	time.Sleep(time.Second / 2)
 	archive, _, err := c.GetArchive(repo.Owner.UserName, repo.Name, "main", ZipArchive)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.True(t, len(archive) > 1500 && len(archive) < 1700)
 }
 
@@ -154,14 +155,14 @@ func TestGetArchiveReader(t *testing.T) {
 	repo, _ := createTestRepo(t, "ToDownload", c)
 	time.Sleep(time.Second / 2)
 	r, _, err := c.GetArchiveReader(repo.Owner.UserName, repo.Name, "main", ZipArchive)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	defer r.Close()
 
 	archive := bytes.NewBuffer(nil)
 	nBytes, err := io.Copy(archive, r)
-	assert.NoError(t, err)
-	assert.True(t, nBytes > 1500)
-	assert.EqualValues(t, nBytes, len(archive.Bytes()))
+	require.NoError(t, err)
+	assert.Greater(t, nBytes, int64(1500))
+	assert.EqualValues(t, nBytes, len(archive.Bytes())) //nolint:testifylint
 }
 
 func TestGetRepoByID(t *testing.T) {
@@ -170,18 +171,18 @@ func TestGetRepoByID(t *testing.T) {
 	testrepo, _ := createTestRepo(t, "TestGetRepoByID", c)
 
 	repo, _, err := c.GetRepoByID(testrepo.ID)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, repo)
 	assert.EqualValues(t, testrepo.ID, repo.ID)
 
 	_, err = c.DeleteRepo(repo.Owner.UserName, repo.Name)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 }
 
 // standard func to create a init repo for test routines
 func createTestRepo(t *testing.T, name string, c *Client) (*Repository, error) {
 	user, _, uErr := c.GetMyUserInfo()
-	assert.NoError(t, uErr)
+	require.NoError(t, uErr)
 	repo, _, err := c.GetRepo(user.UserName, name)
 	// We need to check that the received repo is not a
 	// redirected one, it could be the case that forgejo redirect us
@@ -200,7 +201,7 @@ func createTestRepo(t *testing.T, name string, c *Client) (*Repository, error) {
 		IssueLabels: "Default",
 		Private:     false,
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, repo)
 
 	return repo, err

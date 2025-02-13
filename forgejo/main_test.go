@@ -164,5 +164,9 @@ func TestMain(m *testing.M) {
 	}
 	log.Printf("testing with %v, %v, %v\n", getForgejoURL(), getForgejoUsername(), getForgejoPassword())
 	exitCode := m.Run()
-	os.Exit(exitCode)
+	exit(exitCode)
+}
+
+func exit(code int) {
+	os.Exit(code)
 }

@@ -13,13 +13,14 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestAdminOrg(t *testing.T) {
 	log.Println("== TestAdminOrg ==")
 	c := newTestClient()
 	user, _, err := c.GetMyUserInfo()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	orgName := "NewTestOrg"
 	newOrg, _, err := c.AdminCreateOrg(user.UserName, CreateOrgOption{
@@ -28,19 +29,19 @@ func TestAdminOrg(t *testing.T) {
 		Description: "test adminCreateOrg",
 		Visibility:  VisibleTypePublic,
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotEmpty(t, newOrg)
 	assert.EqualValues(t, orgName, newOrg.UserName)
 
 	orgs, _, err := c.AdminListOrgs(AdminListOrgsOptions{})
-	assert.NoError(t, err)
-	if assert.True(t, len(orgs) >= 1) {
+	require.NoError(t, err)
+	if assert.GreaterOrEqual(t, len(orgs), 1) {
 		orgs = orgs[len(orgs)-1:]
 		assert.EqualValues(t, newOrg.ID, orgs[0].ID)
 	}
 
 	_, err = c.DeleteOrg(orgName)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 }
 
 func TestAdminCronTasks(t *testing.T) {
@@ -48,8 +49,8 @@ func TestAdminCronTasks(t *testing.T) {
 	c := newTestClient()
 
 	tasks, _, err := c.ListCronTasks(ListCronTaskOptions{})
-	assert.NoError(t, err)
-	assert.True(t, len(tasks) > 15)
+	require.NoError(t, err)
+	require.Greater(t, len(tasks), 15)
 	_, err = c.RunCronTasks(tasks[0].Name)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 }
