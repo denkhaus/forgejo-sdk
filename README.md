@@ -17,7 +17,7 @@ Note: function arguments are escaped by the SDK.
 ## Use it
 
 ```go
-import "codeberg.org/mvdkleijn/forgejo-sdk/forgejo"
+import "codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2"
 ```
 
 ## Version Requirements
