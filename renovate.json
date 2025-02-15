@@ -1,14 +1,25 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:base"],
-  "enabledManagers": ["gomod"],
+  "extends": [
+    "config:recommended"
+  ],
+  "enabledManagers": [
+    "gomod"
+  ],
   "packageRules": [
     {
       "description": "Configure updates for the Forgejo SDK in the forgejo directory",
-      "matchManagers": ["gomod"],
-      "matchPaths": ["forgejo/**"],
-      "labels": ["dependencies", "go-sdk"],
-      "stabilityDays": 3,
+      "matchManagers": [
+        "gomod"
+      ],
+      "matchFileNames": [
+        "forgejo/**"
+      ],
+      "labels": [
+        "dependencies",
+        "go-sdk"
+      ],
+      "minimumReleaseAge": "3 days",
       "separateMinorPatch": true,
       "automerge": false
     }
