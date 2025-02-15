@@ -1,0 +1,22 @@
+name: Renovate
+
+on:
+  # Run Renovate every night at 01:23 (24h time, randomly chosen).
+  schedule:
+    - cron: "23 01 * * *"
+
+jobs:
+  renovate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Run Renovate
+        run: |
+          docker run --rm \
+            -e RENOVATE_ENDPOINT="https://codeberg.org/api/v1/" \
+            -e RENOVATE_TOKEN="${{ secrets.RENOVATE_TOKEN }}" \
+            -e RENOVATE_PLATFORM="gitea" \
+            -v "$(pwd):/data" \
+            renovate/renovate:latest
