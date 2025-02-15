@@ -1,6 +1,7 @@
 name: Renovate
 
 on:
+  workflow_dispatch:
   # Run Renovate every night at 01:23 (24h time, randomly chosen).
   schedule:
     - cron: "23 01 * * *"
