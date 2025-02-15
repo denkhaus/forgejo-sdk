@@ -11,13 +11,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      - name: Run Renovate
-        run: |
-          docker run --rm \
-            -e RENOVATE_ENDPOINT="https://codeberg.org/api/v1/" \
-            -e RENOVATE_TOKEN="${{ secrets.RENOVATE_TOKEN }}" \
-            -e RENOVATE_PLATFORM="gitea" \
-            -v "$(pwd):/data" \
-            renovate/renovate:latest
+      - name: Renovate
+        uses: https://github.com/renovatebot/github-action@v41.0.12
+        with:
+          token: ${{ secrets.RENOVATE_TOKEN }}
+        env:
+          RENOVATE_ENDPOINT: "https://codeberg.org/api/v1/"
+          RENOVATE_PLATFORM: "gitea"
+            
