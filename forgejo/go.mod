@@ -2,8 +2,6 @@ module codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2
 
 go 1.23.0
 
-toolchain go1.24.0
-
 require (
 	github.com/42wim/httpsig v1.2.2
 	github.com/davidmz/go-pageant v1.0.2
