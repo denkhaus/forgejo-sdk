@@ -20,11 +20,13 @@ import (
 func TestMyUser(t *testing.T) {
 	log.Println("== TestMyUser ==")
 
-	var expectedAvatarURL string
+	var expectedAvatarURL, expectedHTMLURL string
 	if os.Getenv("CI") != "" {
 		expectedAvatarURL = "http://forgejo:3000/avatars/90e9f0102fc2832d69ae59a1214601c0"
+		expectedHTMLURL = "http://forgejo:3000/test01"
 	} else {
 		expectedAvatarURL = "http://localhost:3000/avatars/90e9f0102fc2832d69ae59a1214601c0"
+		expectedHTMLURL = "http://localhost:3000/test01"
 	}
 
 	c := newTestClient()
@@ -36,6 +38,7 @@ func TestMyUser(t *testing.T) {
 	assert.EqualValues(t, "test01@forgejo.org", user.Email)
 	assert.EqualValues(t, "", user.FullName)
 	assert.EqualValues(t, expectedAvatarURL, user.AvatarURL)
+	assert.EqualValues(t, expectedHTMLURL, user.HTMLURL)
 	assert.True(t, user.IsAdmin)
 }
 
