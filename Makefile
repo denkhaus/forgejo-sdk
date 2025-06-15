@@ -24,6 +24,9 @@ ifeq ($(UNAME_S),Linux)
   ifeq ($(UNAME_P),x86_64)
    FORGEJO_DL := $(FORGEJO_DL)amd64
   endif
+  ifeq ($(UNAME_P),aarch64)
+   FORGEJO_DL := $(FORGEJO_DL)arm64
+  endif
   ifneq ($(filter %86,$(UNAME_P)),)
    FORGEJO_DL := $(FORGEJO_DL)386
   endif
@@ -67,7 +70,7 @@ vet:
 	cd forgejo && $(GO) vet $(PACKAGE)
 
 .PHONY: ci-lint
-ci-lint: 
+ci-lint:
 	@cd forgejo/; echo -n "gofumpt ...";\
 	diff=$$($(GO) run $(GOFUMPT_PACKAGE) -extra -l .); \
 	if [ -n "$$diff" ]; then \
@@ -117,4 +120,3 @@ bench:
 .PHONY: build
 build:
 	cd forgejo && $(GO) build
-
