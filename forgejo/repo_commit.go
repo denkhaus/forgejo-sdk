@@ -158,3 +158,17 @@ func (c *Client) GetCommitPatch(user, repo, commitID string) ([]byte, *Response,
 
 	return c.getResponse("GET", fmt.Sprintf("/repos/%s/%s/git/commits/%s.%s", user, repo, commitID, pullRequestDiffTypePatch), nil, nil)
 }
+
+func (c *Client) GetCommitPullRequest(user, repo, commitID string) (*PullRequest, *Response, error) {
+	if err := c.checkServerVersionGreaterThanOrEqual(version1_22_0); err != nil {
+		return nil, nil, err
+	}
+
+	if err := escapeValidatePathSegments(&user, &repo); err != nil {
+		return nil, nil, err
+	}
+
+	pullRequest := new(PullRequest)
+	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/commits/%s/pull", user, repo, commitID), nil, nil, pullRequest)
+	return pullRequest, resp, err
+}
