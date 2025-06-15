@@ -144,6 +144,12 @@ func TestPull(t *testing.T) {
 	})
 	require.NoError(t, err)
 	assert.Len(t, pulls, 2)
+
+	// test get pull by base and head
+	pr, _, err = c.GetPullRequestByBaseAndHead(user.UserName, repoName, "main", forkOrg+":new_file")
+	require.NoError(t, err)
+	assert.NotNil(t, pr)
+	assert.Equal(t, pr.Title, "create a file")
 }
 
 func preparePullTest(t *testing.T, c *Client, repoName, forkOrg string) bool {
