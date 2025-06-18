@@ -19,7 +19,6 @@ import (
 	"time"
 
 	"github.com/42wim/httpsig"
-	legacyhttpsig "github.com/go-fed/httpsig"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -211,7 +210,7 @@ func (c *Client) SignRequest(r *http.Request) error {
 
 	// use legacyhttpsig to sign with RSA-SHA1 on older gitea releases
 	if err = c.checkServerVersionGreaterThanOrEqual(version1_23_0); err != nil {
-		signer, _, err = legacyhttpsig.NewSSHSigner(c.httpsigner.Signer, httpsig.DigestSha512, headersToSign, legacyhttpsig.Signature, 10)
+		err = fmt.Errorf("signing with RSA-SHA1 is no longer supported")
 	} else {
 		signer, _, err = httpsig.NewSSHSigner(c.httpsigner.Signer, httpsig.DigestSha512, headersToSign, httpsig.Signature, 10)
 	}
