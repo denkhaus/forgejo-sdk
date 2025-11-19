@@ -2,9 +2,15 @@ GO ?= go
 
 WORK_DIR   := $(shell pwd)
 
+# Test configuration
 FORGEJO_SDK_TEST_URL ?= http://localhost:3000
 FORGEJO_SDK_TEST_USERNAME ?= test01
 FORGEJO_SDK_TEST_PASSWORD ?= test01
+FORGEJO_SDK_TEST_EMAIL ?= test01@forgejo.org
+
+# Common test instance configuration
+FORGEJO_SECRET_KEY := 2crAW4UANgvLipDS6U5obRcFosjSJHQANll6MNfX7P0G3se3fKcCwwK3szPyGcbo
+FORGEJO_INTERNAL_TOKEN := eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1NTg4MzY4ODB9.LoKQyK5TN_0kMJFVHWUW0uDAyoGjDP6Mkup4ps2VJN4
 
 PACKAGE := codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2
 
@@ -13,6 +19,8 @@ GOLANGCI_LINT_PACKAGE ?= github.com/golangci/golangci-lint/cmd/golangci-lint@v1.
 
 FORGEJO_VERSION := 9.0.3
 FORGEJO_DL := https://codeberg.org/forgejo/forgejo/releases/download/v$(FORGEJO_VERSION)/forgejo-$(FORGEJO_VERSION)-
+
+# Detect OS and architecture
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
   FORGEJO_DL := $(FORGEJO_DL)linux-
@@ -38,20 +46,30 @@ ifeq ($(UNAME_S),Darwin)
   FORGEJO_DL := $(FORGEJO_DL)darwin-10.12-amd64
 endif
 
+# Check if Docker is available
+HAS_DOCKER := $(shell command -v docker 2> /dev/null)
+DOCKER_AVAILABLE := $(if $(HAS_DOCKER),yes,no)
+
 .PHONY: all
 all: clean test build
 
 .PHONY: help
 help:
 	@echo "Make Routines:"
-	@echo " - \"\"              run \"make clean test build\""
-	@echo " - build             build sdk"
-	@echo " - clean             clean"
-	@echo " - fmt               format the code"
-	@echo " - lint              run golint"
-	@echo " - vet               examines Go source code and reports"
-	@echo " - test              run unit tests (need a running forgejo)"
-	@echo " - test-instance     start a forgejo instance for test"
+	@echo " - \"\"                      run \"make clean test build\""
+	@echo " - build                   build sdk"
+	@echo " - clean                   clean build artifacts and test instances"
+	@echo " - fmt                     format the code"
+	@echo " - lint / ci-lint          run golint"
+	@echo " - vet                     examines Go source code and reports suspicious constructs"
+	@echo " - test                    run unit tests (requires a running forgejo instance)"
+	@echo " - test-instance           start a forgejo instance for test (auto-detects method)"
+	@echo " - test-instance-native    start a native forgejo instance (Linux only)"
+	@echo " - test-instance-docker    start a forgejo instance using Docker"
+	@echo " - test-instance-stop      stop the forgejo test instance"
+	@echo " - bench                   run benchmarks"
+	@echo ""
+	@echo "Docker available: $(DOCKER_AVAILABLE)"
 
 
 .PHONY: clean
@@ -93,15 +111,34 @@ test:
 
 .PHONY: test-instance
 test-instance:
+ifeq ($(DOCKER_AVAILABLE),yes)
+	@$(MAKE) test-instance-docker
+else
+ifeq ($(UNAME_S),Darwin)
+	@echo "Error: Docker is required on macOS but not found in PATH"
+	@echo "Please install Docker Desktop from https://www.docker.com/products/docker-desktop"
+	@exit 1
+else
+	@$(MAKE) test-instance-native
+endif
+endif
+
+.PHONY: test-instance-native
+test-instance-native:
+ifeq ($(UNAME_S),Darwin)
+	@echo "Native instance not supported on macOS, use Docker instead"
+	@exit 1
+endif
+	@echo "Starting native Forgejo test instance..."
 	rm -f -r ${WORK_DIR}/test 2> /dev/null; \
 	mkdir -p ${WORK_DIR}/test/conf/ ${WORK_DIR}/test/data/ ${WORK_DIR}/test-cache
 	[ -f ${WORK_DIR}/test-cache/forgejo-main ] || { wget ${FORGEJO_DL} -O ${WORK_DIR}/test-cache/forgejo-main; }
 	cp ${WORK_DIR}/test-cache/forgejo-main ${WORK_DIR}/test/forgejo-main; \
 	chmod +x ${WORK_DIR}/test/forgejo-main; \
 	echo "[security]" > ${WORK_DIR}/test/conf/app.ini; \
-	echo "INTERNAL_TOKEN = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1NTg4MzY4ODB9.LoKQyK5TN_0kMJFVHWUW0uDAyoGjDP6Mkup4ps2VJN4" >> ${WORK_DIR}/test/conf/app.ini; \
+	echo "INTERNAL_TOKEN = $(FORGEJO_INTERNAL_TOKEN)" >> ${WORK_DIR}/test/conf/app.ini; \
 	echo "INSTALL_LOCK   = true" >> ${WORK_DIR}/test/conf/app.ini; \
-	echo "SECRET_KEY     = 2crAW4UANgvLipDS6U5obRcFosjSJHQANll6MNfX7P0G3se3fKcCwwK3szPyGcbo" >> ${WORK_DIR}/test/conf/app.ini; \
+	echo "SECRET_KEY     = $(FORGEJO_SECRET_KEY)" >> ${WORK_DIR}/test/conf/app.ini; \
 	echo "PASSWORD_COMPLEXITY = off" >> ${WORK_DIR}/test/conf/app.ini; \
 	echo "[database]" >> ${WORK_DIR}/test/conf/app.ini; \
 	echo "DB_TYPE = sqlite3" >> ${WORK_DIR}/test/conf/app.ini; \
@@ -110,8 +147,66 @@ test-instance:
 	echo "[server]" >> ${WORK_DIR}/test/conf/app.ini; \
 	echo "ROOT_URL = ${FORGEJO_SDK_TEST_URL}" >> ${WORK_DIR}/test/conf/app.ini; \
 	${WORK_DIR}/test/forgejo-main migrate -c ${WORK_DIR}/test/conf/app.ini; \
-	${WORK_DIR}/test/forgejo-main admin user create --username=${FORGEJO_SDK_TEST_USERNAME} --password=${FORGEJO_SDK_TEST_PASSWORD} --email=test01@forgejo.org --admin=true --must-change-password=false --access-token -c ${WORK_DIR}/test/conf/app.ini; \
+	${WORK_DIR}/test/forgejo-main admin user create \
+		--username=${FORGEJO_SDK_TEST_USERNAME} \
+		--password=${FORGEJO_SDK_TEST_PASSWORD} \
+		--email=${FORGEJO_SDK_TEST_EMAIL} \
+		--admin=true \
+		--must-change-password=false \
+		--access-token \
+		-c ${WORK_DIR}/test/conf/app.ini; \
 	${WORK_DIR}/test/forgejo-main web -c ${WORK_DIR}/test/conf/app.ini
+
+.PHONY: test-instance-docker
+test-instance-docker:
+ifeq ($(DOCKER_AVAILABLE),no)
+	@echo "Error: Docker is not available in PATH"
+	@echo "Please install Docker from https://www.docker.com/products/docker-desktop"
+	@exit 1
+endif
+	@echo "Starting Forgejo test instance in Docker..."
+	@docker volume create forgejo-test-data > /dev/null 2>&1 || true
+	@docker run -d --name forgejo-test \
+		-p 3000:3000 \
+		-v forgejo-test-data:/data \
+		-e FORGEJO__security__INSTALL_LOCK=true \
+		-e FORGEJO__security__SECRET_KEY=$(FORGEJO_SECRET_KEY) \
+		-e FORGEJO__security__INTERNAL_TOKEN=$(FORGEJO_INTERNAL_TOKEN) \
+		-e FORGEJO__security__PASSWORD_COMPLEXITY=off \
+		-e FORGEJO__database__DB_TYPE=sqlite3 \
+		-e FORGEJO__server__ROOT_URL=${FORGEJO_SDK_TEST_URL} \
+		-e FORGEJO__service__DISABLE_REGISTRATION=false \
+		-e FORGEJO__admin__DISABLE_REGULAR_ORG_CREATION=false \
+		codeberg.org/forgejo/forgejo:${FORGEJO_VERSION} > /dev/null 2>&1 || true
+	@echo "Waiting for Forgejo to start..."
+	@for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do \
+		if curl --noproxy "*" -s "${FORGEJO_SDK_TEST_URL}/api/v1/version" > /dev/null 2>&1; then \
+			echo "Forgejo is ready!"; \
+			break; \
+		fi; \
+		echo "Waiting... ($$i/20)"; \
+		sleep 2; \
+	done
+	@echo "Creating test user..."
+	@docker exec -u git forgejo-test forgejo admin user create \
+		--username=${FORGEJO_SDK_TEST_USERNAME} \
+		--password=${FORGEJO_SDK_TEST_PASSWORD} \
+		--email=${FORGEJO_SDK_TEST_EMAIL} \
+		--admin=true \
+		--must-change-password=false \
+		--access-token > /dev/null 2>&1 || echo "User might already exist"
+	@echo "Test instance is ready at ${FORGEJO_SDK_TEST_URL}"
+
+.PHONY: test-instance-stop
+test-instance-stop:
+	@echo "Stopping Forgejo test instance..."
+ifeq ($(DOCKER_AVAILABLE),yes)
+	@docker stop forgejo-test > /dev/null 2>&1 || true
+	@docker rm forgejo-test > /dev/null 2>&1 || true
+	@docker volume rm forgejo-test-data > /dev/null 2>&1 || true
+endif
+	@pkill -f "forgejo-main web" > /dev/null 2>&1 || true
+	@echo "Test instance stopped"
 
 .PHONY: bench
 bench:

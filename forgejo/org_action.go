@@ -14,6 +14,8 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"regexp"
+	"strings"
 )
 
 // ListOrgActionSecretOption list OrgActionSecret options
@@ -43,13 +45,31 @@ type CreateSecretOption struct {
 
 // Validate checks if the CreateSecretOption is valid.
 // It returns an error if any of the validation checks fail.
+// Validation rules:
+// - Name is required and must not exceed 255 characters
+// - Name must contain only alphanumeric characters and underscores (case-insensitive)
+// - Name must not start with GITEA_ or GITHUB_ (reserved prefixes)
+// - Data is required
 func (opt *CreateSecretOption) Validate() error {
 	if len(opt.Name) == 0 {
 		return fmt.Errorf("name required")
 	}
-	if len(opt.Name) > 30 {
-		return fmt.Errorf("name to long")
+	if len(opt.Name) > 255 {
+		return fmt.Errorf("name too long (maximum 255 characters)")
 	}
+	
+	// Validate name format: alphanumeric and underscores only
+	validNamePattern := regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
+	if !validNamePattern.MatchString(opt.Name) {
+		return fmt.Errorf("name must contain only alphanumeric characters and underscores")
+	}
+	
+	// Check for reserved prefixes (case-insensitive)
+	nameUpper := strings.ToUpper(opt.Name)
+	if strings.HasPrefix(nameUpper, "GITEA_") || strings.HasPrefix(nameUpper, "GITHUB_") {
+		return fmt.Errorf("name cannot start with GITEA_ or GITHUB_ (reserved prefixes)")
+	}
+	
 	if len(opt.Data) == 0 {
 		return fmt.Errorf("data required")
 	}
