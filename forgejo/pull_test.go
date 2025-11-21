@@ -92,7 +92,7 @@ func TestPull(t *testing.T) {
 	assert.NotNil(t, pr)
 	assert.False(t, pullUpdateFile.HasMerged)
 	assert.True(t, pullUpdateFile.Mergeable)
-	
+
 	// Wait for PR to be ready for merge (give server time to process)
 	var merged bool
 	for i := 0; i < 10; i++ {
@@ -106,7 +106,7 @@ func TestPull(t *testing.T) {
 			break
 		}
 		// Small delay before retry
-		pr, _, _ = c.GetPullRequest(user.UserName, repoName, pullUpdateFile.Index)
+		_, _, _ = c.GetPullRequest(user.UserName, repoName, pullUpdateFile.Index)
 	}
 	assert.True(t, merged)
 	merged, _, err = c.IsPullRequestMerged(user.UserName, repoName, pullUpdateFile.Index)
