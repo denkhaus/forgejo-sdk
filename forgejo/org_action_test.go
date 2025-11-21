@@ -61,34 +61,34 @@ func TestOrgActionSecrets(t *testing.T) {
 	t.Run("InvalidNames", func(t *testing.T) {
 		// test invalid names - client-side validation should reject these
 		_, err := c.CreateOrgActionSecret(testOrg.UserName, CreateSecretOption{Name: "", Data: "data"})
-		assert.Error(t, err)
-		assert.EqualError(t, err, "name required")
+		require.Error(t, err)
+		require.EqualError(t, err, "name required")
 
 		_, err = c.CreateOrgActionSecret(testOrg.UserName, CreateSecretOption{Name: "INVALID-NAME", Data: "data"})
-		assert.Error(t, err)
-		assert.EqualError(t, err, "name must contain only alphanumeric characters and underscores")
+		require.Error(t, err)
+		require.EqualError(t, err, "name must contain only alphanumeric characters and underscores")
 
 		_, err = c.CreateOrgActionSecret(testOrg.UserName, CreateSecretOption{Name: "INVALID NAME", Data: "data"})
-		assert.Error(t, err)
-		assert.EqualError(t, err, "name must contain only alphanumeric characters and underscores")
+		require.Error(t, err)
+		require.EqualError(t, err, "name must contain only alphanumeric characters and underscores")
 
 		_, err = c.CreateOrgActionSecret(testOrg.UserName, CreateSecretOption{Name: "GITEA_SECRET", Data: "data"})
-		assert.Error(t, err)
-		assert.EqualError(t, err, "name cannot start with GITEA_ or GITHUB_ (reserved prefixes)")
+		require.Error(t, err)
+		require.EqualError(t, err, "name cannot start with GITEA_ or GITHUB_ (reserved prefixes)")
 
 		_, err = c.CreateOrgActionSecret(testOrg.UserName, CreateSecretOption{Name: "github_token", Data: "data"})
-		assert.Error(t, err)
-		assert.EqualError(t, err, "name cannot start with GITEA_ or GITHUB_ (reserved prefixes)")
+		require.Error(t, err)
+		require.EqualError(t, err, "name cannot start with GITEA_ or GITHUB_ (reserved prefixes)")
 
 		_, err = c.CreateOrgActionSecret(testOrg.UserName, CreateSecretOption{Name: strings.Repeat("A", 256), Data: "data"})
-		assert.Error(t, err)
-		assert.EqualError(t, err, "name too long (maximum 255 characters)")
+		require.Error(t, err)
+		require.EqualError(t, err, "name too long (maximum 255 characters)")
 	})
 
 	t.Run("EmptyData", func(t *testing.T) {
 		_, err := c.CreateOrgActionSecret(testOrg.UserName, CreateSecretOption{Name: "VALID_NAME", Data: ""})
-		assert.Error(t, err)
-		assert.EqualError(t, err, "data required")
+		require.Error(t, err)
+		require.EqualError(t, err, "data required")
 	})
 
 	t.Run("UpdateMultipleTimes", func(t *testing.T) {
@@ -156,11 +156,11 @@ func TestOrgActionSecrets(t *testing.T) {
 	t.Run("NonExistentOrg", func(t *testing.T) {
 		// trying to create secret for non-existent org should fail
 		_, err := c.CreateOrgActionSecret("NonExistentOrg123456", CreateSecretOption{Name: "TEST", Data: "data"})
-		assert.Error(t, err)
+		require.Error(t, err)
 
 		// listing secrets for non-existent org also returns error
 		_, _, err = c.ListOrgActionSecret("NonExistentOrg123456", ListOrgActionSecretOption{})
-		assert.Error(t, err)
+		require.Error(t, err)
 	})
 
 	t.Run("LargeData", func(t *testing.T) {
@@ -326,7 +326,7 @@ func TestCreateSecretOption_Validate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			err := tt.opt.Validate()
 			if tt.wantErr {
-				assert.Error(t, err)
+				require.Error(t, err)
 				if tt.errMsg != "" {
 					assert.Contains(t, err.Error(), tt.errMsg)
 				}

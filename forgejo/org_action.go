@@ -57,19 +57,19 @@ func (opt *CreateSecretOption) Validate() error {
 	if len(opt.Name) > 255 {
 		return fmt.Errorf("name too long (maximum 255 characters)")
 	}
-	
+
 	// Validate name format: alphanumeric and underscores only
 	validNamePattern := regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
 	if !validNamePattern.MatchString(opt.Name) {
 		return fmt.Errorf("name must contain only alphanumeric characters and underscores")
 	}
-	
+
 	// Check for reserved prefixes (case-insensitive)
 	nameUpper := strings.ToUpper(opt.Name)
 	if strings.HasPrefix(nameUpper, "GITEA_") || strings.HasPrefix(nameUpper, "GITHUB_") {
 		return fmt.Errorf("name cannot start with GITEA_ or GITHUB_ (reserved prefixes)")
 	}
-	
+
 	if len(opt.Data) == 0 {
 		return fmt.Errorf("data required")
 	}

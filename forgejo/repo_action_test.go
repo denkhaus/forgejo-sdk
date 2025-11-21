@@ -57,34 +57,34 @@ func TestRepoActionSecrets(t *testing.T) {
 	t.Run("InvalidNames", func(t *testing.T) {
 		// test invalid names - client-side validation should reject these
 		_, err := c.CreateRepoActionSecret(testRepo.Owner.UserName, testRepo.Name, CreateSecretOption{Name: "", Data: "data"})
-		assert.Error(t, err)
-		assert.EqualError(t, err, "name required")
+		require.Error(t, err)
+		require.EqualError(t, err, "name required")
 
 		_, err = c.CreateRepoActionSecret(testRepo.Owner.UserName, testRepo.Name, CreateSecretOption{Name: "INVALID-NAME", Data: "data"})
-		assert.Error(t, err)
-		assert.EqualError(t, err, "name must contain only alphanumeric characters and underscores")
+		require.Error(t, err)
+		require.EqualError(t, err, "name must contain only alphanumeric characters and underscores")
 
 		_, err = c.CreateRepoActionSecret(testRepo.Owner.UserName, testRepo.Name, CreateSecretOption{Name: "INVALID NAME", Data: "data"})
-		assert.Error(t, err)
-		assert.EqualError(t, err, "name must contain only alphanumeric characters and underscores")
+		require.Error(t, err)
+		require.EqualError(t, err, "name must contain only alphanumeric characters and underscores")
 
 		_, err = c.CreateRepoActionSecret(testRepo.Owner.UserName, testRepo.Name, CreateSecretOption{Name: "GITEA_SECRET", Data: "data"})
-		assert.Error(t, err)
-		assert.EqualError(t, err, "name cannot start with GITEA_ or GITHUB_ (reserved prefixes)")
+		require.Error(t, err)
+		require.EqualError(t, err, "name cannot start with GITEA_ or GITHUB_ (reserved prefixes)")
 
 		_, err = c.CreateRepoActionSecret(testRepo.Owner.UserName, testRepo.Name, CreateSecretOption{Name: "github_token", Data: "data"})
-		assert.Error(t, err)
-		assert.EqualError(t, err, "name cannot start with GITEA_ or GITHUB_ (reserved prefixes)")
+		require.Error(t, err)
+		require.EqualError(t, err, "name cannot start with GITEA_ or GITHUB_ (reserved prefixes)")
 
 		_, err = c.CreateRepoActionSecret(testRepo.Owner.UserName, testRepo.Name, CreateSecretOption{Name: strings.Repeat("A", 256), Data: "data"})
-		assert.Error(t, err)
-		assert.EqualError(t, err, "name too long (maximum 255 characters)")
+		require.Error(t, err)
+		require.EqualError(t, err, "name too long (maximum 255 characters)")
 	})
 
 	t.Run("EmptyData", func(t *testing.T) {
 		_, err := c.CreateRepoActionSecret(testRepo.Owner.UserName, testRepo.Name, CreateSecretOption{Name: "VALID_NAME", Data: ""})
-		assert.Error(t, err)
-		assert.EqualError(t, err, "data required")
+		require.Error(t, err)
+		require.EqualError(t, err, "data required")
 	})
 
 	t.Run("UpdateMultipleTimes", func(t *testing.T) {
@@ -152,11 +152,11 @@ func TestRepoActionSecrets(t *testing.T) {
 	t.Run("NonExistentRepo", func(t *testing.T) {
 		// trying to create secret for non-existent repo should fail
 		_, err := c.CreateRepoActionSecret(testRepo.Owner.UserName, "NonExistentRepo123456", CreateSecretOption{Name: "TEST", Data: "data"})
-		assert.Error(t, err)
+		require.Error(t, err)
 
 		// listing secrets for non-existent repo also returns error
 		_, _, err = c.ListRepoActionSecret(testRepo.Owner.UserName, "NonExistentRepo123456", ListRepoActionSecretOption{})
-		assert.Error(t, err)
+		require.Error(t, err)
 	})
 
 	t.Run("LargeData", func(t *testing.T) {
