@@ -22,29 +22,24 @@ FORGEJO_DL := https://codeberg.org/forgejo/forgejo/releases/download/v$(FORGEJO_
 
 # Detect OS and architecture
 UNAME_S := $(shell uname -s)
+UNAME_M := $(shell uname -m)
+NATIVE_BINARY_AVAILABLE := no
+
 ifeq ($(UNAME_S),Linux)
   FORGEJO_DL := $(FORGEJO_DL)linux-
-
-  UNAME_P := $(shell uname -p)
-  ifeq ($(UNAME_P),unknown)
-   FORGEJO_DL := $(FORGEJO_DL)amd64
-  endif
-  ifeq ($(UNAME_P),x86_64)
-   FORGEJO_DL := $(FORGEJO_DL)amd64
-  endif
-  ifeq ($(UNAME_P),aarch64)
-   FORGEJO_DL := $(FORGEJO_DL)arm64
-  endif
-  ifneq ($(filter %86,$(UNAME_P)),)
-   FORGEJO_DL := $(FORGEJO_DL)386
-  endif
-  ifneq ($(filter arm%,$(UNAME_P)),)
-    FORGEJO_DL := $(FORGEJO_DL)arm-5
+  ifeq ($(UNAME_M),x86_64)
+    FORGEJO_DL := $(FORGEJO_DL)amd64
+    NATIVE_BINARY_AVAILABLE := yes
+  else ifeq ($(UNAME_M),aarch64)
+    FORGEJO_DL := $(FORGEJO_DL)arm64
+    NATIVE_BINARY_AVAILABLE := yes
+  else ifneq ($(filter armv6% armv7% armhf arm,$(UNAME_M)),)
+    FORGEJO_DL := $(FORGEJO_DL)arm-6
+    NATIVE_BINARY_AVAILABLE := yes
   endif
 endif
-ifeq ($(UNAME_S),Darwin)
-  FORGEJO_DL := $(FORGEJO_DL)darwin-10.12-amd64
-endif
+# macOS: Native binaries not available, Docker required
+# Linux: Only amd64, arm64, and arm-6 binaries available for Forgejo 9.0.3+
 
 # Check if Docker is available
 HAS_DOCKER := $(shell command -v docker 2> /dev/null)
@@ -111,13 +106,12 @@ test:
 
 .PHONY: test-instance
 test-instance:
-ifeq ($(DOCKER_AVAILABLE),yes)
+ifeq ($(NATIVE_BINARY_AVAILABLE),no)
+	@echo "Native binary not available for $(UNAME_S)/$(UNAME_M): using Docker"
 	@$(MAKE) test-instance-docker
 else
-ifeq ($(UNAME_S),Darwin)
-	@echo "Error: Docker is required on macOS but not found in PATH"
-	@echo "Please install Docker Desktop from https://www.docker.com/products/docker-desktop"
-	@exit 1
+ifeq ($(DOCKER_AVAILABLE),yes)
+	@$(MAKE) test-instance-docker
 else
 	@$(MAKE) test-instance-native
 endif
@@ -125,8 +119,9 @@ endif
 
 .PHONY: test-instance-native
 test-instance-native:
-ifeq ($(UNAME_S),Darwin)
-	@echo "Native instance not supported on macOS, use Docker instead"
+ifeq ($(NATIVE_BINARY_AVAILABLE),no)
+	@echo "Error: Native binary not available for $(UNAME_S)/$(UNAME_M)"
+	@echo "Please use 'make test-instance' to automatically use Docker, or install Docker and run 'make test-instance-docker'"
 	@exit 1
 endif
 	@echo "Starting native Forgejo test instance..."
