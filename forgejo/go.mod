@@ -2,7 +2,7 @@ module codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2
 
 go 1.23.0
 
-toolchain go1.24.10
+toolchain go1.24.11
 
 require (
 	github.com/42wim/httpsig v1.2.3
