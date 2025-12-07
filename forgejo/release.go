@@ -18,25 +18,6 @@ import (
 	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
-// // Release represents a repository release
-// type Release struct {
-// 	ID           int64         `json:"id"`
-// 	TagName      string        `json:"tag_name"`
-// 	Target       string        `json:"target_commitish"`
-// 	Title        string        `json:"name"`
-// 	Note         string        `json:"body"`
-// 	URL          string        `json:"url"`
-// 	HTMLURL      string        `json:"html_url"`
-// 	TarURL       string        `json:"tarball_url"`
-// 	ZipURL       string        `json:"zipball_url"`
-// 	IsDraft      bool          `json:"draft"`
-// 	IsPrerelease bool          `json:"prerelease"`
-// 	CreatedAt    time.Time     `json:"created_at"`
-// 	PublishedAt  time.Time     `json:"published_at"`
-// 	Publisher    *models.User  `json:"author"`
-// 	Attachments  []*Attachment `json:"assets"`
-// }
-
 // ListReleasesOptions options for listing repository's releases
 type ListReleasesOptions struct {
 	ListOptions
