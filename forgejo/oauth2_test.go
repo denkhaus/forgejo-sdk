@@ -12,6 +12,7 @@ import (
 	"log"
 	"testing"
 
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -37,7 +38,7 @@ func TestOauth2(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
-		createOptions := CreateOauth2Option{
+		createOptions := models.CreateOAuth2ApplicationOptions{
 			Name:         "test",
 			RedirectURIs: []string{"http://test/test"},
 		}
@@ -66,7 +67,7 @@ func TestOauth2(t *testing.T) {
 		assert.EqualValues(t, newApp.Name, b.Name, testCase.name)
 		assert.EqualValues(t, newApp.ConfidentialClient, b.ConfidentialClient, testCase.name)
 
-		b, _, err = c.UpdateOauth2(newApp.ID, CreateOauth2Option{
+		b, _, err = c.UpdateOauth2(newApp.ID, models.CreateOAuth2ApplicationOptions{
 			Name:               newApp.Name,
 			ConfidentialClient: !newApp.ConfidentialClient,
 			RedirectURIs:       []string{"https://test/login"},
