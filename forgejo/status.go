@@ -13,7 +13,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
-	"time"
 
 	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
@@ -35,19 +34,6 @@ const (
 	StatusWarning StatusState = "warning"
 )
 
-// Status holds a single Status of a single Commit
-type Status struct {
-	ID          int64        `json:"id"`
-	State       StatusState  `json:"status"`
-	TargetURL   string       `json:"target_url"`
-	Description string       `json:"description"`
-	URL         string       `json:"url"`
-	Context     string       `json:"context"`
-	Creator     *models.User `json:"creator"`
-	Created     time.Time    `json:"created_at"`
-	Updated     time.Time    `json:"updated_at"`
-}
-
 // CreateStatusOption holds the information needed to create a new Status for a Commit
 type CreateStatusOption struct {
 	State       StatusState `json:"state"`
@@ -57,7 +43,7 @@ type CreateStatusOption struct {
 }
 
 // CreateStatus creates a new Status for a given Commit
-func (c *Client) CreateStatus(owner, repo, sha string, opts CreateStatusOption) (*Status, *Response, error) {
+func (c *Client) CreateStatus(owner, repo, sha string, opts CreateStatusOption) (*models.CommitStatus, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
@@ -65,7 +51,7 @@ func (c *Client) CreateStatus(owner, repo, sha string, opts CreateStatusOption) 
 	if err != nil {
 		return nil, nil, err
 	}
-	status := new(Status)
+	status := new(models.CommitStatus)
 	resp, err := c.getParsedResponse("POST", fmt.Sprintf("/repos/%s/%s/statuses/%s", owner, repo, url.QueryEscape(sha)), jsonHeader, bytes.NewReader(body), status)
 	return status, resp, err
 }
@@ -76,25 +62,25 @@ type ListStatusesOption struct {
 }
 
 // ListStatuses returns all statuses for a given Commit by ref
-func (c *Client) ListStatuses(owner, repo, ref string, opt ListStatusesOption) ([]*Status, *Response, error) {
+func (c *Client) ListStatuses(owner, repo, ref string, opt ListStatusesOption) ([]*models.CommitStatus, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo, &ref); err != nil {
 		return nil, nil, err
 	}
 	opt.setDefaults()
-	statuses := make([]*Status, 0, opt.PageSize)
+	statuses := make([]*models.CommitStatus, 0, opt.PageSize)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/commits/%s/statuses?%s", owner, repo, ref, opt.getURLQuery().Encode()), jsonHeader, nil, &statuses)
 	return statuses, resp, err
 }
 
 // CombinedStatus holds the combined state of several statuses for a single commit
 type CombinedStatus struct {
-	State      StatusState        `json:"state"`
-	SHA        string             `json:"sha"`
-	TotalCount int                `json:"total_count"`
-	Statuses   []*Status          `json:"statuses"`
-	Repository *models.Repository `json:"repository"`
-	CommitURL  string             `json:"commit_url"`
-	URL        string             `json:"url"`
+	State      StatusState            `json:"state"`
+	SHA        string                 `json:"sha"`
+	TotalCount int                    `json:"total_count"`
+	Statuses   []*models.CommitStatus `json:"statuses"`
+	Repository *models.Repository     `json:"repository"`
+	CommitURL  string                 `json:"commit_url"`
+	URL        string                 `json:"url"`
 }
 
 // GetCombinedStatus returns the CombinedStatus for a given Commit

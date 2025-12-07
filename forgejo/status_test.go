@@ -80,5 +80,5 @@ func createStatus(t *testing.T, c *Client, userName, repoName, sha, url, desc, c
 	require.NoError(t, err)
 	assert.NotNil(t, resp)
 	assert.NotNil(t, stats)
-	assert.EqualValues(t, state, stats.State)
+	assert.EqualValues(t, state, stats.Status)
 }
