@@ -45,7 +45,7 @@ func TestRelease(t *testing.T) {
 	assert.EqualValues(t, fmt.Sprintf("%s/api/v1/repos/%s/releases/%d", c.url, repo.FullName, r.ID), r.URL)
 	assert.EqualValues(t, "main", r.Target)
 	assert.EqualValues(t, "yes it's awesome", r.Note)
-	assert.EqualValues(t, c.username, r.Publisher.UserName)
+	assert.EqualValues(t, c.username, r.Author.UserName)
 	rl, _, _ = c.ListReleases(repo.Owner.UserName, repo.Name, ListReleasesOptions{})
 	assert.Len(t, rl, 1)
 

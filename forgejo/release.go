@@ -14,29 +14,28 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-	"time"
 
 	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
-// Release represents a repository release
-type Release struct {
-	ID           int64         `json:"id"`
-	TagName      string        `json:"tag_name"`
-	Target       string        `json:"target_commitish"`
-	Title        string        `json:"name"`
-	Note         string        `json:"body"`
-	URL          string        `json:"url"`
-	HTMLURL      string        `json:"html_url"`
-	TarURL       string        `json:"tarball_url"`
-	ZipURL       string        `json:"zipball_url"`
-	IsDraft      bool          `json:"draft"`
-	IsPrerelease bool          `json:"prerelease"`
-	CreatedAt    time.Time     `json:"created_at"`
-	PublishedAt  time.Time     `json:"published_at"`
-	Publisher    *models.User  `json:"author"`
-	Attachments  []*Attachment `json:"assets"`
-}
+// // Release represents a repository release
+// type Release struct {
+// 	ID           int64         `json:"id"`
+// 	TagName      string        `json:"tag_name"`
+// 	Target       string        `json:"target_commitish"`
+// 	Title        string        `json:"name"`
+// 	Note         string        `json:"body"`
+// 	URL          string        `json:"url"`
+// 	HTMLURL      string        `json:"html_url"`
+// 	TarURL       string        `json:"tarball_url"`
+// 	ZipURL       string        `json:"zipball_url"`
+// 	IsDraft      bool          `json:"draft"`
+// 	IsPrerelease bool          `json:"prerelease"`
+// 	CreatedAt    time.Time     `json:"created_at"`
+// 	PublishedAt  time.Time     `json:"published_at"`
+// 	Publisher    *models.User  `json:"author"`
+// 	Attachments  []*Attachment `json:"assets"`
+// }
 
 // ListReleasesOptions options for listing repository's releases
 type ListReleasesOptions struct {
@@ -60,12 +59,12 @@ func (opt *ListReleasesOptions) QueryEncode() string {
 }
 
 // ListReleases list releases of a repository
-func (c *Client) ListReleases(owner, repo string, opt ListReleasesOptions) ([]*Release, *Response, error) {
+func (c *Client) ListReleases(owner, repo string, opt ListReleasesOptions) ([]*models.Release, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
 	opt.setDefaults()
-	releases := make([]*Release, 0, opt.PageSize)
+	releases := make([]*models.Release, 0, opt.PageSize)
 	resp, err := c.getParsedResponse("GET",
 		fmt.Sprintf("/repos/%s/%s/releases?%s", owner, repo, opt.QueryEncode()),
 		nil, nil, &releases)
@@ -73,11 +72,11 @@ func (c *Client) ListReleases(owner, repo string, opt ListReleasesOptions) ([]*R
 }
 
 // GetRelease get a release of a repository by id
-func (c *Client) GetRelease(owner, repo string, id int64) (*Release, *Response, error) {
+func (c *Client) GetRelease(owner, repo string, id int64) (*models.Release, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
-	r := new(Release)
+	r := new(models.Release)
 	resp, err := c.getParsedResponse("GET",
 		fmt.Sprintf("/repos/%s/%s/releases/%d", owner, repo, id),
 		jsonHeader, nil, &r)
@@ -85,11 +84,11 @@ func (c *Client) GetRelease(owner, repo string, id int64) (*Release, *Response, 
 }
 
 // GetLatestRelease get the latest release of a repository
-func (c *Client) GetLatestRelease(owner, repo string) (*Release, *Response, error) {
+func (c *Client) GetLatestRelease(owner, repo string) (*models.Release, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
-	r := new(Release)
+	r := new(models.Release)
 	resp, err := c.getParsedResponse("GET",
 		fmt.Sprintf("/repos/%s/%s/releases/latest", owner, repo),
 		jsonHeader, nil, &r)
@@ -97,14 +96,14 @@ func (c *Client) GetLatestRelease(owner, repo string) (*Release, *Response, erro
 }
 
 // GetReleaseByTag get a release of a repository by tag
-func (c *Client) GetReleaseByTag(owner, repo, tag string) (*Release, *Response, error) {
+func (c *Client) GetReleaseByTag(owner, repo, tag string) (*models.Release, *Response, error) {
 	if c.checkServerVersionGreaterThanOrEqual(version1_13_0) != nil {
 		return c.fallbackGetReleaseByTag(owner, repo, tag)
 	}
 	if err := escapeValidatePathSegments(&owner, &repo, &tag); err != nil {
 		return nil, nil, err
 	}
-	r := new(Release)
+	r := new(models.Release)
 	resp, err := c.getParsedResponse("GET",
 		fmt.Sprintf("/repos/%s/%s/releases/tags/%s", owner, repo, tag),
 		nil, nil, &r)
@@ -130,7 +129,7 @@ func (opt CreateReleaseOption) Validate() error {
 }
 
 // CreateRelease create a release
-func (c *Client) CreateRelease(owner, repo string, opt CreateReleaseOption) (*Release, *Response, error) {
+func (c *Client) CreateRelease(owner, repo string, opt CreateReleaseOption) (*models.Release, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
@@ -141,7 +140,7 @@ func (c *Client) CreateRelease(owner, repo string, opt CreateReleaseOption) (*Re
 	if err != nil {
 		return nil, nil, err
 	}
-	r := new(Release)
+	r := new(models.Release)
 	resp, err := c.getParsedResponse("POST",
 		fmt.Sprintf("/repos/%s/%s/releases", owner, repo),
 		jsonHeader, bytes.NewReader(body), r)
@@ -159,7 +158,7 @@ type EditReleaseOption struct {
 }
 
 // EditRelease edit a release
-func (c *Client) EditRelease(owner, repo string, id int64, form EditReleaseOption) (*Release, *Response, error) {
+func (c *Client) EditRelease(owner, repo string, id int64, form EditReleaseOption) (*models.Release, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
@@ -167,7 +166,7 @@ func (c *Client) EditRelease(owner, repo string, id int64, form EditReleaseOptio
 	if err != nil {
 		return nil, nil, err
 	}
-	r := new(Release)
+	r := new(models.Release)
 	resp, err := c.getParsedResponse("PATCH",
 		fmt.Sprintf("/repos/%s/%s/releases/%d", owner, repo, id),
 		jsonHeader, bytes.NewReader(body), r)
@@ -200,7 +199,7 @@ func (c *Client) DeleteReleaseByTag(user, repo, tag string) (*Response, error) {
 }
 
 // fallbackGetReleaseByTag is fallback for old forgejo installations ( < 1.13.0 )
-func (c *Client) fallbackGetReleaseByTag(owner, repo, tag string) (*Release, *Response, error) {
+func (c *Client) fallbackGetReleaseByTag(owner, repo, tag string) (*models.Release, *Response, error) {
 	for i := 1; ; i++ {
 		rl, resp, err := c.ListReleases(owner, repo, ListReleasesOptions{ListOptions: ListOptions{Page: i}})
 		if err != nil {
