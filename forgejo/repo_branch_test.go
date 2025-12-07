@@ -33,7 +33,7 @@ func TestRepoBranches(t *testing.T) {
 	assert.Len(t, bl, 3)
 
 	branchNames := make([]string, len(bl))
-	branches := make(map[string]Branch, len(bl))
+	branches := make(map[string]models.Branch, len(bl))
 	for index, branch := range bl {
 		branchNames[index] = branch.Name
 		branches[branch.Name] = *branch
