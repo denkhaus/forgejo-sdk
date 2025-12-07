@@ -35,7 +35,7 @@ func TestPullReview(t *testing.T) {
 	require.NoError(t, err)
 	if assert.NotNil(t, r1) {
 		assert.EqualValues(t, ReviewStateComment, r1.State)
-		assert.EqualValues(t, 1, r1.Reviewer.ID)
+		assert.EqualValues(t, 1, r1.User.ID)
 	}
 
 	c.SetSudo(submitter.UserName)
@@ -74,7 +74,7 @@ func TestPullReview(t *testing.T) {
 	for i := range rl {
 		assert.EqualValues(t, pull.HTMLURL, rl[i].HTMLPullURL)
 		if rl[i].CodeCommentsCount == 1 {
-			assert.EqualValues(t, reviewer.ID, rl[i].Reviewer.ID)
+			assert.EqualValues(t, reviewer.ID, rl[i].User.ID)
 		}
 	}
 
@@ -128,7 +128,7 @@ func TestPullReview(t *testing.T) {
 	// ListPullReviewComments
 	rcl, _, err := c.ListPullReviewComments(repo.Owner.UserName, repo.Name, pull.Index, r.ID)
 	require.NoError(t, err)
-	assert.Len(t, rcl, r.CodeCommentsCount)
+	assert.Len(t, rcl, int(r.CodeCommentsCount))
 	for _, rc := range rcl {
 		assert.EqualValues(t, pull.HTMLURL, rc.HTMLPullURL)
 		if rc.LineNum == 3 {
@@ -144,7 +144,7 @@ func TestPullReview(t *testing.T) {
 	assert.False(t, r.Dismissed)
 
 	// DismissPullReview
-	resp, err = c.DismissPullReview(repo.Owner.UserName, repo.Name, pull.Index, r.ID, DismissPullReviewOptions{Message: "stale"})
+	resp, err = c.DismissPullReview(repo.Owner.UserName, repo.Name, pull.Index, r.ID, models.DismissPullReviewOptions{Message: "stale"})
 	require.NoError(t, err)
 	if assert.NotNil(t, resp) {
 		assert.EqualValues(t, 200, resp.StatusCode)
@@ -166,7 +166,7 @@ func TestPullReview(t *testing.T) {
 	assert.Len(t, rl, 3)
 
 	c.SetSudo(submitter.UserName)
-	resp, err = c.CreateReviewRequests(repo.Owner.UserName, repo.Name, pull.Index, PullReviewRequestOptions{Reviewers: []string{reviewer.UserName}})
+	resp, err = c.CreateReviewRequests(repo.Owner.UserName, repo.Name, pull.Index, models.PullReviewRequestOptions{Reviewers: []string{reviewer.UserName}})
 	require.NoError(t, err)
 	assert.NotNil(t, resp)
 
@@ -176,7 +176,7 @@ func TestPullReview(t *testing.T) {
 	}
 
 	c.SetSudo(reviewer.UserName)
-	resp, err = c.DeleteReviewRequests(repo.Owner.UserName, repo.Name, pull.Index, PullReviewRequestOptions{Reviewers: []string{reviewer.UserName}})
+	resp, err = c.DeleteReviewRequests(repo.Owner.UserName, repo.Name, pull.Index, models.PullReviewRequestOptions{Reviewers: []string{reviewer.UserName}})
 	require.NoError(t, err)
 	assert.NotNil(t, resp)
 

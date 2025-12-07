@@ -14,7 +14,6 @@ import (
 	"fmt"
 	"net/url"
 	"strings"
-	"time"
 
 	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
@@ -36,48 +35,6 @@ const (
 	// ReviewStateUnknown state of pr is unknown
 	ReviewStateUnknown ReviewStateType = ""
 )
-
-// PullReview represents a pull request review
-type PullReview struct {
-	ID           int64           `json:"id"`
-	Reviewer     *models.User    `json:"user"`
-	ReviewerTeam *Team           `json:"team"`
-	State        ReviewStateType `json:"state"`
-	Body         string          `json:"body"`
-	CommitID     string          `json:"commit_id"`
-	// Stale indicates if the pull has changed since the review
-	Stale bool `json:"stale"`
-	// Official indicates if the review counts towards the required approval limit, if PR base is a protected branch
-	Official          bool      `json:"official"`
-	Dismissed         bool      `json:"dismissed"`
-	CodeCommentsCount int       `json:"comments_count"`
-	Submitted         time.Time `json:"submitted_at"`
-
-	HTMLURL     string `json:"html_url"`
-	HTMLPullURL string `json:"pull_request_url"`
-}
-
-// PullReviewComment represents a comment on a pull request review
-type PullReviewComment struct {
-	ID       int64        `json:"id"`
-	Body     string       `json:"body"`
-	Reviewer *models.User `json:"user"`
-	ReviewID int64        `json:"pull_request_review_id"`
-	Resolver *models.User `json:"resolver"`
-
-	Created time.Time `json:"created_at"`
-	Updated time.Time `json:"updated_at"`
-
-	Path         string `json:"path"`
-	CommitID     string `json:"commit_id"`
-	OrigCommitID string `json:"original_commit_id"`
-	DiffHunk     string `json:"diff_hunk"`
-	LineNum      uint64 `json:"position"`
-	OldLineNum   uint64 `json:"original_position"`
-
-	HTMLURL     string `json:"html_url"`
-	HTMLPullURL string `json:"pull_request_url"`
-}
 
 // CreatePullReviewOptions are options to create a pull review
 type CreatePullReviewOptions struct {
@@ -102,17 +59,6 @@ type CreatePullReviewComment struct {
 type SubmitPullReviewOptions struct {
 	State ReviewStateType `json:"event"`
 	Body  string          `json:"body"`
-}
-
-// DismissPullReviewOptions are options to dismiss a pull review
-type DismissPullReviewOptions struct {
-	Message string `json:"message"`
-}
-
-// PullReviewRequestOptions are options to add or remove pull review requests
-type PullReviewRequestOptions struct {
-	Reviewers     []string `json:"reviewers"`
-	TeamReviewers []string `json:"team_reviewers"`
 }
 
 // ListPullReviewsOptions options for listing PullReviews
@@ -153,7 +99,7 @@ func (opt CreatePullReviewComment) Validate() error {
 }
 
 // ListPullReviews lists all reviews of a pull request
-func (c *Client) ListPullReviews(owner, repo string, index int64, opt ListPullReviewsOptions) ([]*PullReview, *Response, error) {
+func (c *Client) ListPullReviews(owner, repo string, index int64, opt ListPullReviewsOptions) ([]*models.PullReview, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
@@ -161,7 +107,7 @@ func (c *Client) ListPullReviews(owner, repo string, index int64, opt ListPullRe
 		return nil, nil, err
 	}
 	opt.setDefaults()
-	rs := make([]*PullReview, 0, opt.PageSize)
+	rs := make([]*models.PullReview, 0, opt.PageSize)
 
 	link, _ := url.Parse(fmt.Sprintf("/repos/%s/%s/pulls/%d/reviews", owner, repo, index))
 	link.RawQuery = opt.ListOptions.getURLQuery().Encode()
@@ -171,7 +117,7 @@ func (c *Client) ListPullReviews(owner, repo string, index int64, opt ListPullRe
 }
 
 // GetPullReview gets a specific review of a pull request
-func (c *Client) GetPullReview(owner, repo string, index, id int64) (*PullReview, *Response, error) {
+func (c *Client) GetPullReview(owner, repo string, index, id int64) (*models.PullReview, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
@@ -179,20 +125,20 @@ func (c *Client) GetPullReview(owner, repo string, index, id int64) (*PullReview
 		return nil, nil, err
 	}
 
-	r := new(PullReview)
+	r := new(models.PullReview)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/pulls/%d/reviews/%d", owner, repo, index, id), jsonHeader, nil, &r)
 	return r, resp, err
 }
 
 // ListPullReviewComments lists all comments of a pull request review
-func (c *Client) ListPullReviewComments(owner, repo string, index, id int64) ([]*PullReviewComment, *Response, error) {
+func (c *Client) ListPullReviewComments(owner, repo string, index, id int64) ([]*models.PullReviewComment, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
 	if err := c.checkServerVersionGreaterThanOrEqual(version1_12_0); err != nil {
 		return nil, nil, err
 	}
-	rcl := make([]*PullReviewComment, 0, 4)
+	rcl := make([]*models.PullReviewComment, 0, 4)
 	link, _ := url.Parse(fmt.Sprintf("/repos/%s/%s/pulls/%d/reviews/%d/comments", owner, repo, index, id))
 
 	resp, err := c.getParsedResponse("GET", link.String(), jsonHeader, nil, &rcl)
@@ -213,7 +159,7 @@ func (c *Client) DeletePullReview(owner, repo string, index, id int64) (*Respons
 }
 
 // CreatePullReview create a review to an pull request
-func (c *Client) CreatePullReview(owner, repo string, index int64, opt CreatePullReviewOptions) (*PullReview, *Response, error) {
+func (c *Client) CreatePullReview(owner, repo string, index int64, opt CreatePullReviewOptions) (*models.PullReview, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
@@ -228,7 +174,7 @@ func (c *Client) CreatePullReview(owner, repo string, index int64, opt CreatePul
 		return nil, nil, err
 	}
 
-	r := new(PullReview)
+	r := new(models.PullReview)
 	resp, err := c.getParsedResponse("POST",
 		fmt.Sprintf("/repos/%s/%s/pulls/%d/reviews", owner, repo, index),
 		jsonHeader, bytes.NewReader(body), r)
@@ -236,7 +182,7 @@ func (c *Client) CreatePullReview(owner, repo string, index int64, opt CreatePul
 }
 
 // SubmitPullReview submit a pending review to an pull request
-func (c *Client) SubmitPullReview(owner, repo string, index, id int64, opt SubmitPullReviewOptions) (*PullReview, *Response, error) {
+func (c *Client) SubmitPullReview(owner, repo string, index, id int64, opt SubmitPullReviewOptions) (*models.PullReview, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
@@ -251,7 +197,7 @@ func (c *Client) SubmitPullReview(owner, repo string, index, id int64, opt Submi
 		return nil, nil, err
 	}
 
-	r := new(PullReview)
+	r := new(models.PullReview)
 	resp, err := c.getParsedResponse("POST",
 		fmt.Sprintf("/repos/%s/%s/pulls/%d/reviews/%d", owner, repo, index, id),
 		jsonHeader, bytes.NewReader(body), r)
@@ -259,7 +205,7 @@ func (c *Client) SubmitPullReview(owner, repo string, index, id int64, opt Submi
 }
 
 // CreateReviewRequests create review requests to an pull request
-func (c *Client) CreateReviewRequests(owner, repo string, index int64, opt PullReviewRequestOptions) (*Response, error) {
+func (c *Client) CreateReviewRequests(owner, repo string, index int64, opt models.PullReviewRequestOptions) (*Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, err
 	}
@@ -278,7 +224,7 @@ func (c *Client) CreateReviewRequests(owner, repo string, index int64, opt PullR
 }
 
 // DeleteReviewRequests delete review requests to an pull request
-func (c *Client) DeleteReviewRequests(owner, repo string, index int64, opt PullReviewRequestOptions) (*Response, error) {
+func (c *Client) DeleteReviewRequests(owner, repo string, index int64, opt models.PullReviewRequestOptions) (*Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, err
 	}
@@ -297,7 +243,7 @@ func (c *Client) DeleteReviewRequests(owner, repo string, index int64, opt PullR
 }
 
 // DismissPullReview dismiss a review for a pull request
-func (c *Client) DismissPullReview(owner, repo string, index, id int64, opt DismissPullReviewOptions) (*Response, error) {
+func (c *Client) DismissPullReview(owner, repo string, index, id int64, opt models.DismissPullReviewOptions) (*Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, err
 	}
