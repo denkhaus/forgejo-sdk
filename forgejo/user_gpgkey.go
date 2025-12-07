@@ -16,12 +16,6 @@ import (
 	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
-// GPGKeyEmail an email attached to a GPGKey
-type GPGKeyEmail struct {
-	Email    string `json:"email"`
-	Verified bool   `json:"verified"`
-}
-
 // ListGPGKeysOptions options for listing a user's GPGKeys
 type ListGPGKeysOptions struct {
 	ListOptions
