@@ -13,6 +13,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
 // AdminListOrgsOptions options for listing admin's organizations
@@ -21,15 +23,15 @@ type AdminListOrgsOptions struct {
 }
 
 // AdminListOrgs lists all orgs
-func (c *Client) AdminListOrgs(opt AdminListOrgsOptions) ([]*Organization, *Response, error) {
+func (c *Client) AdminListOrgs(opt AdminListOrgsOptions) ([]*models.Organization, *Response, error) {
 	opt.setDefaults()
-	orgs := make([]*Organization, 0, opt.PageSize)
+	orgs := make([]*models.Organization, 0, opt.PageSize)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/admin/orgs?%s", opt.getURLQuery().Encode()), nil, nil, &orgs)
 	return orgs, resp, err
 }
 
 // AdminCreateOrg create an organization
-func (c *Client) AdminCreateOrg(user string, opt CreateOrgOption) (*Organization, *Response, error) {
+func (c *Client) AdminCreateOrg(user string, opt CreateOrgOption) (*models.Organization, *Response, error) {
 	if err := escapeValidatePathSegments(&user); err != nil {
 		return nil, nil, err
 	}
@@ -37,7 +39,7 @@ func (c *Client) AdminCreateOrg(user string, opt CreateOrgOption) (*Organization
 	if err != nil {
 		return nil, nil, err
 	}
-	org := new(Organization)
+	org := new(models.Organization)
 	resp, err := c.getParsedResponse("POST", fmt.Sprintf("/admin/users/%s/orgs", user), jsonHeader, bytes.NewReader(body), org)
 	return org, resp, err
 }

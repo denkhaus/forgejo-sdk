@@ -13,19 +13,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-)
 
-// Organization represents an organization
-type Organization struct {
-	ID          int64  `json:"id"`
-	UserName    string `json:"username"`
-	FullName    string `json:"full_name"`
-	AvatarURL   string `json:"avatar_url"`
-	Description string `json:"description"`
-	Website     string `json:"website"`
-	Location    string `json:"location"`
-	Visibility  string `json:"visibility"`
-}
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
+)
 
 // VisibleType defines the visibility
 type VisibleType string
@@ -47,30 +37,30 @@ type ListOrgsOptions struct {
 }
 
 // ListMyOrgs list all of current user's organizations
-func (c *Client) ListMyOrgs(opt ListOrgsOptions) ([]*Organization, *Response, error) {
+func (c *Client) ListMyOrgs(opt ListOrgsOptions) ([]*models.Organization, *Response, error) {
 	opt.setDefaults()
-	orgs := make([]*Organization, 0, opt.PageSize)
+	orgs := make([]*models.Organization, 0, opt.PageSize)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/user/orgs?%s", opt.getURLQuery().Encode()), nil, nil, &orgs)
 	return orgs, resp, err
 }
 
 // ListUserOrgs list all of some user's organizations
-func (c *Client) ListUserOrgs(user string, opt ListOrgsOptions) ([]*Organization, *Response, error) {
+func (c *Client) ListUserOrgs(user string, opt ListOrgsOptions) ([]*models.Organization, *Response, error) {
 	if err := escapeValidatePathSegments(&user); err != nil {
 		return nil, nil, err
 	}
 	opt.setDefaults()
-	orgs := make([]*Organization, 0, opt.PageSize)
+	orgs := make([]*models.Organization, 0, opt.PageSize)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/users/%s/orgs?%s", user, opt.getURLQuery().Encode()), nil, nil, &orgs)
 	return orgs, resp, err
 }
 
 // GetOrg get one organization by name
-func (c *Client) GetOrg(orgname string) (*Organization, *Response, error) {
+func (c *Client) GetOrg(orgname string) (*models.Organization, *Response, error) {
 	if err := escapeValidatePathSegments(&orgname); err != nil {
 		return nil, nil, err
 	}
-	org := new(Organization)
+	org := new(models.Organization)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/orgs/%s", orgname), nil, nil, org)
 	return org, resp, err
 }
@@ -103,7 +93,7 @@ func (opt CreateOrgOption) Validate() error {
 }
 
 // CreateOrg creates an organization
-func (c *Client) CreateOrg(opt CreateOrgOption) (*Organization, *Response, error) {
+func (c *Client) CreateOrg(opt CreateOrgOption) (*models.Organization, *Response, error) {
 	if err := opt.Validate(); err != nil {
 		return nil, nil, err
 	}
@@ -111,7 +101,7 @@ func (c *Client) CreateOrg(opt CreateOrgOption) (*Organization, *Response, error
 	if err != nil {
 		return nil, nil, err
 	}
-	org := new(Organization)
+	org := new(models.Organization)
 	resp, err := c.getParsedResponse("POST", "/orgs", jsonHeader, bytes.NewReader(body), org)
 	return org, resp, err
 }

@@ -19,14 +19,14 @@ import (
 
 // Team represents a team in an organization
 type Team struct {
-	ID                      int64          `json:"id"`
-	Name                    string         `json:"name"`
-	Description             string         `json:"description"`
-	Organization            *Organization  `json:"organization"`
-	Permission              AccessMode     `json:"permission"`
-	CanCreateOrgRepo        bool           `json:"can_create_org_repo"`
-	IncludesAllRepositories bool           `json:"includes_all_repositories"`
-	Units                   []RepoUnitType `json:"units"`
+	ID                      int64                `json:"id"`
+	Name                    string               `json:"name"`
+	Description             string               `json:"description"`
+	Organization            *models.Organization `json:"organization"`
+	Permission              AccessMode           `json:"permission"`
+	CanCreateOrgRepo        bool                 `json:"can_create_org_repo"`
+	IncludesAllRepositories bool                 `json:"includes_all_repositories"`
+	Units                   []RepoUnitType       `json:"units"`
 }
 
 // RepoUnitType represent all unit types of a repo forgejo currently offer
