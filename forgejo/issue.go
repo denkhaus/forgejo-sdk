@@ -20,20 +20,6 @@ import (
 	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
-// PullRequestMeta PR info if an issue is a PR
-type PullRequestMeta struct {
-	HasMerged bool       `json:"merged"`
-	Merged    *time.Time `json:"merged_at"`
-}
-
-// RepositoryMeta basic repository information
-type RepositoryMeta struct {
-	ID       int64  `json:"id"`
-	Name     string `json:"name"`
-	Owner    string `json:"owner"`
-	FullName string `json:"full_name"`
-}
-
 // ListIssueOption list issue options
 type ListIssueOption struct {
 	ListOptions
