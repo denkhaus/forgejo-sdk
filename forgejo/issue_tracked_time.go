@@ -18,19 +18,19 @@ import (
 	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
-// TrackedTime worked time for an issue / pr
-type TrackedTime struct {
-	ID      int64     `json:"id"`
-	Created time.Time `json:"created"`
-	// Time in seconds
-	Time int64 `json:"time"`
-	// deprecated (only for backwards compatibility)
-	UserID   int64  `json:"user_id"`
-	UserName string `json:"user_name"`
-	// deprecated (only for backwards compatibility)
-	IssueID int64         `json:"issue_id"`
-	Issue   *models.Issue `json:"issue"`
-}
+// // TrackedTime worked time for an issue / pr
+// type TrackedTime struct {
+// 	ID      int64     `json:"id"`
+// 	Created time.Time `json:"created"`
+// 	// Time in seconds
+// 	Time int64 `json:"time"`
+// 	// deprecated (only for backwards compatibility)
+// 	UserID   int64  `json:"user_id"`
+// 	UserName string `json:"user_name"`
+// 	// deprecated (only for backwards compatibility)
+// 	IssueID int64         `json:"issue_id"`
+// 	Issue   *models.Issue `json:"issue"`
+// }
 
 // ListTrackedTimesOptions options for listing repository's tracked times
 type ListTrackedTimesOptions struct {
@@ -60,21 +60,21 @@ func (opt *ListTrackedTimesOptions) QueryEncode() string {
 }
 
 // ListRepoTrackedTimes list tracked times of a repository
-func (c *Client) ListRepoTrackedTimes(owner, repo string, opt ListTrackedTimesOptions) ([]*TrackedTime, *Response, error) {
+func (c *Client) ListRepoTrackedTimes(owner, repo string, opt ListTrackedTimesOptions) ([]*models.TrackedTime, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
 	link, _ := url.Parse(fmt.Sprintf("/repos/%s/%s/times", owner, repo))
 	opt.setDefaults()
 	link.RawQuery = opt.QueryEncode()
-	times := make([]*TrackedTime, 0, opt.PageSize)
+	times := make([]*models.TrackedTime, 0, opt.PageSize)
 	resp, err := c.getParsedResponse("GET", link.String(), jsonHeader, nil, &times)
 	return times, resp, err
 }
 
 // GetMyTrackedTimes list tracked times of the current user
-func (c *Client) GetMyTrackedTimes() ([]*TrackedTime, *Response, error) {
-	times := make([]*TrackedTime, 0, 10)
+func (c *Client) GetMyTrackedTimes() ([]*models.TrackedTime, *Response, error) {
+	times := make([]*models.TrackedTime, 0, 10)
 	resp, err := c.getParsedResponse("GET", "/user/times", jsonHeader, nil, &times)
 	return times, resp, err
 }
@@ -98,7 +98,7 @@ func (opt AddTimeOption) Validate() error {
 }
 
 // AddTime adds time to issue with the given index
-func (c *Client) AddTime(owner, repo string, index int64, opt AddTimeOption) (*TrackedTime, *Response, error) {
+func (c *Client) AddTime(owner, repo string, index int64, opt AddTimeOption) (*models.TrackedTime, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
@@ -109,7 +109,7 @@ func (c *Client) AddTime(owner, repo string, index int64, opt AddTimeOption) (*T
 	if err != nil {
 		return nil, nil, err
 	}
-	t := new(TrackedTime)
+	t := new(models.TrackedTime)
 	resp, err := c.getParsedResponse("POST",
 		fmt.Sprintf("/repos/%s/%s/issues/%d/times", owner, repo, index),
 		jsonHeader, bytes.NewReader(body), t)
@@ -117,14 +117,14 @@ func (c *Client) AddTime(owner, repo string, index int64, opt AddTimeOption) (*T
 }
 
 // ListIssueTrackedTimes list tracked times of a single issue for a given repository
-func (c *Client) ListIssueTrackedTimes(owner, repo string, index int64, opt ListTrackedTimesOptions) ([]*TrackedTime, *Response, error) {
+func (c *Client) ListIssueTrackedTimes(owner, repo string, index int64, opt ListTrackedTimesOptions) ([]*models.TrackedTime, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
 	link, _ := url.Parse(fmt.Sprintf("/repos/%s/%s/issues/%d/times", owner, repo, index))
 	opt.setDefaults()
 	link.RawQuery = opt.QueryEncode()
-	times := make([]*TrackedTime, 0, opt.PageSize)
+	times := make([]*models.TrackedTime, 0, opt.PageSize)
 	resp, err := c.getParsedResponse("GET", link.String(), jsonHeader, nil, &times)
 	return times, resp, err
 }
