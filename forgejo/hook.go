@@ -13,20 +13,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"time"
-)
 
-// Hook a hook is a web hook when one repository changed
-type Hook struct {
-	ID      int64             `json:"id"`
-	Type    string            `json:"type"`
-	URL     string            `json:"-"`
-	Config  map[string]string `json:"config"`
-	Events  []string          `json:"events"`
-	Active  bool              `json:"active"`
-	Updated time.Time         `json:"updated_at"`
-	Created time.Time         `json:"created_at"`
-}
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
+)
 
 // HookType represent all webhook types forgejo currently offer
 type HookType string
@@ -58,58 +47,58 @@ type ListHooksOptions struct {
 }
 
 // ListOrgHooks list all the hooks of one organization
-func (c *Client) ListOrgHooks(org string, opt ListHooksOptions) ([]*Hook, *Response, error) {
+func (c *Client) ListOrgHooks(org string, opt ListHooksOptions) ([]*models.Hook, *Response, error) {
 	if err := escapeValidatePathSegments(&org); err != nil {
 		return nil, nil, err
 	}
 	opt.setDefaults()
-	hooks := make([]*Hook, 0, opt.PageSize)
+	hooks := make([]*models.Hook, 0, opt.PageSize)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/orgs/%s/hooks?%s", org, opt.getURLQuery().Encode()), nil, nil, &hooks)
 	return hooks, resp, err
 }
 
 // ListMyHooks list all the hooks of the authenticated user
-func (c *Client) ListMyHooks(opt ListHooksOptions) ([]*Hook, *Response, error) {
+func (c *Client) ListMyHooks(opt ListHooksOptions) ([]*models.Hook, *Response, error) {
 	opt.setDefaults()
-	hooks := make([]*Hook, 0, opt.PageSize)
+	hooks := make([]*models.Hook, 0, opt.PageSize)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/user/hooks?%s", opt.getURLQuery().Encode()), nil, nil, &hooks)
 	return hooks, resp, err
 }
 
 // ListRepoHooks list all the hooks of one repository
-func (c *Client) ListRepoHooks(user, repo string, opt ListHooksOptions) ([]*Hook, *Response, error) {
+func (c *Client) ListRepoHooks(user, repo string, opt ListHooksOptions) ([]*models.Hook, *Response, error) {
 	if err := escapeValidatePathSegments(&user, &repo); err != nil {
 		return nil, nil, err
 	}
 	opt.setDefaults()
-	hooks := make([]*Hook, 0, opt.PageSize)
+	hooks := make([]*models.Hook, 0, opt.PageSize)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/hooks?%s", user, repo, opt.getURLQuery().Encode()), nil, nil, &hooks)
 	return hooks, resp, err
 }
 
 // GetOrgHook get a hook of an organization
-func (c *Client) GetOrgHook(org string, id int64) (*Hook, *Response, error) {
+func (c *Client) GetOrgHook(org string, id int64) (*models.Hook, *Response, error) {
 	if err := escapeValidatePathSegments(&org); err != nil {
 		return nil, nil, err
 	}
-	h := new(Hook)
+	h := new(models.Hook)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/orgs/%s/hooks/%d", org, id), nil, nil, h)
 	return h, resp, err
 }
 
 // GetMyHook get a hook of the authenticated user
-func (c *Client) GetMyHook(id int64) (*Hook, *Response, error) {
-	h := new(Hook)
+func (c *Client) GetMyHook(id int64) (*models.Hook, *Response, error) {
+	h := new(models.Hook)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/user/hooks/%d", id), nil, nil, h)
 	return h, resp, err
 }
 
 // GetRepoHook get a hook of a repository
-func (c *Client) GetRepoHook(user, repo string, id int64) (*Hook, *Response, error) {
+func (c *Client) GetRepoHook(user, repo string, id int64) (*models.Hook, *Response, error) {
 	if err := escapeValidatePathSegments(&user, &repo); err != nil {
 		return nil, nil, err
 	}
-	h := new(Hook)
+	h := new(models.Hook)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/hooks/%d", user, repo, id), nil, nil, h)
 	return h, resp, err
 }
@@ -133,7 +122,7 @@ func (opt CreateHookOption) Validate() error {
 }
 
 // CreateOrgHook create one hook for an organization, with options
-func (c *Client) CreateOrgHook(org string, opt CreateHookOption) (*Hook, *Response, error) {
+func (c *Client) CreateOrgHook(org string, opt CreateHookOption) (*models.Hook, *Response, error) {
 	if err := escapeValidatePathSegments(&org); err != nil {
 		return nil, nil, err
 	}
@@ -144,13 +133,13 @@ func (c *Client) CreateOrgHook(org string, opt CreateHookOption) (*Hook, *Respon
 	if err != nil {
 		return nil, nil, err
 	}
-	h := new(Hook)
+	h := new(models.Hook)
 	resp, err := c.getParsedResponse("POST", fmt.Sprintf("/orgs/%s/hooks", org), jsonHeader, bytes.NewReader(body), h)
 	return h, resp, err
 }
 
 // CreateMyHook create one hook for the authenticated user, with options
-func (c *Client) CreateMyHook(opt CreateHookOption) (*Hook, *Response, error) {
+func (c *Client) CreateMyHook(opt CreateHookOption) (*models.Hook, *Response, error) {
 	if err := opt.Validate(); err != nil {
 		return nil, nil, err
 	}
@@ -158,13 +147,13 @@ func (c *Client) CreateMyHook(opt CreateHookOption) (*Hook, *Response, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	h := new(Hook)
+	h := new(models.Hook)
 	resp, err := c.getParsedResponse("POST", "/user/hooks", jsonHeader, bytes.NewReader(body), h)
 	return h, resp, err
 }
 
 // CreateRepoHook create one hook for a repository, with options
-func (c *Client) CreateRepoHook(user, repo string, opt CreateHookOption) (*Hook, *Response, error) {
+func (c *Client) CreateRepoHook(user, repo string, opt CreateHookOption) (*models.Hook, *Response, error) {
 	if err := escapeValidatePathSegments(&user, &repo); err != nil {
 		return nil, nil, err
 	}
@@ -172,22 +161,13 @@ func (c *Client) CreateRepoHook(user, repo string, opt CreateHookOption) (*Hook,
 	if err != nil {
 		return nil, nil, err
 	}
-	h := new(Hook)
+	h := new(models.Hook)
 	resp, err := c.getParsedResponse("POST", fmt.Sprintf("/repos/%s/%s/hooks", user, repo), jsonHeader, bytes.NewReader(body), h)
 	return h, resp, err
 }
 
-// EditHookOption options when modify one hook
-type EditHookOption struct {
-	Config              map[string]string `json:"config"`
-	Events              []string          `json:"events"`
-	BranchFilter        string            `json:"branch_filter"`
-	Active              *bool             `json:"active"`
-	AuthorizationHeader string            `json:"authorization_header"`
-}
-
 // EditOrgHook modify one hook of an organization, with hook id and options
-func (c *Client) EditOrgHook(org string, id int64, opt EditHookOption) (*Response, error) {
+func (c *Client) EditOrgHook(org string, id int64, opt models.EditHookOption) (*Response, error) {
 	if err := escapeValidatePathSegments(&org); err != nil {
 		return nil, err
 	}
@@ -200,7 +180,7 @@ func (c *Client) EditOrgHook(org string, id int64, opt EditHookOption) (*Respons
 }
 
 // EditMyHook modify one hook of the authenticated user, with hook id and options
-func (c *Client) EditMyHook(id int64, opt EditHookOption) (*Response, error) {
+func (c *Client) EditMyHook(id int64, opt models.EditHookOption) (*Response, error) {
 	body, err := json.Marshal(&opt)
 	if err != nil {
 		return nil, err
@@ -210,7 +190,7 @@ func (c *Client) EditMyHook(id int64, opt EditHookOption) (*Response, error) {
 }
 
 // EditRepoHook modify one hook of a repository, with hook id and options
-func (c *Client) EditRepoHook(user, repo string, id int64, opt EditHookOption) (*Response, error) {
+func (c *Client) EditRepoHook(user, repo string, id int64, opt models.EditHookOption) (*Response, error) {
 	if err := escapeValidatePathSegments(&user, &repo); err != nil {
 		return nil, err
 	}
