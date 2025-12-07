@@ -16,28 +16,6 @@ import (
 	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
-// NotificationThread expose Notification on API
-type NotificationThread struct {
-	ID         int64                `json:"id"`
-	Repository *models.Repository   `json:"repository"`
-	Subject    *NotificationSubject `json:"subject"`
-	Unread     bool                 `json:"unread"`
-	Pinned     bool                 `json:"pinned"`
-	UpdatedAt  time.Time            `json:"updated_at"`
-	URL        string               `json:"url"`
-}
-
-// NotificationSubject contains the notification subject (Issue/Pull/Commit)
-type NotificationSubject struct {
-	Title                string             `json:"title"`
-	URL                  string             `json:"url"`
-	HTMLURL              string             `json:"html_url"`
-	LatestCommentURL     string             `json:"latest_comment_url"`
-	LatestCommentHTMLURL string             `json:"latest_comment_html_url"`
-	Type                 NotifySubjectType  `json:"type"`
-	State                NotifySubjectState `json:"state"`
-}
-
 // NotifyStatus notification status type
 type NotifyStatus string
 
@@ -155,11 +133,11 @@ func (c *Client) CheckNotifications() (int64, *Response, error) {
 }
 
 // GetNotification get notification thread by ID
-func (c *Client) GetNotification(id int64) (*NotificationThread, *Response, error) {
+func (c *Client) GetNotification(id int64) (*models.NotificationThread, *Response, error) {
 	if err := c.checkServerVersionGreaterThanOrEqual(version1_12_0); err != nil {
 		return nil, nil, err
 	}
-	thread := new(NotificationThread)
+	thread := new(models.NotificationThread)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/notifications/threads/%d", id), nil, nil, thread)
 	return thread, resp, err
 }
@@ -167,7 +145,7 @@ func (c *Client) GetNotification(id int64) (*NotificationThread, *Response, erro
 // ReadNotification mark notification thread as read by ID
 // It optionally takes a second argument if status has to be set other than 'read'
 // The relevant notification will be returned as the first parameter when the Forgejo server is 1.16.0 or higher.
-func (c *Client) ReadNotification(id int64, status ...NotifyStatus) (*NotificationThread, *Response, error) {
+func (c *Client) ReadNotification(id int64, status ...NotifyStatus) (*models.NotificationThread, *Response, error) {
 	if err := c.checkServerVersionGreaterThanOrEqual(version1_12_0); err != nil {
 		return nil, nil, err
 	}
@@ -176,7 +154,7 @@ func (c *Client) ReadNotification(id int64, status ...NotifyStatus) (*Notificati
 		link += fmt.Sprintf("?to-status=%s", status[0])
 	}
 	if err := c.checkServerVersionGreaterThanOrEqual(version1_16_0); err == nil {
-		thread := &NotificationThread{}
+		thread := &models.NotificationThread{}
 		resp, err := c.getParsedResponse("PATCH", link, nil, nil, thread)
 		return thread, resp, err
 	}
@@ -185,7 +163,7 @@ func (c *Client) ReadNotification(id int64, status ...NotifyStatus) (*Notificati
 }
 
 // ListNotifications list users's notification threads
-func (c *Client) ListNotifications(opt ListNotificationOptions) ([]*NotificationThread, *Response, error) {
+func (c *Client) ListNotifications(opt ListNotificationOptions) ([]*models.NotificationThread, *Response, error) {
 	if err := c.checkServerVersionGreaterThanOrEqual(version1_12_0); err != nil {
 		return nil, nil, err
 	}
@@ -194,14 +172,14 @@ func (c *Client) ListNotifications(opt ListNotificationOptions) ([]*Notification
 	}
 	link, _ := url.Parse("/notifications")
 	link.RawQuery = opt.QueryEncode()
-	threads := make([]*NotificationThread, 0, 10)
+	threads := make([]*models.NotificationThread, 0, 10)
 	resp, err := c.getParsedResponse("GET", link.String(), nil, nil, &threads)
 	return threads, resp, err
 }
 
 // ReadNotifications mark notification threads as read
 // The relevant notifications will only be returned as the first parameter when the Forgejo server is 1.16.0 or higher.
-func (c *Client) ReadNotifications(opt MarkNotificationOptions) ([]*NotificationThread, *Response, error) {
+func (c *Client) ReadNotifications(opt MarkNotificationOptions) ([]*models.NotificationThread, *Response, error) {
 	if err := c.checkServerVersionGreaterThanOrEqual(version1_12_0); err != nil {
 		return nil, nil, err
 	}
@@ -212,7 +190,7 @@ func (c *Client) ReadNotifications(opt MarkNotificationOptions) ([]*Notification
 	link.RawQuery = opt.QueryEncode()
 
 	if err := c.checkServerVersionGreaterThanOrEqual(version1_16_0); err == nil {
-		threads := make([]*NotificationThread, 0, 10)
+		threads := make([]*models.NotificationThread, 0, 10)
 		resp, err := c.getParsedResponse("PUT", link.String(), nil, nil, &threads)
 		return threads, resp, err
 	}
@@ -221,7 +199,7 @@ func (c *Client) ReadNotifications(opt MarkNotificationOptions) ([]*Notification
 }
 
 // ListRepoNotifications list users's notification threads on a specific repo
-func (c *Client) ListRepoNotifications(owner, repo string, opt ListNotificationOptions) ([]*NotificationThread, *Response, error) {
+func (c *Client) ListRepoNotifications(owner, repo string, opt ListNotificationOptions) ([]*models.NotificationThread, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
@@ -233,14 +211,14 @@ func (c *Client) ListRepoNotifications(owner, repo string, opt ListNotificationO
 	}
 	link, _ := url.Parse(fmt.Sprintf("/repos/%s/%s/notifications", owner, repo))
 	link.RawQuery = opt.QueryEncode()
-	threads := make([]*NotificationThread, 0, 10)
+	threads := make([]*models.NotificationThread, 0, 10)
 	resp, err := c.getParsedResponse("GET", link.String(), nil, nil, &threads)
 	return threads, resp, err
 }
 
 // ReadRepoNotifications mark notification threads as read on a specific repo
 // The relevant notifications will only be returned as the first parameter when the Forgejo server is 1.16.0 or higher.
-func (c *Client) ReadRepoNotifications(owner, repo string, opt MarkNotificationOptions) ([]*NotificationThread, *Response, error) {
+func (c *Client) ReadRepoNotifications(owner, repo string, opt MarkNotificationOptions) ([]*models.NotificationThread, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
@@ -254,7 +232,7 @@ func (c *Client) ReadRepoNotifications(owner, repo string, opt MarkNotificationO
 	link.RawQuery = opt.QueryEncode()
 
 	if err := c.checkServerVersionGreaterThanOrEqual(version1_16_0); err == nil {
-		threads := make([]*NotificationThread, 0, 10)
+		threads := make([]*models.NotificationThread, 0, 10)
 		resp, err := c.getParsedResponse("PUT", link.String(), nil, nil, &threads)
 		return threads, resp, err
 	}
