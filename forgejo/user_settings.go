@@ -11,21 +11,9 @@ package forgejo
 import (
 	"bytes"
 	"encoding/json"
-)
 
-// UserSettings represents user settings
-type UserSettings struct {
-	FullName      string `json:"full_name"`
-	Website       string `json:"website"`
-	Description   string `json:"description"`
-	Location      string `json:"location"`
-	Language      string `json:"language"`
-	Theme         string `json:"theme"`
-	DiffViewStyle string `json:"diff_view_style"`
-	// Privacy
-	HideEmail    bool `json:"hide_email"`
-	HideActivity bool `json:"hide_activity"`
-}
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
+)
 
 // UserSettingsOptions represents options to change user settings
 type UserSettingsOptions struct {
@@ -42,17 +30,17 @@ type UserSettingsOptions struct {
 }
 
 // GetUserSettings returns user settings
-func (c *Client) GetUserSettings() (*UserSettings, *Response, error) {
+func (c *Client) GetUserSettings() (*models.UserSettings, *Response, error) {
 	if err := c.checkServerVersionGreaterThanOrEqual(version1_15_0); err != nil {
 		return nil, nil, err
 	}
-	userConfig := new(UserSettings)
+	userConfig := new(models.UserSettings)
 	resp, err := c.getParsedResponse("GET", "/user/settings", nil, nil, userConfig)
 	return userConfig, resp, err
 }
 
 // UpdateUserSettings returns user settings
-func (c *Client) UpdateUserSettings(opt UserSettingsOptions) (*UserSettings, *Response, error) {
+func (c *Client) UpdateUserSettings(opt UserSettingsOptions) (*models.UserSettings, *Response, error) {
 	if err := c.checkServerVersionGreaterThanOrEqual(version1_15_0); err != nil {
 		return nil, nil, err
 	}
@@ -60,7 +48,7 @@ func (c *Client) UpdateUserSettings(opt UserSettingsOptions) (*UserSettings, *Re
 	if err != nil {
 		return nil, nil, err
 	}
-	userConfig := new(UserSettings)
+	userConfig := new(models.UserSettings)
 	resp, err := c.getParsedResponse("PATCH", "/user/settings", jsonHeader, bytes.NewReader(body), userConfig)
 	return userConfig, resp, err
 }
