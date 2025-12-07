@@ -13,30 +13,18 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
-// Reference represents a Git reference.
-type Reference struct {
-	Ref    string     `json:"ref"`
-	URL    string     `json:"url"`
-	Object *GitObject `json:"object"`
-}
-
-// GitObject represents a Git object.
-type GitObject struct {
-	Type string `json:"type"`
-	SHA  string `json:"sha"`
-	URL  string `json:"url"`
-}
-
 // GetRepoRef get one ref's information of one repository
-func (c *Client) GetRepoRef(user, repo, ref string) (*Reference, *Response, error) {
+func (c *Client) GetRepoRef(user, repo, ref string) (*models.Reference, *Response, error) {
 	if err := escapeValidatePathSegments(&user, &repo); err != nil {
 		return nil, nil, err
 	}
 	ref = strings.TrimPrefix(ref, "refs/")
 	ref = pathEscapeSegments(ref)
-	r := new(Reference)
+	r := new(models.Reference)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/git/refs/%s", user, repo, ref), nil, nil, &r)
 	if _, ok := err.(*json.UnmarshalTypeError); ok {
 		// Multiple refs
@@ -49,7 +37,7 @@ func (c *Client) GetRepoRef(user, repo, ref string) (*Reference, *Response, erro
 }
 
 // GetRepoRefs get list of ref's information of one repository
-func (c *Client) GetRepoRefs(user, repo, ref string) ([]*Reference, *Response, error) {
+func (c *Client) GetRepoRefs(user, repo, ref string) ([]*models.Reference, *Response, error) {
 	if err := escapeValidatePathSegments(&user, &repo); err != nil {
 		return nil, nil, err
 	}
@@ -62,14 +50,14 @@ func (c *Client) GetRepoRefs(user, repo, ref string) ([]*Reference, *Response, e
 	}
 
 	// Attempt to unmarshal single returned ref.
-	r := new(Reference)
+	r := new(models.Reference)
 	refErr := json.Unmarshal(data, r)
 	if refErr == nil {
-		return []*Reference{r}, resp, nil
+		return []*models.Reference{r}, resp, nil
 	}
 
 	// Attempt to unmarshal multiple refs.
-	var rs []*Reference
+	var rs []*models.Reference
 	refsErr := json.Unmarshal(data, &rs)
 	if refsErr == nil {
 		if len(rs) == 0 {
