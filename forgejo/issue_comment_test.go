@@ -11,6 +11,7 @@ package forgejo
 import (
 	"log"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -45,7 +46,7 @@ func TestIssueComment(t *testing.T) {
 		require.NoError(t, e)
 		assert.NotEmpty(t, comment)
 		assert.EqualValues(t, text, comment.Body)
-		assert.EqualValues(t, u.ID, comment.Poster.ID)
+		assert.EqualValues(t, u.ID, comment.User.ID)
 	}
 
 	// CreateIssue
@@ -73,9 +74,9 @@ func TestIssueComment(t *testing.T) {
 	// GetIssueComment
 	comment, _, err := c.GetIssueComment(user.UserName, repo.Name, comments[1].ID)
 	require.NoError(t, err)
-	assert.EqualValues(t, comment.Poster.ID, comments[1].Poster.ID)
+	assert.EqualValues(t, comment.User.ID, comments[1].User.ID)
 	assert.EqualValues(t, comment.Body, comments[1].Body)
-	assert.EqualValues(t, comment.Updated.Unix(), comments[1].Updated.Unix())
+	assert.EqualValues(t, time.Time(comment.Updated).Unix(), time.Time(comments[1].Updated).Unix())
 
 	// EditIssueComment
 	comment, _, err = c.EditIssueComment(user.UserName, repo.Name, comments[1].ID, EditIssueCommentOption{

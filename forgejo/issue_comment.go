@@ -18,20 +18,6 @@ import (
 	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
-// Comment represents a comment on a commit or issue
-type Comment struct {
-	ID               int64        `json:"id"`
-	HTMLURL          string       `json:"html_url"`
-	PRURL            string       `json:"pull_request_url"`
-	IssueURL         string       `json:"issue_url"`
-	Poster           *models.User `json:"user"`
-	OriginalAuthor   string       `json:"original_author"`
-	OriginalAuthorID int64        `json:"original_author_id"`
-	Body             string       `json:"body"`
-	Created          time.Time    `json:"created_at"`
-	Updated          time.Time    `json:"updated_at"`
-}
-
 // ListIssueCommentOptions list comment options
 type ListIssueCommentOptions struct {
 	ListOptions
@@ -52,37 +38,37 @@ func (opt *ListIssueCommentOptions) QueryEncode() string {
 }
 
 // ListIssueComments list comments on an issue.
-func (c *Client) ListIssueComments(owner, repo string, index int64, opt ListIssueCommentOptions) ([]*Comment, *Response, error) {
+func (c *Client) ListIssueComments(owner, repo string, index int64, opt ListIssueCommentOptions) ([]*models.Comment, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
 	opt.setDefaults()
 	link, _ := url.Parse(fmt.Sprintf("/repos/%s/%s/issues/%d/comments", owner, repo, index))
 	link.RawQuery = opt.QueryEncode()
-	comments := make([]*Comment, 0, opt.PageSize)
+	comments := make([]*models.Comment, 0, opt.PageSize)
 	resp, err := c.getParsedResponse("GET", link.String(), nil, nil, &comments)
 	return comments, resp, err
 }
 
 // ListRepoIssueComments list comments for a given repo.
-func (c *Client) ListRepoIssueComments(owner, repo string, opt ListIssueCommentOptions) ([]*Comment, *Response, error) {
+func (c *Client) ListRepoIssueComments(owner, repo string, opt ListIssueCommentOptions) ([]*models.Comment, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
 	opt.setDefaults()
 	link, _ := url.Parse(fmt.Sprintf("/repos/%s/%s/issues/comments", owner, repo))
 	link.RawQuery = opt.QueryEncode()
-	comments := make([]*Comment, 0, opt.PageSize)
+	comments := make([]*models.Comment, 0, opt.PageSize)
 	resp, err := c.getParsedResponse("GET", link.String(), nil, nil, &comments)
 	return comments, resp, err
 }
 
 // GetIssueComment get a comment for a given repo by id.
-func (c *Client) GetIssueComment(owner, repo string, id int64) (*Comment, *Response, error) {
+func (c *Client) GetIssueComment(owner, repo string, id int64) (*models.Comment, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
-	comment := new(Comment)
+	comment := new(models.Comment)
 	if err := c.checkServerVersionGreaterThanOrEqual(version1_12_0); err != nil {
 		return comment, nil, err
 	}
@@ -104,7 +90,7 @@ func (opt CreateIssueCommentOption) Validate() error {
 }
 
 // CreateIssueComment create comment on an issue.
-func (c *Client) CreateIssueComment(owner, repo string, index int64, opt CreateIssueCommentOption) (*Comment, *Response, error) {
+func (c *Client) CreateIssueComment(owner, repo string, index int64, opt CreateIssueCommentOption) (*models.Comment, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
@@ -115,7 +101,7 @@ func (c *Client) CreateIssueComment(owner, repo string, index int64, opt CreateI
 	if err != nil {
 		return nil, nil, err
 	}
-	comment := new(Comment)
+	comment := new(models.Comment)
 	resp, err := c.getParsedResponse("POST", fmt.Sprintf("/repos/%s/%s/issues/%d/comments", owner, repo, index), jsonHeader, bytes.NewReader(body), comment)
 	return comment, resp, err
 }
@@ -134,7 +120,7 @@ func (opt EditIssueCommentOption) Validate() error {
 }
 
 // EditIssueComment edits an issue comment.
-func (c *Client) EditIssueComment(owner, repo string, commentID int64, opt EditIssueCommentOption) (*Comment, *Response, error) {
+func (c *Client) EditIssueComment(owner, repo string, commentID int64, opt EditIssueCommentOption) (*models.Comment, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
@@ -145,7 +131,7 @@ func (c *Client) EditIssueComment(owner, repo string, commentID int64, opt EditI
 	if err != nil {
 		return nil, nil, err
 	}
-	comment := new(Comment)
+	comment := new(models.Comment)
 	resp, err := c.getParsedResponse("PATCH", fmt.Sprintf("/repos/%s/%s/issues/comments/%d", owner, repo, commentID), jsonHeader, bytes.NewReader(body), comment)
 	return comment, resp, err
 }
