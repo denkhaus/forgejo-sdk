@@ -13,23 +13,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
-	"time"
 
 	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
-
-// DeployKey a deploy key
-type DeployKey struct {
-	ID          int64              `json:"id"`
-	KeyID       int64              `json:"key_id"`
-	Key         string             `json:"key"`
-	URL         string             `json:"url"`
-	Title       string             `json:"title"`
-	Fingerprint string             `json:"fingerprint"`
-	Created     time.Time          `json:"created_at"`
-	ReadOnly    bool               `json:"read_only"`
-	Repository  *models.Repository `json:"repository,omitempty"`
-}
 
 // ListDeployKeysOptions options for listing a repository's deploy keys
 type ListDeployKeysOptions struct {
@@ -51,30 +37,30 @@ func (opt *ListDeployKeysOptions) QueryEncode() string {
 }
 
 // ListDeployKeys list all the deploy keys of one repository
-func (c *Client) ListDeployKeys(user, repo string, opt ListDeployKeysOptions) ([]*DeployKey, *Response, error) {
+func (c *Client) ListDeployKeys(user, repo string, opt ListDeployKeysOptions) ([]*models.DeployKey, *Response, error) {
 	if err := escapeValidatePathSegments(&user, &repo); err != nil {
 		return nil, nil, err
 	}
 	link, _ := url.Parse(fmt.Sprintf("/repos/%s/%s/keys", user, repo))
 	opt.setDefaults()
 	link.RawQuery = opt.QueryEncode()
-	keys := make([]*DeployKey, 0, opt.PageSize)
+	keys := make([]*models.DeployKey, 0, opt.PageSize)
 	resp, err := c.getParsedResponse("GET", link.String(), nil, nil, &keys)
 	return keys, resp, err
 }
 
 // GetDeployKey get one deploy key with key id
-func (c *Client) GetDeployKey(user, repo string, keyID int64) (*DeployKey, *Response, error) {
+func (c *Client) GetDeployKey(user, repo string, keyID int64) (*models.DeployKey, *Response, error) {
 	if err := escapeValidatePathSegments(&user, &repo); err != nil {
 		return nil, nil, err
 	}
-	key := new(DeployKey)
+	key := new(models.DeployKey)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/keys/%d", user, repo, keyID), nil, nil, &key)
 	return key, resp, err
 }
 
 // CreateDeployKey options when create one deploy key
-func (c *Client) CreateDeployKey(user, repo string, opt CreateKeyOption) (*DeployKey, *Response, error) {
+func (c *Client) CreateDeployKey(user, repo string, opt CreateKeyOption) (*models.DeployKey, *Response, error) {
 	if err := escapeValidatePathSegments(&user, &repo); err != nil {
 		return nil, nil, err
 	}
@@ -82,7 +68,7 @@ func (c *Client) CreateDeployKey(user, repo string, opt CreateKeyOption) (*Deplo
 	if err != nil {
 		return nil, nil, err
 	}
-	key := new(DeployKey)
+	key := new(models.DeployKey)
 	resp, err := c.getParsedResponse("POST", fmt.Sprintf("/repos/%s/%s/keys", user, repo), jsonHeader, bytes.NewReader(body), key)
 	return key, resp, err
 }
