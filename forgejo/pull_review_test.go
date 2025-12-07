@@ -190,7 +190,7 @@ func TestPullReview(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func preparePullReviewTest(t *testing.T, c *Client, repoName string) (*models.Repository, *PullRequest, *models.User, *models.User, bool) {
+func preparePullReviewTest(t *testing.T, c *Client, repoName string) (*models.Repository, *models.PullRequest, *models.User, *models.User, bool) {
 	repo, err := createTestRepo(t, repoName, c)
 	if !assert.NoError(t, err) { //nolint
 		return nil, nil, nil, nil, false
@@ -235,5 +235,5 @@ func preparePullReviewTest(t *testing.T, c *Client, repoName string) (*models.Re
 	})
 	require.NoError(t, err)
 
-	return repo, pull, pullSubmitter, reviewer, pull.Poster.ID == pullSubmitter.ID
+	return repo, pull, pullSubmitter, reviewer, pull.User.ID == pullSubmitter.ID
 }

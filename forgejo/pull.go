@@ -20,65 +20,6 @@ import (
 	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
-// PRBranchInfo information about a branch
-type PRBranchInfo struct {
-	Name       string             `json:"label"`
-	Ref        string             `json:"ref"`
-	Sha        string             `json:"sha"`
-	RepoID     int64              `json:"repo_id"`
-	Repository *models.Repository `json:"repo"`
-}
-
-// PullRequest represents a pull request
-type PullRequest struct {
-	ID        int64          `json:"id"`
-	URL       string         `json:"url"`
-	Index     int64          `json:"number"`
-	Poster    *models.User   `json:"user"`
-	Title     string         `json:"title"`
-	Body      string         `json:"body"`
-	Labels    []*Label       `json:"labels"`
-	Milestone *Milestone     `json:"milestone"`
-	Assignee  *models.User   `json:"assignee"`
-	Assignees []*models.User `json:"assignees"`
-	State     StateType      `json:"state"`
-	IsLocked  bool           `json:"is_locked"`
-	Comments  int            `json:"comments"`
-
-	HTMLURL  string `json:"html_url"`
-	DiffURL  string `json:"diff_url"`
-	PatchURL string `json:"patch_url"`
-
-	Mergeable           bool         `json:"mergeable"`
-	HasMerged           bool         `json:"merged"`
-	Merged              *time.Time   `json:"merged_at"`
-	MergedCommitID      *string      `json:"merge_commit_sha"`
-	MergedBy            *models.User `json:"merged_by"`
-	AllowMaintainerEdit bool         `json:"allow_maintainer_edit"`
-
-	Base      *PRBranchInfo `json:"base"`
-	Head      *PRBranchInfo `json:"head"`
-	MergeBase string        `json:"merge_base"`
-
-	Deadline *time.Time `json:"due_date"`
-	Created  *time.Time `json:"created_at"`
-	Updated  *time.Time `json:"updated_at"`
-	Closed   *time.Time `json:"closed_at"`
-}
-
-// ChangedFile is a changed file in a diff
-type ChangedFile struct {
-	Filename         string `json:"filename"`
-	PreviousFilename string `json:"previous_filename"`
-	Status           string `json:"status"`
-	Additions        int    `json:"additions"`
-	Deletions        int    `json:"deletions"`
-	Changes          int    `json:"changes"`
-	HTMLURL          string `json:"html_url"`
-	ContentsURL      string `json:"contents_url"`
-	RawURL           string `json:"raw_url"`
-}
-
 // ListPullRequestsOptions options for listing pull requests
 type ListPullRequestsOptions struct {
 	ListOptions
@@ -118,12 +59,12 @@ func (opt *ListPullRequestsOptions) QueryEncode() string {
 }
 
 // ListRepoPullRequests list PRs of one repository
-func (c *Client) ListRepoPullRequests(owner, repo string, opt ListPullRequestsOptions) ([]*PullRequest, *Response, error) {
+func (c *Client) ListRepoPullRequests(owner, repo string, opt ListPullRequestsOptions) ([]*models.PullRequest, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
 	opt.setDefaults()
-	prs := make([]*PullRequest, 0, opt.PageSize)
+	prs := make([]*models.PullRequest, 0, opt.PageSize)
 
 	link, _ := url.Parse(fmt.Sprintf("/repos/%s/%s/pulls", owner, repo))
 	link.RawQuery = opt.QueryEncode()
@@ -139,11 +80,11 @@ func (c *Client) ListRepoPullRequests(owner, repo string, opt ListPullRequestsOp
 }
 
 // GetPullRequest get information of one PR
-func (c *Client) GetPullRequest(owner, repo string, index int64) (*PullRequest, *Response, error) {
+func (c *Client) GetPullRequest(owner, repo string, index int64) (*models.PullRequest, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
-	pr := new(PullRequest)
+	pr := new(models.PullRequest)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/pulls/%d", owner, repo, index), nil, nil, pr)
 	if c.checkServerVersionGreaterThanOrEqual(version1_14_0) != nil {
 		if err := fixPullHeadSha(c, pr); err != nil {
@@ -154,11 +95,11 @@ func (c *Client) GetPullRequest(owner, repo string, index int64) (*PullRequest, 
 }
 
 // GetPullRequestByBaseAndHead finds a pull request by base and head
-func (c *Client) GetPullRequestByBaseAndHead(owner, repo, base, head string) (*PullRequest, *Response, error) {
+func (c *Client) GetPullRequestByBaseAndHead(owner, repo, base, head string) (*models.PullRequest, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo, &base, &head); err != nil {
 		return nil, nil, err
 	}
-	pr := new(PullRequest)
+	pr := new(models.PullRequest)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/pulls/%s/%s", owner, repo, base, head), nil, nil, pr)
 	if c.checkServerVersionGreaterThanOrEqual(version1_14_0) != nil {
 		if err := fixPullHeadSha(c, pr); err != nil {
@@ -182,7 +123,7 @@ type CreatePullRequestOption struct {
 }
 
 // CreatePullRequest create pull request with options
-func (c *Client) CreatePullRequest(owner, repo string, opt CreatePullRequestOption) (*PullRequest, *Response, error) {
+func (c *Client) CreatePullRequest(owner, repo string, opt CreatePullRequestOption) (*models.PullRequest, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
@@ -190,7 +131,7 @@ func (c *Client) CreatePullRequest(owner, repo string, opt CreatePullRequestOpti
 	if err != nil {
 		return nil, nil, err
 	}
-	pr := new(PullRequest)
+	pr := new(models.PullRequest)
 	resp, err := c.getParsedResponse("POST",
 		fmt.Sprintf("/repos/%s/%s/pulls", owner, repo),
 		jsonHeader, bytes.NewReader(body), pr)
@@ -226,7 +167,7 @@ func (opt EditPullRequestOption) Validate(c *Client) error {
 }
 
 // EditPullRequest modify pull request with PR id and options
-func (c *Client) EditPullRequest(owner, repo string, index int64, opt EditPullRequestOption) (*PullRequest, *Response, error) {
+func (c *Client) EditPullRequest(owner, repo string, index int64, opt EditPullRequestOption) (*models.PullRequest, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
@@ -237,7 +178,7 @@ func (c *Client) EditPullRequest(owner, repo string, index int64, opt EditPullRe
 	if err != nil {
 		return nil, nil, err
 	}
-	pr := new(PullRequest)
+	pr := new(models.PullRequest)
 	resp, err := c.getParsedResponse("PATCH",
 		fmt.Sprintf("/repos/%s/%s/pulls/%d", owner, repo, index),
 		jsonHeader, bytes.NewReader(body), pr)
@@ -369,11 +310,11 @@ func (c *Client) ListPullRequestCommits(owner, repo string, index int64, opt Lis
 // When no head sha is available, this is because the branch got deleted in the base repo.
 // pr.Head.Ref points in this case not to the head repo branch name, but the base repo ref,
 // which stays available to resolve the commit sha. This is fixed for forgejo >= 1.14.0
-func fixPullHeadSha(client *Client, pr *PullRequest) error {
-	if pr.Base != nil && pr.Base.Repository != nil && pr.Base.Repository.Owner != nil &&
+func fixPullHeadSha(client *Client, pr *models.PullRequest) error {
+	if pr.Base != nil && pr.Base.Repo != nil && pr.Base.Repo.Owner != nil &&
 		pr.Head != nil && pr.Head.Ref != "" && pr.Head.Sha == "" {
-		owner := pr.Base.Repository.Owner.UserName
-		repo := pr.Base.Repository.Name
+		owner := pr.Base.Repo.Owner.UserName
+		repo := pr.Base.Repo.Name
 		refs, _, err := client.GetRepoRefs(owner, repo, pr.Head.Ref)
 		if err != nil {
 			return err
@@ -391,13 +332,13 @@ type ListPullRequestFilesOptions struct {
 }
 
 // ListPullRequestFiles list changed files for a pull request
-func (c *Client) ListPullRequestFiles(owner, repo string, index int64, opt ListPullRequestFilesOptions) ([]*ChangedFile, *Response, error) {
+func (c *Client) ListPullRequestFiles(owner, repo string, index int64, opt ListPullRequestFilesOptions) ([]*models.ChangedFile, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
 	link, _ := url.Parse(fmt.Sprintf("/repos/%s/%s/pulls/%d/files", owner, repo, index))
 	opt.setDefaults()
-	files := make([]*ChangedFile, 0, opt.PageSize)
+	files := make([]*models.ChangedFile, 0, opt.PageSize)
 	link.RawQuery = opt.getURLQuery().Encode()
 	resp, err := c.getParsedResponse("GET", link.String(), nil, nil, &files)
 	return files, resp, err

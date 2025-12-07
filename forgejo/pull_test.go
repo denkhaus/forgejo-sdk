@@ -133,7 +133,7 @@ func TestPull(t *testing.T) {
 
 	// Guard against nil before dereferencing MergedCommitID
 	if assert.NotNil(t, pr.MergedCommitID, "MergedCommitID should not be nil for merged PR") {
-		assert.Len(t, *pr.MergedCommitID, 40, "MergedCommitID should be a 40-char SHA1")
+		assert.Len(t, pr.MergedCommitID, 40, "MergedCommitID should be a 40-char SHA1")
 	}
 
 	// test conflict pull
@@ -153,7 +153,7 @@ func TestPull(t *testing.T) {
 	assert.False(t, merged)
 	pr, _, err = c.GetPullRequest(user.UserName, repoName, pullConflict.Index)
 	require.NoError(t, err)
-	assert.Nil(t, pr.MergedCommitID)
+	assert.Empty(t, pr.MergedCommitID)
 	assert.False(t, pr.HasMerged)
 
 	state := StateClosed
