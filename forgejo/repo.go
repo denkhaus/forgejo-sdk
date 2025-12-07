@@ -20,39 +20,6 @@ import (
 	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
-// Permission represents a set of permissions
-type Permission struct {
-	Admin bool `json:"admin"`
-	Push  bool `json:"push"`
-	Pull  bool `json:"pull"`
-}
-
-// InternalTracker represents settings for internal tracker
-type InternalTracker struct {
-	// Enable time tracking (Built-in issue tracker)
-	EnableTimeTracker bool `json:"enable_time_tracker"`
-	// Let only contributors track time (Built-in issue tracker)
-	AllowOnlyContributorsToTrackTime bool `json:"allow_only_contributors_to_track_time"`
-	// Enable dependencies for issues and pull requests (Built-in issue tracker)
-	EnableIssueDependencies bool `json:"enable_issue_dependencies"`
-}
-
-// ExternalTracker represents settings for external tracker
-type ExternalTracker struct {
-	// URL of external issue tracker.
-	ExternalTrackerURL string `json:"external_tracker_url"`
-	// External Issue Tracker URL Format. Use the placeholders {user}, {repo} and {index} for the username, repository name and issue index.
-	ExternalTrackerFormat string `json:"external_tracker_format"`
-	// External Issue Tracker Number Format, either `numeric` or `alphanumeric`
-	ExternalTrackerStyle string `json:"external_tracker_style"`
-}
-
-// ExternalWiki represents setting for external wiki
-type ExternalWiki struct {
-	// URL of external wiki.
-	ExternalWikiURL string `json:"external_wiki_url"`
-}
-
 // RepoType represent repo type
 type RepoType string
 
@@ -366,13 +333,13 @@ type EditRepoOption struct {
 	// either `true` to enable issues for this repository or `false` to disable them.
 	HasIssues *bool `json:"has_issues,omitempty"`
 	// set this structure to configure internal issue tracker (requires has_issues)
-	InternalTracker *InternalTracker `json:"internal_tracker,omitempty"`
+	InternalTracker *models.InternalTracker `json:"internal_tracker,omitempty"`
 	// set this structure to use external issue tracker (requires has_issues)
-	ExternalTracker *ExternalTracker `json:"external_tracker,omitempty"`
+	ExternalTracker *models.ExternalTracker `json:"external_tracker,omitempty"`
 	// either `true` to enable the wiki for this repository or `false` to disable it.
 	HasWiki *bool `json:"has_wiki,omitempty"`
 	// set this structure to use external wiki instead of internal (requires has_wiki)
-	ExternalWiki *ExternalWiki `json:"external_wiki,omitempty"`
+	ExternalWiki *models.ExternalWiki `json:"external_wiki,omitempty"`
 	// sets the default branch for this repository.
 	DefaultBranch *string `json:"default_branch,omitempty"`
 	// either `true` to allow pull requests, or `false` to prevent pull request.
