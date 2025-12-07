@@ -14,19 +14,9 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
-	"time"
-)
 
-// Attachment a generic attachment
-type Attachment struct {
-	ID            int64     `json:"id"`
-	Name          string    `json:"name"`
-	Size          int64     `json:"size"`
-	DownloadCount int64     `json:"download_count"`
-	Created       time.Time `json:"created_at"`
-	UUID          string    `json:"uuid"`
-	DownloadURL   string    `json:"browser_download_url"`
-}
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
+)
 
 // ListReleaseAttachmentsOptions options for listing release's attachments
 type ListReleaseAttachmentsOptions struct {
@@ -34,12 +24,12 @@ type ListReleaseAttachmentsOptions struct {
 }
 
 // ListReleaseAttachments list release's attachments
-func (c *Client) ListReleaseAttachments(user, repo string, release int64, opt ListReleaseAttachmentsOptions) ([]*Attachment, *Response, error) {
+func (c *Client) ListReleaseAttachments(user, repo string, release int64, opt ListReleaseAttachmentsOptions) ([]*models.Attachment, *Response, error) {
 	if err := escapeValidatePathSegments(&user, &repo); err != nil {
 		return nil, nil, err
 	}
 	opt.setDefaults()
-	attachments := make([]*Attachment, 0, opt.PageSize)
+	attachments := make([]*models.Attachment, 0, opt.PageSize)
 	resp, err := c.getParsedResponse("GET",
 		fmt.Sprintf("/repos/%s/%s/releases/%d/assets?%s", user, repo, release, opt.getURLQuery().Encode()),
 		nil, nil, &attachments)
@@ -47,11 +37,11 @@ func (c *Client) ListReleaseAttachments(user, repo string, release int64, opt Li
 }
 
 // GetReleaseAttachment returns the requested attachment
-func (c *Client) GetReleaseAttachment(user, repo string, release, id int64) (*Attachment, *Response, error) {
+func (c *Client) GetReleaseAttachment(user, repo string, release, id int64) (*models.Attachment, *Response, error) {
 	if err := escapeValidatePathSegments(&user, &repo); err != nil {
 		return nil, nil, err
 	}
-	a := new(Attachment)
+	a := new(models.Attachment)
 	resp, err := c.getParsedResponse("GET",
 		fmt.Sprintf("/repos/%s/%s/releases/%d/assets/%d", user, repo, release, id),
 		nil, nil, &a)
@@ -59,7 +49,7 @@ func (c *Client) GetReleaseAttachment(user, repo string, release, id int64) (*At
 }
 
 // CreateReleaseAttachment creates an attachment for the given release
-func (c *Client) CreateReleaseAttachment(user, repo string, release int64, file io.Reader, filename string) (*Attachment, *Response, error) {
+func (c *Client) CreateReleaseAttachment(user, repo string, release int64, file io.Reader, filename string) (*models.Attachment, *Response, error) {
 	if err := escapeValidatePathSegments(&user, &repo); err != nil {
 		return nil, nil, err
 	}
@@ -79,20 +69,15 @@ func (c *Client) CreateReleaseAttachment(user, repo string, release int64, file 
 	}
 
 	// Send request
-	attachment := new(Attachment)
+	attachment := new(models.Attachment)
 	resp, err := c.getParsedResponse("POST",
 		fmt.Sprintf("/repos/%s/%s/releases/%d/assets", user, repo, release),
 		http.Header{"Content-Type": []string{writer.FormDataContentType()}}, body, &attachment)
 	return attachment, resp, err
 }
 
-// EditAttachmentOptions options for editing attachments
-type EditAttachmentOptions struct {
-	Name string `json:"name"`
-}
-
 // EditReleaseAttachment updates the given attachment with the given options
-func (c *Client) EditReleaseAttachment(user, repo string, release, attachment int64, form EditAttachmentOptions) (*Attachment, *Response, error) {
+func (c *Client) EditReleaseAttachment(user, repo string, release, attachment int64, form models.EditAttachmentOptions) (*models.Attachment, *Response, error) {
 	if err := escapeValidatePathSegments(&user, &repo); err != nil {
 		return nil, nil, err
 	}
@@ -100,7 +85,7 @@ func (c *Client) EditReleaseAttachment(user, repo string, release, attachment in
 	if err != nil {
 		return nil, nil, err
 	}
-	attach := new(Attachment)
+	attach := new(models.Attachment)
 	resp, err := c.getParsedResponse("PATCH", fmt.Sprintf("/repos/%s/%s/releases/%d/assets/%d", user, repo, release, attachment), jsonHeader, bytes.NewReader(body), attach)
 	return attach, resp, err
 }
