@@ -14,17 +14,9 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
-)
 
-// Label a label to an issue or a pr
-type Label struct {
-	ID   int64  `json:"id"`
-	Name string `json:"name"`
-	// example: 00aabb
-	Color       string `json:"color"`
-	Description string `json:"description"`
-	URL         string `json:"url"`
-}
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
+)
 
 // ListLabelsOptions options for listing repository's labels
 type ListLabelsOptions struct {
@@ -32,22 +24,22 @@ type ListLabelsOptions struct {
 }
 
 // ListRepoLabels list labels of one repository
-func (c *Client) ListRepoLabels(owner, repo string, opt ListLabelsOptions) ([]*Label, *Response, error) {
+func (c *Client) ListRepoLabels(owner, repo string, opt ListLabelsOptions) ([]*models.Label, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
 	opt.setDefaults()
-	labels := make([]*Label, 0, opt.PageSize)
+	labels := make([]*models.Label, 0, opt.PageSize)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/labels?%s", owner, repo, opt.getURLQuery().Encode()), nil, nil, &labels)
 	return labels, resp, err
 }
 
 // GetRepoLabel get one label of repository by repo it
-func (c *Client) GetRepoLabel(owner, repo string, id int64) (*Label, *Response, error) {
+func (c *Client) GetRepoLabel(owner, repo string, id int64) (*models.Label, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
-	label := new(Label)
+	label := new(models.Label)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/labels/%d", owner, repo, id), nil, nil, label)
 	return label, resp, err
 }
@@ -76,7 +68,7 @@ func (opt CreateLabelOption) Validate() error {
 }
 
 // CreateLabel create one label of repository
-func (c *Client) CreateLabel(owner, repo string, opt CreateLabelOption) (*Label, *Response, error) {
+func (c *Client) CreateLabel(owner, repo string, opt CreateLabelOption) (*models.Label, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
@@ -92,7 +84,7 @@ func (c *Client) CreateLabel(owner, repo string, opt CreateLabelOption) (*Label,
 	if err != nil {
 		return nil, nil, err
 	}
-	label := new(Label)
+	label := new(models.Label)
 	resp, err := c.getParsedResponse("POST",
 		fmt.Sprintf("/repos/%s/%s/labels", owner, repo),
 		jsonHeader, bytes.NewReader(body), label)
@@ -126,7 +118,7 @@ func (opt EditLabelOption) Validate() error {
 }
 
 // EditLabel modify one label with options
-func (c *Client) EditLabel(owner, repo string, id int64, opt EditLabelOption) (*Label, *Response, error) {
+func (c *Client) EditLabel(owner, repo string, id int64, opt EditLabelOption) (*models.Label, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
@@ -137,7 +129,7 @@ func (c *Client) EditLabel(owner, repo string, id int64, opt EditLabelOption) (*
 	if err != nil {
 		return nil, nil, err
 	}
-	label := new(Label)
+	label := new(models.Label)
 	resp, err := c.getParsedResponse("PATCH", fmt.Sprintf("/repos/%s/%s/labels/%d", owner, repo, id), jsonHeader, bytes.NewReader(body), label)
 	return label, resp, err
 }
@@ -152,23 +144,17 @@ func (c *Client) DeleteLabel(owner, repo string, id int64) (*Response, error) {
 }
 
 // GetIssueLabels get labels of one issue via issue id
-func (c *Client) GetIssueLabels(owner, repo string, index int64, opts ListLabelsOptions) ([]*Label, *Response, error) {
+func (c *Client) GetIssueLabels(owner, repo string, index int64, opts ListLabelsOptions) ([]*models.Label, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
-	labels := make([]*Label, 0, 5)
+	labels := make([]*models.Label, 0, 5)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/issues/%d/labels?%s", owner, repo, index, opts.getURLQuery().Encode()), nil, nil, &labels)
 	return labels, resp, err
 }
 
-// IssueLabelsOption a collection of labels
-type IssueLabelsOption struct {
-	// list of label IDs
-	Labels []int64 `json:"labels"`
-}
-
 // AddIssueLabels add one or more labels to one issue
-func (c *Client) AddIssueLabels(owner, repo string, index int64, opt IssueLabelsOption) ([]*Label, *Response, error) {
+func (c *Client) AddIssueLabels(owner, repo string, index int64, opt models.IssueLabelsOption) ([]*models.Label, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
@@ -176,13 +162,13 @@ func (c *Client) AddIssueLabels(owner, repo string, index int64, opt IssueLabels
 	if err != nil {
 		return nil, nil, err
 	}
-	var labels []*Label
+	var labels []*models.Label
 	resp, err := c.getParsedResponse("POST", fmt.Sprintf("/repos/%s/%s/issues/%d/labels", owner, repo, index), jsonHeader, bytes.NewReader(body), &labels)
 	return labels, resp, err
 }
 
 // ReplaceIssueLabels replace old labels of issue with new labels
-func (c *Client) ReplaceIssueLabels(owner, repo string, index int64, opt IssueLabelsOption) ([]*Label, *Response, error) {
+func (c *Client) ReplaceIssueLabels(owner, repo string, index int64, opt models.IssueLabelsOption) ([]*models.Label, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
@@ -190,7 +176,7 @@ func (c *Client) ReplaceIssueLabels(owner, repo string, index int64, opt IssueLa
 	if err != nil {
 		return nil, nil, err
 	}
-	var labels []*Label
+	var labels []*models.Label
 	resp, err := c.getParsedResponse("PUT", fmt.Sprintf("/repos/%s/%s/issues/%d/labels", owner, repo, index), jsonHeader, bytes.NewReader(body), &labels)
 	return labels, resp, err
 }

@@ -12,6 +12,7 @@ import (
 	"log"
 	"testing"
 
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -77,7 +78,7 @@ func TestLabels(t *testing.T) {
 		Description: OptionalString("blueish"),
 	})
 	require.NoError(t, err)
-	assert.EqualValues(t, &Label{
+	assert.EqualValues(t, &models.Label{
 		ID:          labelTwo.ID,
 		Name:        labelTwo.Name,
 		Color:       "0e0175",
@@ -94,10 +95,10 @@ func TestLabels(t *testing.T) {
 	assert.Len(t, issueLabels, 1)
 	assert.EqualValues(t, label, issueLabels[0])
 
-	_, _, err = c.AddIssueLabels(repo.Owner.UserName, repo.Name, issueIndex, IssueLabelsOption{Labels: []int64{labels[0].ID}})
+	_, _, err = c.AddIssueLabels(repo.Owner.UserName, repo.Name, issueIndex, models.IssueLabelsOption{Labels: []any{labels[0].ID}})
 	require.NoError(t, err)
 
-	issueLabels, _, err = c.AddIssueLabels(repo.Owner.UserName, repo.Name, issueIndex, IssueLabelsOption{Labels: []int64{labels[1].ID, labels[2].ID}})
+	issueLabels, _, err = c.AddIssueLabels(repo.Owner.UserName, repo.Name, issueIndex, models.IssueLabelsOption{Labels: []any{labels[1].ID, labels[2].ID}})
 	require.NoError(t, err)
 	assert.Len(t, issueLabels, 3)
 	assert.EqualValues(t, labels, issueLabels)
@@ -105,7 +106,7 @@ func TestLabels(t *testing.T) {
 	labels, _, _ = c.ListRepoLabels(repo.Owner.UserName, repo.Name, ListLabelsOptions{})
 	assert.Len(t, labels, 11)
 
-	issueLabels, _, err = c.ReplaceIssueLabels(repo.Owner.UserName, repo.Name, issueIndex, IssueLabelsOption{Labels: []int64{labels[0].ID, labels[1].ID}})
+	issueLabels, _, err = c.ReplaceIssueLabels(repo.Owner.UserName, repo.Name, issueIndex, models.IssueLabelsOption{Labels: []any{labels[0].ID, labels[1].ID}})
 	require.NoError(t, err)
 	assert.Len(t, issueLabels, 2)
 
