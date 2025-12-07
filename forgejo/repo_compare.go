@@ -14,14 +14,8 @@ import (
 	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
-// Compare represents a comparison between two commits.
-type Compare struct {
-	TotalCommits int              `json:"total_commits"` // Total number of commits in the comparison.
-	Commits      []*models.Commit `json:"commits"`       // List of commits in the comparison.
-}
-
 // CompareCommits compares two commits in a repository.
-func (c *Client) CompareCommits(user, repo, prev, current string) (*Compare, *Response, error) {
+func (c *Client) CompareCommits(user, repo, prev, current string) (*models.Compare, *Response, error) {
 	if err := c.checkServerVersionGreaterThanOrEqual(version1_22_0); err != nil {
 		return nil, nil, err
 	}
@@ -31,7 +25,7 @@ func (c *Client) CompareCommits(user, repo, prev, current string) (*Compare, *Re
 
 	basehead := fmt.Sprintf("%s...%s", prev, current)
 
-	apiResp := new(Compare)
+	apiResp := new(models.Compare)
 	resp, err := c.getParsedResponse(
 		"GET",
 		fmt.Sprintf("/repos/%s/%s/compare/%s", user, repo, basehead),
