@@ -85,7 +85,7 @@ func TestRepoBranchProtection(t *testing.T) {
 	assert.Empty(t, bpl)
 
 	// CreateBranchProtection
-	bp, _, err := c.CreateBranchProtection(repo.Owner.UserName, repo.Name, CreateBranchProtectionOption{
+	bp, _, err := c.CreateBranchProtection(repo.Owner.UserName, repo.Name, models.CreateBranchProtectionOption{
 		BranchName:              "main",
 		EnablePush:              true,
 		EnablePushWhitelist:     true,
@@ -101,7 +101,7 @@ func TestRepoBranchProtection(t *testing.T) {
 	assert.True(t, bp.EnablePushWhitelist)
 	assert.EqualValues(t, []string{"test01"}, bp.PushWhitelistUsernames)
 
-	bp, _, err = c.CreateBranchProtection(repo.Owner.UserName, repo.Name, CreateBranchProtectionOption{
+	bp, _, err = c.CreateBranchProtection(repo.Owner.UserName, repo.Name, models.CreateBranchProtectionOption{
 		BranchName:              "update",
 		EnablePush:              false,
 		EnableMergeWhitelist:    true,
@@ -120,12 +120,12 @@ func TestRepoBranchProtection(t *testing.T) {
 	assert.EqualValues(t, bpl[0], bp)
 
 	// EditBranchProtection
-	bp, _, err = c.EditBranchProtection(repo.Owner.UserName, repo.Name, bpl[0].BranchName, EditBranchProtectionOption{
-		EnablePush:                  OptionalBool(false),
-		EnablePushWhitelist:         OptionalBool(false),
+	bp, _, err = c.EditBranchProtection(repo.Owner.UserName, repo.Name, bpl[0].BranchName, models.EditBranchProtectionOption{
+		EnablePush:                  false,
+		EnablePushWhitelist:         false,
 		PushWhitelistUsernames:      nil,
-		RequiredApprovals:           OptionalInt64(1),
-		EnableApprovalsWhitelist:    OptionalBool(true),
+		RequiredApprovals:           1,
+		EnableApprovalsWhitelist:    true,
 		ApprovalsWhitelistUsernames: []string{"test01"},
 	})
 	require.NoError(t, err)
