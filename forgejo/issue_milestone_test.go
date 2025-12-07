@@ -13,6 +13,7 @@ import (
 	"testing"
 	"time"
 
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -25,7 +26,7 @@ func TestMilestones(t *testing.T) {
 	now := time.Now()
 	future := time.Unix(1896134400, 0) // 2030-02-01
 	closed := "closed"
-	sClosed := StateClosed
+	sClosed := models.StateType(StateClosed)
 
 	// CreateMilestone 4x
 	m1, _, err := c.CreateMilestone(repo.Owner.UserName, repo.Name, CreateMilestoneOption{Title: "v1.0", Description: "First Version", Deadline: &now})
@@ -49,13 +50,13 @@ func TestMilestones(t *testing.T) {
 	ml, _, err := c.ListRepoMilestones(repo.Owner.UserName, repo.Name, ListMilestoneOption{})
 	require.NoError(t, err)
 	assert.Len(t, ml, 3)
-	ml, _, err = c.ListRepoMilestones(repo.Owner.UserName, repo.Name, ListMilestoneOption{State: StateClosed})
+	ml, _, err = c.ListRepoMilestones(repo.Owner.UserName, repo.Name, ListMilestoneOption{State: models.StateType(StateClosed)})
 	require.NoError(t, err)
 	assert.Len(t, ml, 1)
-	ml, _, err = c.ListRepoMilestones(repo.Owner.UserName, repo.Name, ListMilestoneOption{State: StateAll})
+	ml, _, err = c.ListRepoMilestones(repo.Owner.UserName, repo.Name, ListMilestoneOption{State: models.StateType(StateAll)})
 	require.NoError(t, err)
 	assert.Len(t, ml, 3)
-	ml, _, err = c.ListRepoMilestones(repo.Owner.UserName, repo.Name, ListMilestoneOption{State: StateAll, Name: "V3.0"})
+	ml, _, err = c.ListRepoMilestones(repo.Owner.UserName, repo.Name, ListMilestoneOption{State: models.StateType(StateAll), Name: "V3.0"})
 	require.NoError(t, err)
 	assert.Len(t, ml, 1)
 	assert.EqualValues(t, "v3.0", ml[0].Title)
