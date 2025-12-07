@@ -12,35 +12,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
-
-// Tag represents a repository tag
-type Tag struct {
-	Name       string      `json:"name"`
-	Message    string      `json:"message"`
-	ID         string      `json:"id"`
-	Commit     *CommitMeta `json:"commit"`
-	ZipballURL string      `json:"zipball_url"`
-	TarballURL string      `json:"tarball_url"`
-}
-
-// AnnotatedTag represents an annotated tag
-type AnnotatedTag struct {
-	Tag          string                     `json:"tag"`
-	SHA          string                     `json:"sha"`
-	URL          string                     `json:"url"`
-	Message      string                     `json:"message"`
-	Tagger       *CommitUser                `json:"tagger"`
-	Object       *AnnotatedTagObject        `json:"object"`
-	Verification *PayloadCommitVerification `json:"verification"`
-}
-
-// AnnotatedTagObject contains meta information of the tag object
-type AnnotatedTagObject struct {
-	Type string `json:"type"`
-	URL  string `json:"url"`
-	SHA  string `json:"sha"`
-}
 
 // ListRepoTagsOptions options for listing a repository's tags
 type ListRepoTagsOptions struct {
@@ -48,38 +22,38 @@ type ListRepoTagsOptions struct {
 }
 
 // ListRepoTags list all the branches of one repository
-func (c *Client) ListRepoTags(user, repo string, opt ListRepoTagsOptions) ([]*Tag, *Response, error) {
+func (c *Client) ListRepoTags(user, repo string, opt ListRepoTagsOptions) ([]*models.Tag, *Response, error) {
 	if err := escapeValidatePathSegments(&user, &repo); err != nil {
 		return nil, nil, err
 	}
 	opt.setDefaults()
-	tags := make([]*Tag, 0, opt.PageSize)
+	tags := make([]*models.Tag, 0, opt.PageSize)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/tags?%s", user, repo, opt.getURLQuery().Encode()), nil, nil, &tags)
 	return tags, resp, err
 }
 
 // GetTag get the tag of a repository
-func (c *Client) GetTag(user, repo, tag string) (*Tag, *Response, error) {
+func (c *Client) GetTag(user, repo, tag string) (*models.Tag, *Response, error) {
 	if err := c.checkServerVersionGreaterThanOrEqual(version1_15_0); err != nil {
 		return nil, nil, err
 	}
 	if err := escapeValidatePathSegments(&user, &repo, &tag); err != nil {
 		return nil, nil, err
 	}
-	t := new(Tag)
+	t := new(models.Tag)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/tags/%s", user, repo, tag), nil, nil, &t)
 	return t, resp, err
 }
 
 // GetAnnotatedTag get the tag object of an annotated tag (not lightweight tags) of a repository
-func (c *Client) GetAnnotatedTag(user, repo, sha string) (*AnnotatedTag, *Response, error) {
+func (c *Client) GetAnnotatedTag(user, repo, sha string) (*models.AnnotatedTag, *Response, error) {
 	if err := c.checkServerVersionGreaterThanOrEqual(version1_15_0); err != nil {
 		return nil, nil, err
 	}
 	if err := escapeValidatePathSegments(&user, &repo, &sha); err != nil {
 		return nil, nil, err
 	}
-	t := new(AnnotatedTag)
+	t := new(models.AnnotatedTag)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/git/tags/%s", user, repo, sha), nil, nil, &t)
 	return t, resp, err
 }
@@ -100,7 +74,7 @@ func (opt CreateTagOption) Validate() error {
 }
 
 // CreateTag create a new git tag in a repository
-func (c *Client) CreateTag(user, repo string, opt CreateTagOption) (*Tag, *Response, error) {
+func (c *Client) CreateTag(user, repo string, opt CreateTagOption) (*models.Tag, *Response, error) {
 	if err := c.checkServerVersionGreaterThanOrEqual(version1_15_0); err != nil {
 		return nil, nil, err
 	}
@@ -114,7 +88,7 @@ func (c *Client) CreateTag(user, repo string, opt CreateTagOption) (*Tag, *Respo
 	if err != nil {
 		return nil, nil, err
 	}
-	t := new(Tag)
+	t := new(models.Tag)
 	resp, err := c.getParsedResponse("POST", fmt.Sprintf("/repos/%s/%s/tags", user, repo), jsonHeader, bytes.NewReader(body), &t)
 	return t, resp, err
 }
