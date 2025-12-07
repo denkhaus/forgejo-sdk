@@ -124,15 +124,6 @@ func (c *Client) SetPublicOrgMembership(org, user string, visible bool) (*Respon
 	}
 }
 
-// // OrgPermissions represents the permissions for an user in an organization
-// type OrgPermissions struct {
-// 	CanCreateRepository bool `json:"can_create_repository"`
-// 	CanRead             bool `json:"can_read"`
-// 	CanWrite            bool `json:"can_write"`
-// 	IsAdmin             bool `json:"is_admin"`
-// 	IsOwner             bool `json:"is_owner"`
-// }
-
 // GetOrgPermissions returns user permissions for specific organization.
 func (c *Client) GetOrgPermissions(org, user string) (*models.OrganizationPermissions, *Response, error) {
 	if err := escapeValidatePathSegments(&org, &user); err != nil {
