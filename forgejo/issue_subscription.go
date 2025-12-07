@@ -62,14 +62,14 @@ func (c *Client) DeleteIssueSubscription(owner, repo string, index int64, user s
 }
 
 // CheckIssueSubscription check if current user is subscribed to an issue
-func (c *Client) CheckIssueSubscription(owner, repo string, index int64) (*WatchInfo, *Response, error) {
+func (c *Client) CheckIssueSubscription(owner, repo string, index int64) (*models.WatchInfo, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
 	if err := c.checkServerVersionGreaterThanOrEqual(version1_12_0); err != nil {
 		return nil, nil, err
 	}
-	wi := new(WatchInfo)
+	wi := new(models.WatchInfo)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/issues/%d/subscriptions/check", owner, repo, index), nil, nil, wi)
 	return wi, resp, err
 }

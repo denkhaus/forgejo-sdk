@@ -11,20 +11,9 @@ package forgejo
 import (
 	"fmt"
 	"net/http"
-	"time"
 
 	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
-
-// WatchInfo represents an API watch status of one repository
-type WatchInfo struct {
-	Subscribed    bool        `json:"subscribed"`
-	Ignored       bool        `json:"ignored"`
-	Reason        interface{} `json:"reason"`
-	CreatedAt     time.Time   `json:"created_at"`
-	URL           string      `json:"url"`
-	RepositoryURL string      `json:"repository_url"`
-}
 
 // GetWatchedRepos list all the watched repos of user
 func (c *Client) GetWatchedRepos(user string) ([]*models.Repository, *Response, error) {
