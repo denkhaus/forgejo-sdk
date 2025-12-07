@@ -12,14 +12,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-)
 
-// GitHook represents a Git repository hook
-type GitHook struct {
-	Name     string `json:"name"`
-	IsActive bool   `json:"is_active"`
-	Content  string `json:"content,omitempty"`
-}
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
+)
 
 // ListRepoGitHooksOptions options for listing repository's githooks
 type ListRepoGitHooksOptions struct {
@@ -27,33 +22,28 @@ type ListRepoGitHooksOptions struct {
 }
 
 // ListRepoGitHooks list all the Git hooks of one repository
-func (c *Client) ListRepoGitHooks(user, repo string, opt ListRepoGitHooksOptions) ([]*GitHook, *Response, error) {
+func (c *Client) ListRepoGitHooks(user, repo string, opt ListRepoGitHooksOptions) ([]*models.GitHook, *Response, error) {
 	if err := escapeValidatePathSegments(&user, &repo); err != nil {
 		return nil, nil, err
 	}
 	opt.setDefaults()
-	hooks := make([]*GitHook, 0, opt.PageSize)
+	hooks := make([]*models.GitHook, 0, opt.PageSize)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/hooks/git?%s", user, repo, opt.getURLQuery().Encode()), nil, nil, &hooks)
 	return hooks, resp, err
 }
 
 // GetRepoGitHook get a Git hook of a repository
-func (c *Client) GetRepoGitHook(user, repo, id string) (*GitHook, *Response, error) {
+func (c *Client) GetRepoGitHook(user, repo, id string) (*models.GitHook, *Response, error) {
 	if err := escapeValidatePathSegments(&user, &repo, &id); err != nil {
 		return nil, nil, err
 	}
-	h := new(GitHook)
+	h := new(models.GitHook)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/hooks/git/%s", user, repo, id), nil, nil, h)
 	return h, resp, err
 }
 
-// EditGitHookOption options when modifying one Git hook
-type EditGitHookOption struct {
-	Content string `json:"content"`
-}
-
 // EditRepoGitHook modify one Git hook of a repository
-func (c *Client) EditRepoGitHook(user, repo, id string, opt EditGitHookOption) (*Response, error) {
+func (c *Client) EditRepoGitHook(user, repo, id string, opt models.EditGitHookOption) (*Response, error) {
 	if err := escapeValidatePathSegments(&user, &repo, &id); err != nil {
 		return nil, err
 	}
