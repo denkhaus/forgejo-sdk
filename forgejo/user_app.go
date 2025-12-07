@@ -15,6 +15,8 @@ import (
 	"fmt"
 	"net/url"
 	"reflect"
+
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
 // AccessTokenScope represents the scope for an access token.
@@ -47,22 +49,13 @@ const (
 	AccessTokenScopeUserWrite         AccessTokenScope = "write:user"
 )
 
-// AccessToken represents an API access token.
-type AccessToken struct {
-	ID             int64              `json:"id"`
-	Name           string             `json:"name"`
-	Token          string             `json:"sha1"`
-	TokenLastEight string             `json:"token_last_eight"`
-	Scopes         []AccessTokenScope `json:"scopes"`
-}
-
 // ListAccessTokensOptions options for listing a users's access tokens
 type ListAccessTokensOptions struct {
 	ListOptions
 }
 
 // ListAccessTokens lists all the access tokens of user
-func (c *Client) ListAccessTokens(opts ListAccessTokensOptions) ([]*AccessToken, *Response, error) {
+func (c *Client) ListAccessTokens(opts ListAccessTokensOptions) ([]*models.AccessToken, *Response, error) {
 	c.mutex.RLock()
 	username := c.username
 	c.mutex.RUnlock()
@@ -70,7 +63,7 @@ func (c *Client) ListAccessTokens(opts ListAccessTokensOptions) ([]*AccessToken,
 		return nil, nil, fmt.Errorf("\"username\" not set: only BasicAuth allowed")
 	}
 	opts.setDefaults()
-	tokens := make([]*AccessToken, 0, opts.PageSize)
+	tokens := make([]*models.AccessToken, 0, opts.PageSize)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/users/%s/tokens?%s", url.PathEscape(username), opts.getURLQuery().Encode()), jsonHeader, nil, &tokens)
 	return tokens, resp, err
 }
@@ -82,7 +75,7 @@ type CreateAccessTokenOption struct {
 }
 
 // CreateAccessToken create one access token with options
-func (c *Client) CreateAccessToken(opt CreateAccessTokenOption) (*AccessToken, *Response, error) {
+func (c *Client) CreateAccessToken(opt CreateAccessTokenOption) (*models.AccessToken, *Response, error) {
 	c.mutex.RLock()
 	username := c.username
 	c.mutex.RUnlock()
@@ -93,7 +86,7 @@ func (c *Client) CreateAccessToken(opt CreateAccessTokenOption) (*AccessToken, *
 	if err != nil {
 		return nil, nil, err
 	}
-	t := new(AccessToken)
+	t := new(models.AccessToken)
 	resp, err := c.getParsedResponse("POST", fmt.Sprintf("/users/%s/tokens", url.PathEscape(username)), jsonHeader, bytes.NewReader(body), t)
 	return t, resp, err
 }
