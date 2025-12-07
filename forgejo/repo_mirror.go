@@ -12,15 +12,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-)
 
-type CreatePushMirrorOption struct {
-	Interval       string `json:"interval"`
-	RemoteAddress  string `json:"remote_address"`
-	RemotePassword string `json:"remote_password"`
-	RemoteUsername string `json:"remote_username"`
-	SyncONCommit   bool   `json:"sync_on_commit"`
-}
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
+)
 
 // PushMirrorResponse returns a git push mirror
 type PushMirrorResponse struct {
@@ -35,7 +29,7 @@ type PushMirrorResponse struct {
 }
 
 // PushMirrors add a push mirror to the repository
-func (c *Client) PushMirrors(user, repo string, opt CreatePushMirrorOption) (*PushMirrorResponse, *Response, error) {
+func (c *Client) PushMirrors(user, repo string, opt models.CreatePushMirrorOption) (*PushMirrorResponse, *Response, error) {
 	if err := escapeValidatePathSegments(&user, &repo); err != nil {
 		return nil, nil, err
 	}
