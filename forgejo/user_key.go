@@ -16,19 +16,6 @@ import (
 	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
-// // PublicKey publickey is a user key to push code to repository
-// type PublicKey struct {
-// 	ID          int64        `json:"id"`
-// 	Key         string       `json:"key"`
-// 	URL         string       `json:"url,omitempty"`
-// 	Title       string       `json:"title,omitempty"`
-// 	Fingerprint string       `json:"fingerprint,omitempty"`
-// 	Created     time.Time    `json:"created_at,omitempty"`
-// 	Owner       *models.User `json:"user,omitempty"`
-// 	ReadOnly    bool         `json:"read_only,omitempty"`
-// 	KeyType     string       `json:"key_type,omitempty"`
-// }
-
 // ListPublicKeysOptions options for listing a user's PublicKeys
 type ListPublicKeysOptions struct {
 	ListOptions
