@@ -54,18 +54,6 @@ type CommitStats struct {
 	Deletions int `json:"deletions"`
 }
 
-// Commit contains information generated from a Git commit.
-type Commit struct {
-	*CommitMeta
-	HTMLURL    string                 `json:"html_url"`
-	RepoCommit *RepoCommit            `json:"commit"`
-	Author     *models.User           `json:"author"`
-	Committer  *models.User           `json:"committer"`
-	Parents    []*CommitMeta          `json:"parents"`
-	Files      []*CommitAffectedFiles `json:"files"`
-	Stats      *CommitStats           `json:"stats"`
-}
-
 // CommitDateOptions store dates for GIT_AUTHOR_DATE and GIT_COMMITTER_DATE
 type CommitDateOptions struct {
 	Author    time.Time `json:"author"`
@@ -78,11 +66,11 @@ type CommitAffectedFiles struct {
 }
 
 // GetSingleCommit returns a single commit
-func (c *Client) GetSingleCommit(user, repo, commitID string) (*Commit, *Response, error) {
+func (c *Client) GetSingleCommit(user, repo, commitID string) (*models.Commit, *Response, error) {
 	if err := escapeValidatePathSegments(&user, &repo, &commitID); err != nil {
 		return nil, nil, err
 	}
-	commit := new(Commit)
+	commit := new(models.Commit)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/git/commits/%s", user, repo, commitID), nil, nil, &commit)
 	return commit, resp, err
 }
@@ -123,13 +111,13 @@ func (opt *ListCommitOptions) QueryEncode() string {
 }
 
 // ListRepoCommits return list of commits from a repo
-func (c *Client) ListRepoCommits(user, repo string, opt ListCommitOptions) ([]*Commit, *Response, error) {
+func (c *Client) ListRepoCommits(user, repo string, opt ListCommitOptions) ([]*models.Commit, *Response, error) {
 	if err := escapeValidatePathSegments(&user, &repo); err != nil {
 		return nil, nil, err
 	}
 	link, _ := url.Parse(fmt.Sprintf("/repos/%s/%s/commits", user, repo))
 	opt.setDefaults()
-	commits := make([]*Commit, 0, opt.PageSize)
+	commits := make([]*models.Commit, 0, opt.PageSize)
 	link.RawQuery = opt.QueryEncode()
 	resp, err := c.getParsedResponse("GET", link.String(), nil, nil, &commits)
 	return commits, resp, err

@@ -33,11 +33,11 @@ func TestListRepoCommits(t *testing.T) {
 	assert.Len(t, l, 1)
 
 	// Ensure RepoCommit and Verification are not nil
-	assert.NotNil(t, l[0].RepoCommit)
-	assert.NotNil(t, l[0].RepoCommit.Verification)
+	assert.NotNil(t, l[0].Commit)
+	assert.NotNil(t, l[0].Commit.Verification)
 
-	assert.EqualValues(t, "Initial commit\n", l[0].RepoCommit.Message)
-	assert.EqualValues(t, "gpg.error.not_signed_commit", l[0].RepoCommit.Verification.Reason)
+	assert.EqualValues(t, "Initial commit\n", l[0].Commit.Message)
+	assert.EqualValues(t, "gpg.error.not_signed_commit", l[0].Commit.Verification.Reason)
 	assert.EqualValues(t, 100, l[0].Stats.Additions)
 }
 

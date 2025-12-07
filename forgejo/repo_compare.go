@@ -8,12 +8,16 @@
 
 package forgejo
 
-import "fmt"
+import (
+	"fmt"
+
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
+)
 
 // Compare represents a comparison between two commits.
 type Compare struct {
-	TotalCommits int       `json:"total_commits"` // Total number of commits in the comparison.
-	Commits      []*Commit `json:"commits"`       // List of commits in the comparison.
+	TotalCommits int              `json:"total_commits"` // Total number of commits in the comparison.
+	Commits      []*models.Commit `json:"commits"`       // List of commits in the comparison.
 }
 
 // CompareCommits compares two commits in a repository.

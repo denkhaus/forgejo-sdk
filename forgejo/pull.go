@@ -353,13 +353,13 @@ type ListPullRequestCommitsOptions struct {
 }
 
 // ListPullRequestCommits list commits for a pull request
-func (c *Client) ListPullRequestCommits(owner, repo string, index int64, opt ListPullRequestCommitsOptions) ([]*Commit, *Response, error) {
+func (c *Client) ListPullRequestCommits(owner, repo string, index int64, opt ListPullRequestCommitsOptions) ([]*models.Commit, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
 	link, _ := url.Parse(fmt.Sprintf("/repos/%s/%s/pulls/%d/commits", owner, repo, index))
 	opt.setDefaults()
-	commits := make([]*Commit, 0, opt.PageSize)
+	commits := make([]*models.Commit, 0, opt.PageSize)
 	link.RawQuery = opt.getURLQuery().Encode()
 	resp, err := c.getParsedResponse("GET", link.String(), nil, nil, &commits)
 	return commits, resp, err
