@@ -16,16 +16,8 @@ import (
 	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
-// TransferRepoOption options when transfer a repository's ownership
-type TransferRepoOption struct {
-	// required: true
-	NewOwner string `json:"new_owner"`
-	// ID of the team or teams to add to the repository. Teams can only be added to organization-owned repositories.
-	TeamIDs *[]int64 `json:"team_ids"`
-}
-
 // TransferRepo transfers the ownership of a repository
-func (c *Client) TransferRepo(owner, reponame string, opt TransferRepoOption) (*models.Repository, *Response, error) {
+func (c *Client) TransferRepo(owner, reponame string, opt models.TransferRepoOption) (*models.Repository, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &reponame); err != nil {
 		return nil, nil, err
 	}

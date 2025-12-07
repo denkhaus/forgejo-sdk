@@ -48,7 +48,7 @@ func TestRepoTrees(t *testing.T) {
 	require.NoError(t, err)
 	assert.Len(t, tl.Entries, 3)
 	assert.True(t, tl.Truncated)
-	assert.Equal(t, 24, tl.TotalCount)
+	assert.Equal(t, int64(24), tl.TotalCount)
 
 	// test with recursive option set and page size set to 3, making sure page 4 also has 3 entries
 	tl, _, err = c.GetTrees(repo.Owner.UserName, repo.Name, "main", GetTreesOptions{
@@ -58,8 +58,8 @@ func TestRepoTrees(t *testing.T) {
 	require.NoError(t, err)
 	assert.Len(t, tl.Entries, 3)
 	assert.True(t, tl.Truncated)
-	assert.Equal(t, 4, tl.Page)
-	assert.Equal(t, 24, tl.TotalCount)
+	assert.Equal(t, int64(4), tl.Page)
+	assert.Equal(t, int64(24), tl.TotalCount)
 }
 
 func prepareTreeTest(t *testing.T, c *Client, repoName string) *models.Repository {
