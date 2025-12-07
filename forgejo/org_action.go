@@ -14,6 +14,8 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
 // ListOrgActionSecretOption list OrgActionSecret options
@@ -22,12 +24,12 @@ type ListOrgActionSecretOption struct {
 }
 
 // ListOrgActionSecret list an organization's secrets
-func (c *Client) ListOrgActionSecret(org string, opt ListOrgActionSecretOption) ([]*Secret, *Response, error) {
+func (c *Client) ListOrgActionSecret(org string, opt ListOrgActionSecretOption) ([]*models.Secret, *Response, error) {
 	if err := escapeValidatePathSegments(&org); err != nil {
 		return nil, nil, err
 	}
 	opt.setDefaults()
-	secrets := make([]*Secret, 0, opt.PageSize)
+	secrets := make([]*models.Secret, 0, opt.PageSize)
 
 	link, _ := url.Parse(fmt.Sprintf("/orgs/%s/actions/secrets", org))
 	link.RawQuery = opt.getURLQuery().Encode()

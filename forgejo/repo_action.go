@@ -14,6 +14,8 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
 // ListRepoActionSecretOption list RepoActionSecret options
@@ -22,12 +24,12 @@ type ListRepoActionSecretOption struct {
 }
 
 // ListRepoActionSecret list a repository's secrets
-func (c *Client) ListRepoActionSecret(user, repo string, opt ListRepoActionSecretOption) ([]*Secret, *Response, error) {
+func (c *Client) ListRepoActionSecret(user, repo string, opt ListRepoActionSecretOption) ([]*models.Secret, *Response, error) {
 	if err := escapeValidatePathSegments(&user, &repo); err != nil {
 		return nil, nil, err
 	}
 	opt.setDefaults()
-	secrets := make([]*Secret, 0, opt.PageSize)
+	secrets := make([]*models.Secret, 0, opt.PageSize)
 
 	link, _ := url.Parse(fmt.Sprintf("/repos/%s/%s/actions/secrets", user, repo))
 	link.RawQuery = opt.getURLQuery().Encode()
