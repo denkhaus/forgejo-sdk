@@ -29,9 +29,9 @@ type FileOptions struct {
 	// new_branch (optional) will make a new branch from `branch` before creating the file
 	NewBranchName string `json:"new_branch"`
 	// `author` and `committer` are optional (if only one is given, it will be used for the other, otherwise the authenticated user will be used)
-	Author    Identity          `json:"author"`
-	Committer Identity          `json:"committer"`
-	Dates     CommitDateOptions `json:"dates"`
+	Author    models.Identity          `json:"author"`
+	Committer models.Identity          `json:"committer"`
+	Dates     models.CommitDateOptions `json:"dates"`
 	// Add a Signed-off-by trailer by the committer at the end of the commit log message.
 	Signoff bool `json:"signoff"`
 }

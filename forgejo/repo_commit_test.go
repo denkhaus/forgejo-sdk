@@ -13,6 +13,7 @@ import (
 	"log"
 	"testing"
 
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -53,7 +54,7 @@ func TestGetCommitDiffOrPatch(t *testing.T) {
 		Content: base64.StdEncoding.EncodeToString([]byte("But is it?\n")),
 		FileOptions: FileOptions{
 			Message: "Ensure people know it's not a license!",
-			Committer: Identity{
+			Committer: models.Identity{
 				Name:  "Sup3rCookie",
 				Email: "Sup3rCookie@example.com",
 			},

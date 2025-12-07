@@ -13,57 +13,9 @@ import (
 	"fmt"
 	"net/url"
 	"strconv"
-	"time"
 
 	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
-
-// Identity for a person's identity like an author or committer
-type Identity struct {
-	Name  string `json:"name"`
-	Email string `json:"email"`
-}
-
-// CommitMeta contains meta information of a commit in terms of API.
-type CommitMeta struct {
-	URL     string    `json:"url"`
-	SHA     string    `json:"sha"`
-	Created time.Time `json:"created"`
-}
-
-// CommitUser contains information of a user in the context of a commit.
-type CommitUser struct {
-	Identity
-	Date string `json:"date"`
-}
-
-// RepoCommit contains information of a commit in the context of a repository.
-type RepoCommit struct {
-	URL          string                     `json:"url"`
-	Author       *CommitUser                `json:"author"`
-	Committer    *CommitUser                `json:"committer"`
-	Message      string                     `json:"message"`
-	Tree         *CommitMeta                `json:"tree"`
-	Verification *PayloadCommitVerification `json:"verification"`
-}
-
-// CommitStats contains stats from a Git commit
-type CommitStats struct {
-	Total     int `json:"total"`
-	Additions int `json:"additions"`
-	Deletions int `json:"deletions"`
-}
-
-// CommitDateOptions store dates for GIT_AUTHOR_DATE and GIT_COMMITTER_DATE
-type CommitDateOptions struct {
-	Author    time.Time `json:"author"`
-	Committer time.Time `json:"committer"`
-}
-
-// CommitAffectedFiles store information about files affected by the commit
-type CommitAffectedFiles struct {
-	Filename string `json:"filename"`
-}
 
 // GetSingleCommit returns a single commit
 func (c *Client) GetSingleCommit(user, repo, commitID string) (*models.Commit, *Response, error) {
