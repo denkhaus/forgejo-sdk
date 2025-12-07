@@ -12,6 +12,7 @@ import (
 	"log"
 	"testing"
 
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -189,7 +190,7 @@ func preparePullTest(t *testing.T, c *Client, repoName, forkOrg string) bool {
 	}
 	org, _, err := c.CreateOrg(CreateOrgOption{Name: forkOrg})
 	require.NoError(t, err)
-	forkRepo, _, err := c.CreateFork(origRepo.Owner.UserName, origRepo.Name, CreateForkOption{Organization: &org.UserName})
+	forkRepo, _, err := c.CreateFork(origRepo.Owner.UserName, origRepo.Name, models.CreateForkOption{Organization: org.UserName})
 	require.NoError(t, err)
 	assert.NotNil(t, forkRepo)
 

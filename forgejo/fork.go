@@ -34,16 +34,8 @@ func (c *Client) ListForks(user, repo string, opt ListForksOptions) ([]*models.R
 	return forks, resp, err
 }
 
-// CreateForkOption options for creating a fork
-type CreateForkOption struct {
-	// organization name, if forking into an organization
-	Organization *string `json:"organization"`
-	// name of the forked repository
-	Name *string `json:"name"`
-}
-
 // CreateFork create a fork of a repository
-func (c *Client) CreateFork(user, repo string, form CreateForkOption) (*models.Repository, *Response, error) {
+func (c *Client) CreateFork(user, repo string, form models.CreateForkOption) (*models.Repository, *Response, error) {
 	if err := escapeValidatePathSegments(&user, &repo); err != nil {
 		return nil, nil, err
 	}
