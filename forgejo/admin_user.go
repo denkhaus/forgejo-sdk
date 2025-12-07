@@ -113,7 +113,7 @@ func (c *Client) AdminDeleteUser(user string) (*Response, error) {
 }
 
 // AdminCreateUserPublicKey adds a public key for the user
-func (c *Client) AdminCreateUserPublicKey(user string, opt CreateKeyOption) (*PublicKey, *Response, error) {
+func (c *Client) AdminCreateUserPublicKey(user string, opt CreateKeyOption) (*models.PublicKey, *Response, error) {
 	if err := escapeValidatePathSegments(&user); err != nil {
 		return nil, nil, err
 	}
@@ -121,7 +121,7 @@ func (c *Client) AdminCreateUserPublicKey(user string, opt CreateKeyOption) (*Pu
 	if err != nil {
 		return nil, nil, err
 	}
-	key := new(PublicKey)
+	key := new(models.PublicKey)
 	resp, err := c.getParsedResponse("POST", fmt.Sprintf("/admin/users/%s/keys", user), jsonHeader, bytes.NewReader(body), key)
 	return key, resp, err
 }
