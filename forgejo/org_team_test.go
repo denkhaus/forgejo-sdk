@@ -12,11 +12,12 @@ import (
 	"log"
 	"testing"
 
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func createTestOrgTeams(t *testing.T, c *Client, org, name string, accessMode AccessMode, units []RepoUnitType) (*Team, error) {
+func createTestOrgTeams(t *testing.T, c *Client, org, name string, accessMode AccessMode, units []RepoUnitType) (*models.Team, error) {
 	team, _, e := c.CreateTeam(org, CreateTeamOption{
 		Name:                    name,
 		Description:             name + "'s team desc",

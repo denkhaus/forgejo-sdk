@@ -17,17 +17,17 @@ import (
 	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
-// Team represents a team in an organization
-type Team struct {
-	ID                      int64                `json:"id"`
-	Name                    string               `json:"name"`
-	Description             string               `json:"description"`
-	Organization            *models.Organization `json:"organization"`
-	Permission              AccessMode           `json:"permission"`
-	CanCreateOrgRepo        bool                 `json:"can_create_org_repo"`
-	IncludesAllRepositories bool                 `json:"includes_all_repositories"`
-	Units                   []RepoUnitType       `json:"units"`
-}
+// // Team represents a team in an organization
+// type Team struct {
+// 	ID                      int64                `json:"id"`
+// 	Name                    string               `json:"name"`
+// 	Description             string               `json:"description"`
+// 	Organization            *models.Organization `json:"organization"`
+// 	Permission              AccessMode           `json:"permission"`
+// 	CanCreateOrgRepo        bool                 `json:"can_create_org_repo"`
+// 	IncludesAllRepositories bool                 `json:"includes_all_repositories"`
+// 	Units                   []RepoUnitType       `json:"units"`
+// }
 
 // RepoUnitType represent all unit types of a repo forgejo currently offer
 type RepoUnitType string
@@ -61,27 +61,27 @@ type ListTeamsOptions struct {
 }
 
 // ListOrgTeams lists all teams of an organization
-func (c *Client) ListOrgTeams(org string, opt ListTeamsOptions) ([]*Team, *Response, error) {
+func (c *Client) ListOrgTeams(org string, opt ListTeamsOptions) ([]*models.Team, *Response, error) {
 	if err := escapeValidatePathSegments(&org); err != nil {
 		return nil, nil, err
 	}
 	opt.setDefaults()
-	teams := make([]*Team, 0, opt.PageSize)
+	teams := make([]*models.Team, 0, opt.PageSize)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/orgs/%s/teams?%s", org, opt.getURLQuery().Encode()), nil, nil, &teams)
 	return teams, resp, err
 }
 
 // ListMyTeams lists all the teams of the current user
-func (c *Client) ListMyTeams(opt *ListTeamsOptions) ([]*Team, *Response, error) {
+func (c *Client) ListMyTeams(opt *ListTeamsOptions) ([]*models.Team, *Response, error) {
 	opt.setDefaults()
-	teams := make([]*Team, 0, opt.PageSize)
+	teams := make([]*models.Team, 0, opt.PageSize)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/user/teams?%s", opt.getURLQuery().Encode()), nil, nil, &teams)
 	return teams, resp, err
 }
 
 // GetTeam gets a team by ID
-func (c *Client) GetTeam(id int64) (*Team, *Response, error) {
-	t := new(Team)
+func (c *Client) GetTeam(id int64) (*models.Team, *Response, error) {
+	t := new(models.Team)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/teams/%d", id), nil, nil, t)
 	return t, resp, err
 }
@@ -105,13 +105,13 @@ func (o SearchTeamsOptions) getURLQuery() url.Values {
 
 // TeamSearchResults is the JSON struct that is returned from Team search API.
 type TeamSearchResults struct {
-	OK    bool    `json:"ok"`
-	Error string  `json:"error"`
-	Data  []*Team `json:"data"`
+	OK    bool           `json:"ok"`
+	Error string         `json:"error"`
+	Data  []*models.Team `json:"data"`
 }
 
 // SearchOrgTeams search for teams in a org.
-func (c *Client) SearchOrgTeams(org string, opt *SearchTeamsOptions) ([]*Team, *Response, error) {
+func (c *Client) SearchOrgTeams(org string, opt *SearchTeamsOptions) ([]*models.Team, *Response, error) {
 	responseBody := TeamSearchResults{}
 	opt.setDefaults()
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/orgs/%s/teams/search?%s", org, opt.getURLQuery().Encode()), nil, nil, &responseBody)
@@ -154,7 +154,7 @@ func (opt *CreateTeamOption) Validate() error {
 }
 
 // CreateTeam creates a team for an organization
-func (c *Client) CreateTeam(org string, opt CreateTeamOption) (*Team, *Response, error) {
+func (c *Client) CreateTeam(org string, opt CreateTeamOption) (*models.Team, *Response, error) {
 	if err := escapeValidatePathSegments(&org); err != nil {
 		return nil, nil, err
 	}
@@ -165,7 +165,7 @@ func (c *Client) CreateTeam(org string, opt CreateTeamOption) (*Team, *Response,
 	if err != nil {
 		return nil, nil, err
 	}
-	t := new(Team)
+	t := new(models.Team)
 	resp, err := c.getParsedResponse("POST", fmt.Sprintf("/orgs/%s/teams", org), jsonHeader, bytes.NewReader(body), t)
 	return t, resp, err
 }

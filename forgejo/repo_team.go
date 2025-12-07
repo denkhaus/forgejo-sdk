@@ -11,17 +11,19 @@ package forgejo
 import (
 	"fmt"
 	"net/http"
+
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
 // GetRepoTeams return teams from a repository
-func (c *Client) GetRepoTeams(user, repo string) ([]*Team, *Response, error) {
+func (c *Client) GetRepoTeams(user, repo string) ([]*models.Team, *Response, error) {
 	if err := c.checkServerVersionGreaterThanOrEqual(version1_15_0); err != nil {
 		return nil, nil, err
 	}
 	if err := escapeValidatePathSegments(&user, &repo); err != nil {
 		return nil, nil, err
 	}
-	teams := make([]*Team, 0, 5)
+	teams := make([]*models.Team, 0, 5)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/teams", user, repo), nil, nil, &teams)
 	return teams, resp, err
 }
@@ -52,14 +54,14 @@ func (c *Client) RemoveRepoTeam(user, repo, team string) (*Response, error) {
 
 // CheckRepoTeam check if team is assigned to repo by name and return it.
 // If not assigned, it will return nil.
-func (c *Client) CheckRepoTeam(user, repo, team string) (*Team, *Response, error) {
+func (c *Client) CheckRepoTeam(user, repo, team string) (*models.Team, *Response, error) {
 	if err := c.checkServerVersionGreaterThanOrEqual(version1_15_0); err != nil {
 		return nil, nil, err
 	}
 	if err := escapeValidatePathSegments(&user, &repo, &team); err != nil {
 		return nil, nil, err
 	}
-	t := new(Team)
+	t := new(models.Team)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/teams/%s", user, repo, team), nil, nil, &t)
 	if resp != nil && resp.StatusCode == http.StatusNotFound {
 		// if not found it's not an error, it indicates it's not assigned
