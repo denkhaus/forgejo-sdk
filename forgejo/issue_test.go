@@ -13,6 +13,7 @@ import (
 	"testing"
 	"time"
 
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -69,11 +70,11 @@ func editIssues(t *testing.T, c *Client) {
 	log.Println("== TestEditIssues ==")
 	il, _, err := c.ListIssues(ListIssueOption{KeyWord: "soon!"})
 	require.NoError(t, err)
-	issue, _, err := c.GetIssue(il[0].Poster.UserName, il[0].Repository.Name, il[0].Index)
+	issue, _, err := c.GetIssue(il[0].User.UserName, il[0].Repository.Name, il[0].Index)
 	require.NoError(t, err)
 
 	state := StateClosed
-	issueNew, _, err := c.EditIssue(issue.Poster.UserName, issue.Repository.Name, issue.Index, EditIssueOption{
+	issueNew, _, err := c.EditIssue(issue.User.UserName, issue.Repository.Name, issue.Index, EditIssueOption{
 		Title: "Edited",
 		Body:  OptionalString("123 test and go"),
 		State: &state,
@@ -122,7 +123,7 @@ func listIssues(t *testing.T, c *Client) {
 	assert.Len(t, issues, 3)
 }
 
-func createTestIssue(t *testing.T, c *Client, repoName, title, body string, assignees []string, deadline *time.Time, milestone int64, labels []int64, closed, shouldFail bool) *Issue {
+func createTestIssue(t *testing.T, c *Client, repoName, title, body string, assignees []string, deadline *time.Time, milestone int64, labels []int64, closed, shouldFail bool) *models.Issue {
 	user, _, err := c.GetMyUserInfo()
 	require.NoError(t, err)
 	issue, _, e := c.CreateIssue(user.UserName, repoName, CreateIssueOption{

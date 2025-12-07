@@ -34,33 +34,6 @@ type RepositoryMeta struct {
 	FullName string `json:"full_name"`
 }
 
-// Issue represents an issue in a repository
-type Issue struct {
-	ID               int64          `json:"id"`
-	URL              string         `json:"url"`
-	HTMLURL          string         `json:"html_url"`
-	Index            int64          `json:"number"`
-	Poster           *models.User   `json:"user"`
-	OriginalAuthor   string         `json:"original_author"`
-	OriginalAuthorID int64          `json:"original_author_id"`
-	Title            string         `json:"title"`
-	Body             string         `json:"body"`
-	Ref              string         `json:"ref"`
-	Labels           []*Label       `json:"labels"`
-	Milestone        *Milestone     `json:"milestone"`
-	Assignees        []*models.User `json:"assignees"`
-	// Whether the issue is open or closed
-	State       StateType        `json:"state"`
-	IsLocked    bool             `json:"is_locked"`
-	Comments    int              `json:"comments"`
-	Created     time.Time        `json:"created_at"`
-	Updated     time.Time        `json:"updated_at"`
-	Closed      *time.Time       `json:"closed_at"`
-	Deadline    *time.Time       `json:"due_date"`
-	PullRequest *PullRequestMeta `json:"pull_request"`
-	Repository  *RepositoryMeta  `json:"repository"`
-}
-
 // ListIssueOption list issue options
 type ListIssueOption struct {
 	ListOptions
@@ -156,9 +129,9 @@ func (opt *ListIssueOption) QueryEncode() string {
 }
 
 // ListIssues returns all issues assigned the authenticated user
-func (c *Client) ListIssues(opt ListIssueOption) ([]*Issue, *Response, error) {
+func (c *Client) ListIssues(opt ListIssueOption) ([]*models.Issue, *Response, error) {
 	opt.setDefaults()
-	issues := make([]*Issue, 0, opt.PageSize)
+	issues := make([]*models.Issue, 0, opt.PageSize)
 
 	link, _ := url.Parse("/repos/issues/search")
 	link.RawQuery = opt.QueryEncode()
@@ -177,12 +150,12 @@ func (c *Client) ListIssues(opt ListIssueOption) ([]*Issue, *Response, error) {
 }
 
 // ListRepoIssues returns all issues for a given repository
-func (c *Client) ListRepoIssues(owner, repo string, opt ListIssueOption) ([]*Issue, *Response, error) {
+func (c *Client) ListRepoIssues(owner, repo string, opt ListIssueOption) ([]*models.Issue, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
 	opt.setDefaults()
-	issues := make([]*Issue, 0, opt.PageSize)
+	issues := make([]*models.Issue, 0, opt.PageSize)
 
 	link, _ := url.Parse(fmt.Sprintf("/repos/%s/%s/issues", owner, repo))
 	link.RawQuery = opt.QueryEncode()
@@ -201,11 +174,11 @@ func (c *Client) ListRepoIssues(owner, repo string, opt ListIssueOption) ([]*Iss
 }
 
 // GetIssue returns a single issue for a given repository
-func (c *Client) GetIssue(owner, repo string, index int64) (*Issue, *Response, error) {
+func (c *Client) GetIssue(owner, repo string, index int64) (*models.Issue, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
-	issue := new(Issue)
+	issue := new(models.Issue)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/issues/%d", owner, repo, index), nil, nil, issue)
 	if e := c.checkServerVersionGreaterThanOrEqual(version1_12_0); e != nil && issue.Repository != nil {
 		issue.Repository.Owner = strings.Split(issue.Repository.FullName, "/")[0]
@@ -237,7 +210,7 @@ func (opt CreateIssueOption) Validate() error {
 }
 
 // CreateIssue create a new issue for a given repository
-func (c *Client) CreateIssue(owner, repo string, opt CreateIssueOption) (*Issue, *Response, error) {
+func (c *Client) CreateIssue(owner, repo string, opt CreateIssueOption) (*models.Issue, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
@@ -248,7 +221,7 @@ func (c *Client) CreateIssue(owner, repo string, opt CreateIssueOption) (*Issue,
 	if err != nil {
 		return nil, nil, err
 	}
-	issue := new(Issue)
+	issue := new(models.Issue)
 	resp, err := c.getParsedResponse("POST", fmt.Sprintf("/repos/%s/%s/issues", owner, repo),
 		jsonHeader, bytes.NewReader(body), issue)
 	c.issueBackwardsCompatibility(issue)
@@ -276,7 +249,7 @@ func (opt EditIssueOption) Validate() error {
 }
 
 // EditIssue modify an existing issue for a given repository
-func (c *Client) EditIssue(owner, repo string, index int64, opt EditIssueOption) (*Issue, *Response, error) {
+func (c *Client) EditIssue(owner, repo string, index int64, opt EditIssueOption) (*models.Issue, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
@@ -287,7 +260,7 @@ func (c *Client) EditIssue(owner, repo string, index int64, opt EditIssueOption)
 	if err != nil {
 		return nil, nil, err
 	}
-	issue := new(Issue)
+	issue := new(models.Issue)
 	resp, err := c.getParsedResponse("PATCH",
 		fmt.Sprintf("/repos/%s/%s/issues/%d", owner, repo, index),
 		jsonHeader, bytes.NewReader(body), issue)
@@ -306,7 +279,7 @@ func (c *Client) DeleteIssue(user, repo string, id int64) (*Response, error) {
 	return resp, err
 }
 
-func (c *Client) issueBackwardsCompatibility(issue *Issue) {
+func (c *Client) issueBackwardsCompatibility(issue *models.Issue) {
 	if c.checkServerVersionGreaterThanOrEqual(version1_12_0) != nil {
 		c.mutex.RLock()
 		issue.HTMLURL = fmt.Sprintf("%s/%s/issues/%d", c.url, issue.Repository.FullName, issue.Index)

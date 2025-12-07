@@ -14,6 +14,8 @@ import (
 	"fmt"
 	"net/url"
 	"time"
+
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
 // TrackedTime worked time for an issue / pr
@@ -26,8 +28,8 @@ type TrackedTime struct {
 	UserID   int64  `json:"user_id"`
 	UserName string `json:"user_name"`
 	// deprecated (only for backwards compatibility)
-	IssueID int64  `json:"issue_id"`
-	Issue   *Issue `json:"issue"`
+	IssueID int64         `json:"issue_id"`
+	Issue   *models.Issue `json:"issue"`
 }
 
 // ListTrackedTimesOptions options for listing repository's tracked times
