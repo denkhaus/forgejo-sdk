@@ -12,6 +12,8 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
 // DeleteOrgMembership remove a member from an organization
@@ -29,12 +31,12 @@ type ListOrgMembershipOption struct {
 }
 
 // ListOrgMembership list an organization's members
-func (c *Client) ListOrgMembership(org string, opt ListOrgMembershipOption) ([]*User, *Response, error) {
+func (c *Client) ListOrgMembership(org string, opt ListOrgMembershipOption) ([]*models.User, *Response, error) {
 	if err := escapeValidatePathSegments(&org); err != nil {
 		return nil, nil, err
 	}
 	opt.setDefaults()
-	users := make([]*User, 0, opt.PageSize)
+	users := make([]*models.User, 0, opt.PageSize)
 
 	link, _ := url.Parse(fmt.Sprintf("/orgs/%s/members", org))
 	link.RawQuery = opt.getURLQuery().Encode()
@@ -43,12 +45,12 @@ func (c *Client) ListOrgMembership(org string, opt ListOrgMembershipOption) ([]*
 }
 
 // ListPublicOrgMembership list an organization's members
-func (c *Client) ListPublicOrgMembership(org string, opt ListOrgMembershipOption) ([]*User, *Response, error) {
+func (c *Client) ListPublicOrgMembership(org string, opt ListOrgMembershipOption) ([]*models.User, *Response, error) {
 	if err := escapeValidatePathSegments(&org); err != nil {
 		return nil, nil, err
 	}
 	opt.setDefaults()
-	users := make([]*User, 0, opt.PageSize)
+	users := make([]*models.User, 0, opt.PageSize)
 
 	link, _ := url.Parse(fmt.Sprintf("/orgs/%s/public_members", org))
 	link.RawQuery = opt.getURLQuery().Encode()

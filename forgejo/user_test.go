@@ -13,6 +13,7 @@ import (
 	"os"
 	"testing"
 
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -215,7 +216,7 @@ func TestGetUserByID(t *testing.T) {
 	assert.Nil(t, r4)
 }
 
-func createTestUser(t *testing.T, username string, client *Client) *User {
+func createTestUser(t *testing.T, username string, client *Client) *models.User {
 	user, _, _ := client.GetUserInfo(username)
 	if user.ID != 0 {
 		return user
@@ -226,7 +227,7 @@ func createTestUser(t *testing.T, username string, client *Client) *User {
 }
 
 // userToStringSlice return string slice based on UserName of users
-func userToStringSlice(users []*User) []string {
+func userToStringSlice(users []*models.User) []string {
 	result := make([]string, 0, len(users))
 	for i := range users {
 		result = append(result, users[i].UserName)

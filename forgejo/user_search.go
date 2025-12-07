@@ -11,10 +11,12 @@ package forgejo
 import (
 	"fmt"
 	"net/url"
+
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
 type searchUsersResponse struct {
-	Users []*User `json:"data"`
+	Users []*models.User `json:"data"`
 }
 
 // SearchUsersOption options for SearchUsers
@@ -38,7 +40,7 @@ func (opt *SearchUsersOption) QueryEncode() string {
 	return query.Encode()
 }
 
-func (c *Client) searchUsers(rawQuery string) ([]*User, *Response, error) {
+func (c *Client) searchUsers(rawQuery string) ([]*models.User, *Response, error) {
 	link, _ := url.Parse("/users/search")
 	link.RawQuery = rawQuery
 	userResp := new(searchUsersResponse)
@@ -47,6 +49,6 @@ func (c *Client) searchUsers(rawQuery string) ([]*User, *Response, error) {
 }
 
 // SearchUsers finds users by query
-func (c *Client) SearchUsers(opt SearchUsersOption) ([]*User, *Response, error) {
+func (c *Client) SearchUsers(opt SearchUsersOption) ([]*models.User, *Response, error) {
 	return c.searchUsers(opt.QueryEncode())
 }

@@ -16,6 +16,8 @@ import (
 	"net/url"
 	"strings"
 	"time"
+
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
 // PullRequestMeta PR info if an issue is a PR
@@ -34,19 +36,19 @@ type RepositoryMeta struct {
 
 // Issue represents an issue in a repository
 type Issue struct {
-	ID               int64      `json:"id"`
-	URL              string     `json:"url"`
-	HTMLURL          string     `json:"html_url"`
-	Index            int64      `json:"number"`
-	Poster           *User      `json:"user"`
-	OriginalAuthor   string     `json:"original_author"`
-	OriginalAuthorID int64      `json:"original_author_id"`
-	Title            string     `json:"title"`
-	Body             string     `json:"body"`
-	Ref              string     `json:"ref"`
-	Labels           []*Label   `json:"labels"`
-	Milestone        *Milestone `json:"milestone"`
-	Assignees        []*User    `json:"assignees"`
+	ID               int64          `json:"id"`
+	URL              string         `json:"url"`
+	HTMLURL          string         `json:"html_url"`
+	Index            int64          `json:"number"`
+	Poster           *models.User   `json:"user"`
+	OriginalAuthor   string         `json:"original_author"`
+	OriginalAuthorID int64          `json:"original_author_id"`
+	Title            string         `json:"title"`
+	Body             string         `json:"body"`
+	Ref              string         `json:"ref"`
+	Labels           []*Label       `json:"labels"`
+	Milestone        *Milestone     `json:"milestone"`
+	Assignees        []*models.User `json:"assignees"`
 	// Whether the issue is open or closed
 	State       StateType        `json:"state"`
 	IsLocked    bool             `json:"is_locked"`

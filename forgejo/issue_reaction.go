@@ -13,13 +13,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"time"
+
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
 // Reaction contain one reaction
 type Reaction struct {
-	User     *User     `json:"user"`
-	Reaction string    `json:"content"`
-	Created  time.Time `json:"created_at"`
+	User     *models.User `json:"user"`
+	Reaction string       `json:"content"`
+	Created  time.Time    `json:"created_at"`
 }
 
 // GetIssueReactions get a list reactions of an issue

@@ -12,6 +12,7 @@ import (
 	"log"
 	"testing"
 
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -189,7 +190,7 @@ func TestPullReview(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func preparePullReviewTest(t *testing.T, c *Client, repoName string) (*Repository, *PullRequest, *User, *User, bool) {
+func preparePullReviewTest(t *testing.T, c *Client, repoName string) (*Repository, *PullRequest, *models.User, *models.User, bool) {
 	repo, err := createTestRepo(t, repoName, c)
 	if !assert.NoError(t, err) { //nolint
 		return nil, nil, nil, nil, false

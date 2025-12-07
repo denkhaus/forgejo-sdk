@@ -8,7 +8,11 @@
 
 package forgejo
 
-import "fmt"
+import (
+	"fmt"
+
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
+)
 
 // ListFollowersOptions options for listing followers
 type ListFollowersOptions struct {
@@ -16,20 +20,20 @@ type ListFollowersOptions struct {
 }
 
 // ListMyFollowers list all the followers of current user
-func (c *Client) ListMyFollowers(opt ListFollowersOptions) ([]*User, *Response, error) {
+func (c *Client) ListMyFollowers(opt ListFollowersOptions) ([]*models.User, *Response, error) {
 	opt.setDefaults()
-	users := make([]*User, 0, opt.PageSize)
+	users := make([]*models.User, 0, opt.PageSize)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/user/followers?%s", opt.getURLQuery().Encode()), nil, nil, &users)
 	return users, resp, err
 }
 
 // ListFollowers list all the followers of one user
-func (c *Client) ListFollowers(user string, opt ListFollowersOptions) ([]*User, *Response, error) {
+func (c *Client) ListFollowers(user string, opt ListFollowersOptions) ([]*models.User, *Response, error) {
 	if err := escapeValidatePathSegments(&user); err != nil {
 		return nil, nil, err
 	}
 	opt.setDefaults()
-	users := make([]*User, 0, opt.PageSize)
+	users := make([]*models.User, 0, opt.PageSize)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/users/%s/followers?%s", user, opt.getURLQuery().Encode()), nil, nil, &users)
 	return users, resp, err
 }
@@ -40,20 +44,20 @@ type ListFollowingOptions struct {
 }
 
 // ListMyFollowing list all the users current user followed
-func (c *Client) ListMyFollowing(opt ListFollowingOptions) ([]*User, *Response, error) {
+func (c *Client) ListMyFollowing(opt ListFollowingOptions) ([]*models.User, *Response, error) {
 	opt.setDefaults()
-	users := make([]*User, 0, opt.PageSize)
+	users := make([]*models.User, 0, opt.PageSize)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/user/following?%s", opt.getURLQuery().Encode()), nil, nil, &users)
 	return users, resp, err
 }
 
 // ListFollowing list all the users the user followed
-func (c *Client) ListFollowing(user string, opt ListFollowingOptions) ([]*User, *Response, error) {
+func (c *Client) ListFollowing(user string, opt ListFollowingOptions) ([]*models.User, *Response, error) {
 	if err := escapeValidatePathSegments(&user); err != nil {
 		return nil, nil, err
 	}
 	opt.setDefaults()
-	users := make([]*User, 0, opt.PageSize)
+	users := make([]*models.User, 0, opt.PageSize)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/users/%s/following?%s", user, opt.getURLQuery().Encode()), nil, nil, &users)
 	return users, resp, err
 }

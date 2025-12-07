@@ -15,6 +15,8 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
 // Release represents a repository release
@@ -32,7 +34,7 @@ type Release struct {
 	IsPrerelease bool          `json:"prerelease"`
 	CreatedAt    time.Time     `json:"created_at"`
 	PublishedAt  time.Time     `json:"published_at"`
-	Publisher    *User         `json:"author"`
+	Publisher    *models.User  `json:"author"`
 	Attachments  []*Attachment `json:"assets"`
 }
 

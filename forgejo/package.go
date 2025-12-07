@@ -11,6 +11,8 @@ package forgejo
 import (
 	"fmt"
 	"time"
+
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
 // Package represents a package
@@ -18,11 +20,11 @@ type Package struct {
 	// the package's id
 	ID int64 `json:"id"`
 	// the package's owner
-	Owner User `json:"owner"`
+	Owner models.User `json:"owner"`
 	// the repo this package belongs to (if any)
 	Repository *Repository `json:"repository"`
 	// the package's creator
-	Creator User `json:"creator"`
+	Creator models.User `json:"creator"`
 	// the type of package:
 	Type string `json:"type"`
 	// the name of the package

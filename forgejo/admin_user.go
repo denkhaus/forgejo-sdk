@@ -13,6 +13,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
 // AdminListUsersOptions options for listing admin users
@@ -21,9 +23,9 @@ type AdminListUsersOptions struct {
 }
 
 // AdminListUsers lists all users
-func (c *Client) AdminListUsers(opt AdminListUsersOptions) ([]*User, *Response, error) {
+func (c *Client) AdminListUsers(opt AdminListUsersOptions) ([]*models.User, *Response, error) {
 	opt.setDefaults()
-	users := make([]*User, 0, opt.PageSize)
+	users := make([]*models.User, 0, opt.PageSize)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/admin/users?%s", opt.getURLQuery().Encode()), nil, nil, &users)
 	return users, resp, err
 }
@@ -53,7 +55,7 @@ func (opt CreateUserOption) Validate() error {
 }
 
 // AdminCreateUser create a user
-func (c *Client) AdminCreateUser(opt CreateUserOption) (*User, *Response, error) {
+func (c *Client) AdminCreateUser(opt CreateUserOption) (*models.User, *Response, error) {
 	if err := opt.Validate(); err != nil {
 		return nil, nil, err
 	}
@@ -61,7 +63,7 @@ func (c *Client) AdminCreateUser(opt CreateUserOption) (*User, *Response, error)
 	if err != nil {
 		return nil, nil, err
 	}
-	user := new(User)
+	user := new(models.User)
 	resp, err := c.getParsedResponse("POST", "/admin/users", jsonHeader, bytes.NewReader(body), user)
 	return user, resp, err
 }

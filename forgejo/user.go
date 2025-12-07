@@ -12,74 +12,29 @@ import (
 	"fmt"
 	"net/url"
 	"strconv"
-	"time"
+
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
-// User represents a user
-type User struct {
-	// the user's id
-	ID int64 `json:"id"`
-	// the user's username
-	UserName string `json:"login"`
-	// The login_name of non local users (e.g. LDAP / OAuth / SMTP)
-	LoginName string `json:"login_name"`
-	// The ID of the Authentication Source for non local users.
-	SourceID int64 `json:"source_id"`
-	// the user's full name
-	FullName string `json:"full_name"`
-	Email    string `json:"email"`
-	// URL to the user's page
-	HTMLURL string `json:"html_url"`
-	// URL to the user's avatar
-	AvatarURL string `json:"avatar_url"`
-	// User locale
-	Language string `json:"language"`
-	// Is the user an administrator
-	IsAdmin bool `json:"is_admin"`
-	// Date and Time of last login
-	LastLogin time.Time `json:"last_login"`
-	// Date and Time of user creation
-	Created time.Time `json:"created"`
-	// Is user restricted
-	Restricted bool `json:"restricted"`
-	// Is user active
-	IsActive bool `json:"active"`
-	// Is user login prohibited
-	ProhibitLogin bool `json:"prohibit_login"`
-	// the user's location
-	Location string `json:"location"`
-	// the user's website
-	Website string `json:"website"`
-	// the user's description
-	Description string `json:"description"`
-	// User visibility level option
-	Visibility VisibleType `json:"visibility"`
-
-	// user counts
-	FollowerCount    int `json:"followers_count"`
-	FollowingCount   int `json:"following_count"`
-	StarredRepoCount int `json:"starred_repos_count"`
-}
-
 // GetUserInfo get user info by user's name
-func (c *Client) GetUserInfo(user string) (*User, *Response, error) {
+func (c *Client) GetUserInfo(user string) (*models.User, *Response, error) {
 	if err := escapeValidatePathSegments(&user); err != nil {
 		return nil, nil, err
 	}
-	u := new(User)
+	u := new(models.User)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/users/%s", user), nil, nil, u)
 	return u, resp, err
 }
 
 // GetMyUserInfo get user info of current user
-func (c *Client) GetMyUserInfo() (*User, *Response, error) {
-	u := new(User)
+func (c *Client) GetMyUserInfo() (*models.User, *Response, error) {
+	u := new(models.User)
 	resp, err := c.getParsedResponse("GET", "/user", nil, nil, u)
 	return u, resp, err
 }
 
 // GetUserByID returns user by a given user ID
-func (c *Client) GetUserByID(id int64) (*User, *Response, error) {
+func (c *Client) GetUserByID(id int64) (*models.User, *Response, error) {
 	if id < 0 {
 		return nil, nil, fmt.Errorf("invalid user id %d", id)
 	}

@@ -14,6 +14,8 @@ import (
 	"net/url"
 	"strconv"
 	"time"
+
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
 // Identity for a person's identity like an author or committer
@@ -57,8 +59,8 @@ type Commit struct {
 	*CommitMeta
 	HTMLURL    string                 `json:"html_url"`
 	RepoCommit *RepoCommit            `json:"commit"`
-	Author     *User                  `json:"author"`
-	Committer  *User                  `json:"committer"`
+	Author     *models.User           `json:"author"`
+	Committer  *models.User           `json:"committer"`
 	Parents    []*CommitMeta          `json:"parents"`
 	Files      []*CommitAffectedFiles `json:"files"`
 	Stats      *CommitStats           `json:"stats"`

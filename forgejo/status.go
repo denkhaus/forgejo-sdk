@@ -14,6 +14,8 @@ import (
 	"fmt"
 	"net/url"
 	"time"
+
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
 // StatusState holds the state of a Status
@@ -35,15 +37,15 @@ const (
 
 // Status holds a single Status of a single Commit
 type Status struct {
-	ID          int64       `json:"id"`
-	State       StatusState `json:"status"`
-	TargetURL   string      `json:"target_url"`
-	Description string      `json:"description"`
-	URL         string      `json:"url"`
-	Context     string      `json:"context"`
-	Creator     *User       `json:"creator"`
-	Created     time.Time   `json:"created_at"`
-	Updated     time.Time   `json:"updated_at"`
+	ID          int64        `json:"id"`
+	State       StatusState  `json:"status"`
+	TargetURL   string       `json:"target_url"`
+	Description string       `json:"description"`
+	URL         string       `json:"url"`
+	Context     string       `json:"context"`
+	Creator     *models.User `json:"creator"`
+	Created     time.Time    `json:"created_at"`
+	Updated     time.Time    `json:"updated_at"`
 }
 
 // CreateStatusOption holds the information needed to create a new Status for a Commit

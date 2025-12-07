@@ -14,6 +14,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
 // TestIssueComment creat a issue and test comment creation/edit/deletion on it
@@ -36,7 +38,7 @@ func TestIssueComment(t *testing.T) {
 	tUser2 := createTestUser(t, "Commenter2", c)
 	tUser3 := createTestUser(t, "Commenter3", c)
 
-	createOne := func(u *User, issue int64, text string) {
+	createOne := func(u *models.User, issue int64, text string) {
 		c.sudo = u.UserName
 		comment, _, e := c.CreateIssueComment(user.UserName, repo.Name, issue, CreateIssueCommentOption{Body: text})
 		c.sudo = ""

@@ -13,6 +13,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
 // Team represents a team in an organization
@@ -222,19 +224,19 @@ type ListTeamMembersOptions struct {
 }
 
 // ListTeamMembers lists all members of a team
-func (c *Client) ListTeamMembers(id int64, opt ListTeamMembersOptions) ([]*User, *Response, error) {
+func (c *Client) ListTeamMembers(id int64, opt ListTeamMembersOptions) ([]*models.User, *Response, error) {
 	opt.setDefaults()
-	members := make([]*User, 0, opt.PageSize)
+	members := make([]*models.User, 0, opt.PageSize)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/teams/%d/members?%s", id, opt.getURLQuery().Encode()), nil, nil, &members)
 	return members, resp, err
 }
 
 // GetTeamMember gets a member of a team
-func (c *Client) GetTeamMember(id int64, user string) (*User, *Response, error) {
+func (c *Client) GetTeamMember(id int64, user string) (*models.User, *Response, error) {
 	if err := escapeValidatePathSegments(&user); err != nil {
 		return nil, nil, err
 	}
-	m := new(User)
+	m := new(models.User)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/teams/%d/members/%s", id, user), nil, nil, m)
 	return m, resp, err
 }

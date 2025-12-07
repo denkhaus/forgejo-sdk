@@ -16,6 +16,8 @@ import (
 	"net/url"
 	"strings"
 	"time"
+
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
 // PRBranchInfo information about a branch
@@ -29,30 +31,30 @@ type PRBranchInfo struct {
 
 // PullRequest represents a pull request
 type PullRequest struct {
-	ID        int64      `json:"id"`
-	URL       string     `json:"url"`
-	Index     int64      `json:"number"`
-	Poster    *User      `json:"user"`
-	Title     string     `json:"title"`
-	Body      string     `json:"body"`
-	Labels    []*Label   `json:"labels"`
-	Milestone *Milestone `json:"milestone"`
-	Assignee  *User      `json:"assignee"`
-	Assignees []*User    `json:"assignees"`
-	State     StateType  `json:"state"`
-	IsLocked  bool       `json:"is_locked"`
-	Comments  int        `json:"comments"`
+	ID        int64          `json:"id"`
+	URL       string         `json:"url"`
+	Index     int64          `json:"number"`
+	Poster    *models.User   `json:"user"`
+	Title     string         `json:"title"`
+	Body      string         `json:"body"`
+	Labels    []*Label       `json:"labels"`
+	Milestone *Milestone     `json:"milestone"`
+	Assignee  *models.User   `json:"assignee"`
+	Assignees []*models.User `json:"assignees"`
+	State     StateType      `json:"state"`
+	IsLocked  bool           `json:"is_locked"`
+	Comments  int            `json:"comments"`
 
 	HTMLURL  string `json:"html_url"`
 	DiffURL  string `json:"diff_url"`
 	PatchURL string `json:"patch_url"`
 
-	Mergeable           bool       `json:"mergeable"`
-	HasMerged           bool       `json:"merged"`
-	Merged              *time.Time `json:"merged_at"`
-	MergedCommitID      *string    `json:"merge_commit_sha"`
-	MergedBy            *User      `json:"merged_by"`
-	AllowMaintainerEdit bool       `json:"allow_maintainer_edit"`
+	Mergeable           bool         `json:"mergeable"`
+	HasMerged           bool         `json:"merged"`
+	Merged              *time.Time   `json:"merged_at"`
+	MergedCommitID      *string      `json:"merge_commit_sha"`
+	MergedBy            *models.User `json:"merged_by"`
+	AllowMaintainerEdit bool         `json:"allow_maintainer_edit"`
 
 	Base      *PRBranchInfo `json:"base"`
 	Head      *PRBranchInfo `json:"head"`

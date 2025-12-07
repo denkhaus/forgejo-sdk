@@ -11,6 +11,8 @@ package forgejo
 import (
 	"fmt"
 	"net/http"
+
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
 // ListStargazersOptions options for listing a repository's stargazers
@@ -19,12 +21,12 @@ type ListStargazersOptions struct {
 }
 
 // ListRepoStargazers list a repository's stargazers
-func (c *Client) ListRepoStargazers(user, repo string, opt ListStargazersOptions) ([]*User, *Response, error) {
+func (c *Client) ListRepoStargazers(user, repo string, opt ListStargazersOptions) ([]*models.User, *Response, error) {
 	if err := escapeValidatePathSegments(&user, &repo); err != nil {
 		return nil, nil, err
 	}
 	opt.setDefaults()
-	stargazers := make([]*User, 0, opt.PageSize)
+	stargazers := make([]*models.User, 0, opt.PageSize)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/stargazers?%s", user, repo, opt.getURLQuery().Encode()), nil, nil, &stargazers)
 	return stargazers, resp, err
 }

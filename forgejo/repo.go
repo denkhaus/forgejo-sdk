@@ -17,6 +17,8 @@ import (
 	"net/url"
 	"strings"
 	"time"
+
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
 // Permission represents a set of permissions
@@ -55,7 +57,7 @@ type ExternalWiki struct {
 // Repository represents a repository
 type Repository struct {
 	ID                        int64            `json:"id"`
-	Owner                     *User            `json:"owner"`
+	Owner                     *models.User     `json:"owner"`
 	Name                      string           `json:"name"`
 	FullName                  string           `json:"full_name"`
 	Description               string           `json:"description"`

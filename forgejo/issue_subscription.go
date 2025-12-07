@@ -11,14 +11,16 @@ package forgejo
 import (
 	"fmt"
 	"net/http"
+
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
 // GetIssueSubscribers get list of users who subscribed on an issue
-func (c *Client) GetIssueSubscribers(owner, repo string, index int64) ([]*User, *Response, error) {
+func (c *Client) GetIssueSubscribers(owner, repo string, index int64) ([]*models.User, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
-	subscribers := make([]*User, 0, 10)
+	subscribers := make([]*models.User, 0, 10)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/issues/%d/subscriptions", owner, repo, index), nil, nil, &subscribers)
 	return subscribers, resp, err
 }

@@ -15,6 +15,8 @@ import (
 	"net/url"
 	"strings"
 	"time"
+
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
 // ReviewStateType review state type
@@ -38,7 +40,7 @@ const (
 // PullReview represents a pull request review
 type PullReview struct {
 	ID           int64           `json:"id"`
-	Reviewer     *User           `json:"user"`
+	Reviewer     *models.User    `json:"user"`
 	ReviewerTeam *Team           `json:"team"`
 	State        ReviewStateType `json:"state"`
 	Body         string          `json:"body"`
@@ -57,11 +59,11 @@ type PullReview struct {
 
 // PullReviewComment represents a comment on a pull request review
 type PullReviewComment struct {
-	ID       int64  `json:"id"`
-	Body     string `json:"body"`
-	Reviewer *User  `json:"user"`
-	ReviewID int64  `json:"pull_request_review_id"`
-	Resolver *User  `json:"resolver"`
+	ID       int64        `json:"id"`
+	Body     string       `json:"body"`
+	Reviewer *models.User `json:"user"`
+	ReviewID int64        `json:"pull_request_review_id"`
+	Resolver *models.User `json:"resolver"`
 
 	Created time.Time `json:"created_at"`
 	Updated time.Time `json:"updated_at"`
