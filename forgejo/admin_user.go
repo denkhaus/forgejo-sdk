@@ -68,30 +68,8 @@ func (c *Client) AdminCreateUser(opt CreateUserOption) (*models.User, *Response,
 	return user, resp, err
 }
 
-// EditUserOption edit user options
-type EditUserOption struct {
-	SourceID                int64        `json:"source_id"`
-	LoginName               string       `json:"login_name"`
-	Email                   *string      `json:"email"`
-	FullName                *string      `json:"full_name"`
-	Password                string       `json:"password"`
-	Description             *string      `json:"description"`
-	MustChangePassword      *bool        `json:"must_change_password"`
-	Website                 *string      `json:"website"`
-	Location                *string      `json:"location"`
-	Active                  *bool        `json:"active"`
-	Admin                   *bool        `json:"admin"`
-	AllowGitHook            *bool        `json:"allow_git_hook"`
-	AllowImportLocal        *bool        `json:"allow_import_local"`
-	MaxRepoCreation         *int         `json:"max_repo_creation"`
-	ProhibitLogin           *bool        `json:"prohibit_login"`
-	AllowCreateOrganization *bool        `json:"allow_create_organization"`
-	Restricted              *bool        `json:"restricted"`
-	Visibility              *VisibleType `json:"visibility"`
-}
-
 // AdminEditUser modify user informations
-func (c *Client) AdminEditUser(user string, opt EditUserOption) (*Response, error) {
+func (c *Client) AdminEditUser(user string, opt models.EditUserOption) (*Response, error) {
 	if err := escapeValidatePathSegments(&user); err != nil {
 		return nil, err
 	}
