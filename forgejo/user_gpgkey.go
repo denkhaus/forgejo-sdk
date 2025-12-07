@@ -16,22 +16,6 @@ import (
 	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
-// // GPGKey a user GPG key to sign commit and tag in repository
-// type GPGKey struct {
-// 	ID                int64          `json:"id"`
-// 	PrimaryKeyID      string         `json:"primary_key_id"`
-// 	KeyID             string         `json:"key_id"`
-// 	PublicKey         string         `json:"public_key"`
-// 	Emails            []*GPGKeyEmail `json:"emails"`
-// 	SubsKey           []*GPGKey      `json:"subkeys"`
-// 	CanSign           bool           `json:"can_sign"`
-// 	CanEncryptComms   bool           `json:"can_encrypt_comms"`
-// 	CanEncryptStorage bool           `json:"can_encrypt_storage"`
-// 	CanCertify        bool           `json:"can_certify"`
-// 	Created           time.Time      `json:"created_at,omitempty"`
-// 	Expires           time.Time      `json:"expires_at,omitempty"`
-// }
-
 // GPGKeyEmail an email attached to a GPGKey
 type GPGKeyEmail struct {
 	Email    string `json:"email"`
