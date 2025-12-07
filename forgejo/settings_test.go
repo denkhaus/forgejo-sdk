@@ -12,6 +12,7 @@ import (
 	"log"
 	"testing"
 
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -27,7 +28,7 @@ func TestGetGlobalSettings(t *testing.T) {
 
 	repoSettings, _, err := c.GetGlobalRepoSettings()
 	require.NoError(t, err)
-	assert.EqualValues(t, &GlobalRepoSettings{
+	assert.EqualValues(t, &models.GeneralRepoSettings{
 		HTTPGitDisabled: false,
 		MirrorsDisabled: false,
 		LFSDisabled:     true,
@@ -35,7 +36,7 @@ func TestGetGlobalSettings(t *testing.T) {
 
 	apiSettings, _, err := c.GetGlobalAPISettings()
 	require.NoError(t, err)
-	assert.EqualValues(t, &GlobalAPISettings{
+	assert.EqualValues(t, &models.GeneralAPISettings{
 		MaxResponseItems:       50,
 		DefaultPagingNum:       30,
 		DefaultGitTreesPerPage: 1000,
@@ -47,7 +48,7 @@ func TestGetGlobalSettings(t *testing.T) {
 	if assert.NotEmpty(t, attachSettings.AllowedTypes) {
 		attachSettings.AllowedTypes = ""
 	}
-	assert.EqualValues(t, &GlobalAttachmentSettings{
+	assert.EqualValues(t, &models.GeneralAttachmentSettings{
 		Enabled:  true,
 		MaxSize:  2048,
 		MaxFiles: 5,

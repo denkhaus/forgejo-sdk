@@ -8,75 +8,44 @@
 
 package forgejo
 
-// GlobalUISettings represent the global ui settings of a forgejo instance witch is exposed by API
-type GlobalUISettings struct {
-	DefaultTheme     string   `json:"default_theme"`
-	AllowedReactions []string `json:"allowed_reactions"`
-	CustomEmojis     []string `json:"custom_emojis"`
-}
-
-// GlobalRepoSettings represent the global repository settings of a forgejo instance witch is exposed by API
-type GlobalRepoSettings struct {
-	MirrorsDisabled      bool `json:"mirrors_disabled"`
-	HTTPGitDisabled      bool `json:"http_git_disabled"`
-	MigrationsDisabled   bool `json:"migrations_disabled"`
-	StarsDisabled        bool `json:"stars_disabled"`
-	TimeTrackingDisabled bool `json:"time_tracking_disabled"`
-	LFSDisabled          bool `json:"lfs_disabled"`
-}
-
-// GlobalAPISettings contains global api settings exposed by it
-type GlobalAPISettings struct {
-	MaxResponseItems       int   `json:"max_response_items"`
-	DefaultPagingNum       int   `json:"default_paging_num"`
-	DefaultGitTreesPerPage int   `json:"default_git_trees_per_page"`
-	DefaultMaxBlobSize     int64 `json:"default_max_blob_size"`
-}
-
-// GlobalAttachmentSettings contains global Attachment settings exposed by API
-type GlobalAttachmentSettings struct {
-	Enabled      bool   `json:"enabled"`
-	AllowedTypes string `json:"allowed_types"`
-	MaxSize      int64  `json:"max_size"`
-	MaxFiles     int    `json:"max_files"`
-}
+import "codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 
 // GetGlobalUISettings get global ui settings witch are exposed by API
-func (c *Client) GetGlobalUISettings() (*GlobalUISettings, *Response, error) {
+func (c *Client) GetGlobalUISettings() (*models.GeneralUISettings, *Response, error) {
 	if err := c.checkServerVersionGreaterThanOrEqual(version1_13_0); err != nil {
 		return nil, nil, err
 	}
-	conf := new(GlobalUISettings)
+	conf := new(models.GeneralUISettings)
 	resp, err := c.getParsedResponse("GET", "/settings/ui", jsonHeader, nil, &conf)
 	return conf, resp, err
 }
 
 // GetGlobalRepoSettings get global repository settings witch are exposed by API
-func (c *Client) GetGlobalRepoSettings() (*GlobalRepoSettings, *Response, error) {
+func (c *Client) GetGlobalRepoSettings() (*models.GeneralRepoSettings, *Response, error) {
 	if err := c.checkServerVersionGreaterThanOrEqual(version1_13_0); err != nil {
 		return nil, nil, err
 	}
-	conf := new(GlobalRepoSettings)
+	conf := new(models.GeneralRepoSettings)
 	resp, err := c.getParsedResponse("GET", "/settings/repository", jsonHeader, nil, &conf)
 	return conf, resp, err
 }
 
 // GetGlobalAPISettings get global api settings witch are exposed by it
-func (c *Client) GetGlobalAPISettings() (*GlobalAPISettings, *Response, error) {
+func (c *Client) GetGlobalAPISettings() (*models.GeneralAPISettings, *Response, error) {
 	if err := c.checkServerVersionGreaterThanOrEqual(version1_13_0); err != nil {
 		return nil, nil, err
 	}
-	conf := new(GlobalAPISettings)
+	conf := new(models.GeneralAPISettings)
 	resp, err := c.getParsedResponse("GET", "/settings/api", jsonHeader, nil, &conf)
 	return conf, resp, err
 }
 
 // GetGlobalAttachmentSettings get global repository settings witch are exposed by API
-func (c *Client) GetGlobalAttachmentSettings() (*GlobalAttachmentSettings, *Response, error) {
+func (c *Client) GetGlobalAttachmentSettings() (*models.GeneralAttachmentSettings, *Response, error) {
 	if err := c.checkServerVersionGreaterThanOrEqual(version1_13_0); err != nil {
 		return nil, nil, err
 	}
-	conf := new(GlobalAttachmentSettings)
+	conf := new(models.GeneralAttachmentSettings)
 	resp, err := c.getParsedResponse("GET", "/settings/attachment", jsonHeader, nil, &conf)
 	return conf, resp, err
 }
