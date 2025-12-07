@@ -22,7 +22,7 @@ type Package struct {
 	// the package's owner
 	Owner models.User `json:"owner"`
 	// the repo this package belongs to (if any)
-	Repository *Repository `json:"repository"`
+	Repository *models.Repository `json:"repository"`
 	// the package's creator
 	Creator models.User `json:"creator"`
 	// the type of package:

@@ -22,11 +22,11 @@ import (
 
 // PRBranchInfo information about a branch
 type PRBranchInfo struct {
-	Name       string      `json:"label"`
-	Ref        string      `json:"ref"`
-	Sha        string      `json:"sha"`
-	RepoID     int64       `json:"repo_id"`
-	Repository *Repository `json:"repo"`
+	Name       string             `json:"label"`
+	Ref        string             `json:"ref"`
+	Sha        string             `json:"sha"`
+	RepoID     int64              `json:"repo_id"`
+	Repository *models.Repository `json:"repo"`
 }
 
 // PullRequest represents a pull request

@@ -11,11 +11,12 @@ package forgejo
 import (
 	"testing"
 
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func createTestOrgRepo(t *testing.T, c *Client, name string) (func(), *Repository, error) {
+func createTestOrgRepo(t *testing.T, c *Client, name string) (func(), *models.Repository, error) {
 	_, _, err := c.GetOrg(name)
 	if err == nil {
 		_, _ = c.DeleteOrg(name)

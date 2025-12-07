@@ -13,6 +13,7 @@ import (
 	"testing"
 	"time"
 
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -141,7 +142,7 @@ func TestRepoBranchProtection(t *testing.T) {
 	assert.Len(t, bpl, 1)
 }
 
-func prepareBranchTest(t *testing.T, c *Client, repoName string) *Repository {
+func prepareBranchTest(t *testing.T, c *Client, repoName string) *models.Repository {
 	origRepo, err := createTestRepo(t, repoName, c)
 	if !assert.NoError(t, err) { //nolint:testifylint
 		return nil

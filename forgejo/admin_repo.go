@@ -12,10 +12,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
 // AdminCreateRepo create a repo
-func (c *Client) AdminCreateRepo(user string, opt CreateRepoOption) (*Repository, *Response, error) {
+func (c *Client) AdminCreateRepo(user string, opt CreateRepoOption) (*models.Repository, *Response, error) {
 	if err := escapeValidatePathSegments(&user); err != nil {
 		return nil, nil, err
 	}
@@ -23,7 +25,7 @@ func (c *Client) AdminCreateRepo(user string, opt CreateRepoOption) (*Repository
 	if err != nil {
 		return nil, nil, err
 	}
-	repo := new(Repository)
+	repo := new(models.Repository)
 	resp, err := c.getParsedResponse("POST", fmt.Sprintf("/admin/users/%s/repos", user), jsonHeader, bytes.NewReader(body), repo)
 	return repo, resp, err
 }

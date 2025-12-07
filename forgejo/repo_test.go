@@ -15,6 +15,7 @@ import (
 	"testing"
 	"time"
 
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -180,7 +181,7 @@ func TestGetRepoByID(t *testing.T) {
 }
 
 // standard func to create a init repo for test routines
-func createTestRepo(t *testing.T, name string, c *Client) (*Repository, error) {
+func createTestRepo(t *testing.T, name string, c *Client) (*models.Repository, error) {
 	user, _, uErr := c.GetMyUserInfo()
 	require.NoError(t, uErr)
 	repo, _, err := c.GetRepo(user.UserName, name)

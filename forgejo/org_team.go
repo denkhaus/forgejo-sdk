@@ -265,9 +265,9 @@ type ListTeamRepositoriesOptions struct {
 }
 
 // ListTeamRepositories lists all repositories of a team
-func (c *Client) ListTeamRepositories(id int64, opt ListTeamRepositoriesOptions) ([]*Repository, *Response, error) {
+func (c *Client) ListTeamRepositories(id int64, opt ListTeamRepositoriesOptions) ([]*models.Repository, *Response, error) {
 	opt.setDefaults()
-	repos := make([]*Repository, 0, opt.PageSize)
+	repos := make([]*models.Repository, 0, opt.PageSize)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/teams/%d/repos?%s", id, opt.getURLQuery().Encode()), nil, nil, &repos)
 	return repos, resp, err
 }

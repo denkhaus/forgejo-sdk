@@ -32,18 +32,18 @@ func (c *Client) ListRepoStargazers(user, repo string, opt ListStargazersOptions
 }
 
 // GetStarredRepos returns the repos that the given user has starred
-func (c *Client) GetStarredRepos(user string) ([]*Repository, *Response, error) {
+func (c *Client) GetStarredRepos(user string) ([]*models.Repository, *Response, error) {
 	if err := escapeValidatePathSegments(&user); err != nil {
 		return nil, nil, err
 	}
-	repos := make([]*Repository, 0, 10)
+	repos := make([]*models.Repository, 0, 10)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/users/%s/starred", user), jsonHeader, nil, &repos)
 	return repos, resp, err
 }
 
 // GetMyStarredRepos returns the repos that the authenticated user has starred
-func (c *Client) GetMyStarredRepos() ([]*Repository, *Response, error) {
-	repos := make([]*Repository, 0, 10)
+func (c *Client) GetMyStarredRepos() ([]*models.Repository, *Response, error) {
+	repos := make([]*models.Repository, 0, 10)
 	resp, err := c.getParsedResponse("GET", "/user/starred", jsonHeader, nil, &repos)
 	return repos, resp, err
 }

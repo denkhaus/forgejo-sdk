@@ -10,6 +10,7 @@ import (
 	"testing"
 	"time"
 
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -61,7 +62,7 @@ func TestRepoTrees(t *testing.T) {
 	assert.Equal(t, 24, tl.TotalCount)
 }
 
-func prepareTreeTest(t *testing.T, c *Client, repoName string) *Repository {
+func prepareTreeTest(t *testing.T, c *Client, repoName string) *models.Repository {
 	origRepo, err := createTestRepo(t, repoName, c)
 	if !assert.NoError(t, err) {
 		return nil

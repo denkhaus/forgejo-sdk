@@ -12,6 +12,8 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
 // WatchInfo represents an API watch status of one repository
@@ -25,18 +27,18 @@ type WatchInfo struct {
 }
 
 // GetWatchedRepos list all the watched repos of user
-func (c *Client) GetWatchedRepos(user string) ([]*Repository, *Response, error) {
+func (c *Client) GetWatchedRepos(user string) ([]*models.Repository, *Response, error) {
 	if err := escapeValidatePathSegments(&user); err != nil {
 		return nil, nil, err
 	}
-	repos := make([]*Repository, 0, 10)
+	repos := make([]*models.Repository, 0, 10)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/users/%s/subscriptions", user), nil, nil, &repos)
 	return repos, resp, err
 }
 
 // GetMyWatchedRepos list repositories watched by the authenticated user
-func (c *Client) GetMyWatchedRepos() ([]*Repository, *Response, error) {
-	repos := make([]*Repository, 0, 10)
+func (c *Client) GetMyWatchedRepos() ([]*models.Repository, *Response, error) {
+	repos := make([]*models.Repository, 0, 10)
 	resp, err := c.getParsedResponse("GET", "/user/subscriptions", nil, nil, &repos)
 	return repos, resp, err
 }

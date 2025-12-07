@@ -14,19 +14,21 @@ import (
 	"fmt"
 	"net/url"
 	"time"
+
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
 // DeployKey a deploy key
 type DeployKey struct {
-	ID          int64       `json:"id"`
-	KeyID       int64       `json:"key_id"`
-	Key         string      `json:"key"`
-	URL         string      `json:"url"`
-	Title       string      `json:"title"`
-	Fingerprint string      `json:"fingerprint"`
-	Created     time.Time   `json:"created_at"`
-	ReadOnly    bool        `json:"read_only"`
-	Repository  *Repository `json:"repository,omitempty"`
+	ID          int64              `json:"id"`
+	KeyID       int64              `json:"key_id"`
+	Key         string             `json:"key"`
+	URL         string             `json:"url"`
+	Title       string             `json:"title"`
+	Fingerprint string             `json:"fingerprint"`
+	Created     time.Time          `json:"created_at"`
+	ReadOnly    bool               `json:"read_only"`
+	Repository  *models.Repository `json:"repository,omitempty"`
 }
 
 // ListDeployKeysOptions options for listing a repository's deploy keys

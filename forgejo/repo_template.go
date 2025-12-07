@@ -12,6 +12,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
 // CreateRepoFromTemplateOption options when creating repository using a template
@@ -50,7 +52,7 @@ func (opt CreateRepoFromTemplateOption) Validate() error {
 }
 
 // CreateRepoFromTemplate create a repository using a template
-func (c *Client) CreateRepoFromTemplate(templateOwner, templateRepo string, opt CreateRepoFromTemplateOption) (*Repository, *Response, error) {
+func (c *Client) CreateRepoFromTemplate(templateOwner, templateRepo string, opt CreateRepoFromTemplateOption) (*models.Repository, *Response, error) {
 	if err := escapeValidatePathSegments(&templateOwner, &templateRepo); err != nil {
 		return nil, nil, err
 	}
@@ -63,7 +65,7 @@ func (c *Client) CreateRepoFromTemplate(templateOwner, templateRepo string, opt 
 		return nil, nil, err
 	}
 
-	repo := new(Repository)
+	repo := new(models.Repository)
 	resp, err := c.getParsedResponse("POST", fmt.Sprintf("/repos/%s/%s/generate", templateOwner, templateRepo), jsonHeader, bytes.NewReader(body), &repo)
 	return repo, resp, err
 }

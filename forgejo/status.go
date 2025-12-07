@@ -88,13 +88,13 @@ func (c *Client) ListStatuses(owner, repo, ref string, opt ListStatusesOption) (
 
 // CombinedStatus holds the combined state of several statuses for a single commit
 type CombinedStatus struct {
-	State      StatusState `json:"state"`
-	SHA        string      `json:"sha"`
-	TotalCount int         `json:"total_count"`
-	Statuses   []*Status   `json:"statuses"`
-	Repository *Repository `json:"repository"`
-	CommitURL  string      `json:"commit_url"`
-	URL        string      `json:"url"`
+	State      StatusState        `json:"state"`
+	SHA        string             `json:"sha"`
+	TotalCount int                `json:"total_count"`
+	Statuses   []*Status          `json:"statuses"`
+	Repository *models.Repository `json:"repository"`
+	CommitURL  string             `json:"commit_url"`
+	URL        string             `json:"url"`
 }
 
 // GetCombinedStatus returns the CombinedStatus for a given Commit

@@ -12,6 +12,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
 // TransferRepoOption options when transfer a repository's ownership
@@ -23,7 +25,7 @@ type TransferRepoOption struct {
 }
 
 // TransferRepo transfers the ownership of a repository
-func (c *Client) TransferRepo(owner, reponame string, opt TransferRepoOption) (*Repository, *Response, error) {
+func (c *Client) TransferRepo(owner, reponame string, opt TransferRepoOption) (*models.Repository, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &reponame); err != nil {
 		return nil, nil, err
 	}
@@ -34,33 +36,33 @@ func (c *Client) TransferRepo(owner, reponame string, opt TransferRepoOption) (*
 	if err != nil {
 		return nil, nil, err
 	}
-	repo := new(Repository)
+	repo := new(models.Repository)
 	resp, err := c.getParsedResponse("POST", fmt.Sprintf("/repos/%s/%s/transfer", owner, reponame), jsonHeader, bytes.NewReader(body), repo)
 	return repo, resp, err
 }
 
 // AcceptRepoTransfer accepts a repo transfer.
-func (c *Client) AcceptRepoTransfer(owner, reponame string) (*Repository, *Response, error) {
+func (c *Client) AcceptRepoTransfer(owner, reponame string) (*models.Repository, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &reponame); err != nil {
 		return nil, nil, err
 	}
 	if err := c.checkServerVersionGreaterThanOrEqual(version1_16_0); err != nil {
 		return nil, nil, err
 	}
-	repo := new(Repository)
+	repo := new(models.Repository)
 	resp, err := c.getParsedResponse("POST", fmt.Sprintf("/repos/%s/%s/transfer/accept", owner, reponame), jsonHeader, nil, repo)
 	return repo, resp, err
 }
 
 // RejectRepoTransfer rejects a repo transfer.
-func (c *Client) RejectRepoTransfer(owner, reponame string) (*Repository, *Response, error) {
+func (c *Client) RejectRepoTransfer(owner, reponame string) (*models.Repository, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &reponame); err != nil {
 		return nil, nil, err
 	}
 	if err := c.checkServerVersionGreaterThanOrEqual(version1_16_0); err != nil {
 		return nil, nil, err
 	}
-	repo := new(Repository)
+	repo := new(models.Repository)
 	resp, err := c.getParsedResponse("POST", fmt.Sprintf("/repos/%s/%s/transfer/reject", owner, reponame), jsonHeader, nil, repo)
 	return repo, resp, err
 }

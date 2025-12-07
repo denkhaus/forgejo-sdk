@@ -16,7 +16,6 @@ import (
 	"io"
 	"net/url"
 	"strings"
-	"time"
 
 	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
@@ -54,58 +53,6 @@ type ExternalWiki struct {
 	ExternalWikiURL string `json:"external_wiki_url"`
 }
 
-// Repository represents a repository
-type Repository struct {
-	ID                        int64            `json:"id"`
-	Owner                     *models.User     `json:"owner"`
-	Name                      string           `json:"name"`
-	FullName                  string           `json:"full_name"`
-	Description               string           `json:"description"`
-	Empty                     bool             `json:"empty"`
-	Private                   bool             `json:"private"`
-	Fork                      bool             `json:"fork"`
-	Template                  bool             `json:"template"`
-	Parent                    *Repository      `json:"parent"`
-	Mirror                    bool             `json:"mirror"`
-	Size                      int              `json:"size"`
-	HTMLURL                   string           `json:"html_url"`
-	SSHURL                    string           `json:"ssh_url"`
-	CloneURL                  string           `json:"clone_url"`
-	OriginalURL               string           `json:"original_url"`
-	Website                   string           `json:"website"`
-	Stars                     int              `json:"stars_count"`
-	Forks                     int              `json:"forks_count"`
-	Watchers                  int              `json:"watchers_count"`
-	OpenIssues                int              `json:"open_issues_count"`
-	OpenPulls                 int              `json:"open_pr_counter"`
-	Releases                  int              `json:"release_counter"`
-	DefaultBranch             string           `json:"default_branch"`
-	Archived                  bool             `json:"archived"`
-	Created                   time.Time        `json:"created_at"`
-	Updated                   time.Time        `json:"updated_at"`
-	Permissions               *Permission      `json:"permissions,omitempty"`
-	HasIssues                 bool             `json:"has_issues"`
-	InternalTracker           *InternalTracker `json:"internal_tracker,omitempty"`
-	ExternalTracker           *ExternalTracker `json:"external_tracker,omitempty"`
-	HasWiki                   bool             `json:"has_wiki"`
-	ExternalWiki              *ExternalWiki    `json:"external_wiki,omitempty"`
-	HasPullRequests           bool             `json:"has_pull_requests"`
-	HasProjects               bool             `json:"has_projects"`
-	HasReleases               bool             `json:"has_releases,omitempty"`
-	HasPackages               bool             `json:"has_packages,omitempty"`
-	HasActions                bool             `json:"has_actions,omitempty"`
-	IgnoreWhitespaceConflicts bool             `json:"ignore_whitespace_conflicts"`
-	AllowMerge                bool             `json:"allow_merge_commits"`
-	AllowRebase               bool             `json:"allow_rebase"`
-	AllowRebaseMerge          bool             `json:"allow_rebase_explicit"`
-	AllowSquash               bool             `json:"allow_squash_merge"`
-	AvatarURL                 string           `json:"avatar_url"`
-	Internal                  bool             `json:"internal"`
-	MirrorInterval            string           `json:"mirror_interval"`
-	MirrorUpdated             time.Time        `json:"mirror_updated,omitempty"`
-	DefaultMergeStyle         MergeStyle       `json:"default_merge_style"`
-}
-
 // RepoType represent repo type
 type RepoType string
 
@@ -140,20 +87,20 @@ type ListReposOptions struct {
 }
 
 // ListMyRepos lists all repositories for the authenticated user that has access to.
-func (c *Client) ListMyRepos(opt ListReposOptions) ([]*Repository, *Response, error) {
+func (c *Client) ListMyRepos(opt ListReposOptions) ([]*models.Repository, *Response, error) {
 	opt.setDefaults()
-	repos := make([]*Repository, 0, opt.PageSize)
+	repos := make([]*models.Repository, 0, opt.PageSize)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/user/repos?%s", opt.getURLQuery().Encode()), nil, nil, &repos)
 	return repos, resp, err
 }
 
 // ListUserRepos list all repositories of one user by user's name
-func (c *Client) ListUserRepos(user string, opt ListReposOptions) ([]*Repository, *Response, error) {
+func (c *Client) ListUserRepos(user string, opt ListReposOptions) ([]*models.Repository, *Response, error) {
 	if err := escapeValidatePathSegments(&user); err != nil {
 		return nil, nil, err
 	}
 	opt.setDefaults()
-	repos := make([]*Repository, 0, opt.PageSize)
+	repos := make([]*models.Repository, 0, opt.PageSize)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/users/%s/repos?%s", user, opt.getURLQuery().Encode()), nil, nil, &repos)
 	return repos, resp, err
 }
@@ -164,12 +111,12 @@ type ListOrgReposOptions struct {
 }
 
 // ListOrgRepos list all repositories of one organization by organization's name
-func (c *Client) ListOrgRepos(org string, opt ListOrgReposOptions) ([]*Repository, *Response, error) {
+func (c *Client) ListOrgRepos(org string, opt ListOrgReposOptions) ([]*models.Repository, *Response, error) {
 	if err := escapeValidatePathSegments(&org); err != nil {
 		return nil, nil, err
 	}
 	opt.setDefaults()
-	repos := make([]*Repository, 0, opt.PageSize)
+	repos := make([]*models.Repository, 0, opt.PageSize)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/orgs/%s/repos?%s", org, opt.getURLQuery().Encode()), nil, nil, &repos)
 	return repos, resp, err
 }
@@ -276,11 +223,11 @@ func (opt *SearchRepoOptions) QueryEncode() string {
 }
 
 type searchRepoResponse struct {
-	Repos []*Repository `json:"data"`
+	Repos []*models.Repository `json:"data"`
 }
 
 // SearchRepos searches for repositories matching the given filters
-func (c *Client) SearchRepos(opt SearchRepoOptions) ([]*Repository, *Response, error) {
+func (c *Client) SearchRepos(opt SearchRepoOptions) ([]*models.Repository, *Response, error) {
 	opt.setDefaults()
 	repos := new(searchRepoResponse)
 
@@ -355,7 +302,7 @@ func (opt CreateRepoOption) Validate(c *Client) error {
 }
 
 // CreateRepo creates a repository for authenticated user.
-func (c *Client) CreateRepo(opt CreateRepoOption) (*Repository, *Response, error) {
+func (c *Client) CreateRepo(opt CreateRepoOption) (*models.Repository, *Response, error) {
 	if err := opt.Validate(c); err != nil {
 		return nil, nil, err
 	}
@@ -363,13 +310,13 @@ func (c *Client) CreateRepo(opt CreateRepoOption) (*Repository, *Response, error
 	if err != nil {
 		return nil, nil, err
 	}
-	repo := new(Repository)
+	repo := new(models.Repository)
 	resp, err := c.getParsedResponse("POST", "/user/repos", jsonHeader, bytes.NewReader(body), repo)
 	return repo, resp, err
 }
 
 // CreateOrgRepo creates an organization repository for authenticated user.
-func (c *Client) CreateOrgRepo(org string, opt CreateRepoOption) (*Repository, *Response, error) {
+func (c *Client) CreateOrgRepo(org string, opt CreateRepoOption) (*models.Repository, *Response, error) {
 	if err := escapeValidatePathSegments(&org); err != nil {
 		return nil, nil, err
 	}
@@ -380,24 +327,24 @@ func (c *Client) CreateOrgRepo(org string, opt CreateRepoOption) (*Repository, *
 	if err != nil {
 		return nil, nil, err
 	}
-	repo := new(Repository)
+	repo := new(models.Repository)
 	resp, err := c.getParsedResponse("POST", fmt.Sprintf("/org/%s/repos", org), jsonHeader, bytes.NewReader(body), repo)
 	return repo, resp, err
 }
 
 // GetRepo returns information of a repository of given owner.
-func (c *Client) GetRepo(owner, reponame string) (*Repository, *Response, error) {
+func (c *Client) GetRepo(owner, reponame string) (*models.Repository, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &reponame); err != nil {
 		return nil, nil, err
 	}
-	repo := new(Repository)
+	repo := new(models.Repository)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s", owner, reponame), nil, nil, repo)
 	return repo, resp, err
 }
 
 // GetRepoByID returns information of a repository by a giver repository ID.
-func (c *Client) GetRepoByID(id int64) (*Repository, *Response, error) {
-	repo := new(Repository)
+func (c *Client) GetRepoByID(id int64) (*models.Repository, *Response, error) {
+	repo := new(models.Repository)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repositories/%d", id), nil, nil, repo)
 	return repo, resp, err
 }
@@ -462,7 +409,7 @@ type EditRepoOption struct {
 }
 
 // EditRepo edit the properties of a repository
-func (c *Client) EditRepo(owner, reponame string, opt EditRepoOption) (*Repository, *Response, error) {
+func (c *Client) EditRepo(owner, reponame string, opt EditRepoOption) (*models.Repository, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &reponame); err != nil {
 		return nil, nil, err
 	}
@@ -470,7 +417,7 @@ func (c *Client) EditRepo(owner, reponame string, opt EditRepoOption) (*Reposito
 	if err != nil {
 		return nil, nil, err
 	}
-	repo := new(Repository)
+	repo := new(models.Repository)
 	resp, err := c.getParsedResponse("PATCH", fmt.Sprintf("/repos/%s/%s", owner, reponame), jsonHeader, bytes.NewReader(body), repo)
 	return repo, resp, err
 }

@@ -12,12 +12,14 @@ import (
 	"fmt"
 	"net/url"
 	"time"
+
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
 // NotificationThread expose Notification on API
 type NotificationThread struct {
 	ID         int64                `json:"id"`
-	Repository *Repository          `json:"repository"`
+	Repository *models.Repository   `json:"repository"`
 	Subject    *NotificationSubject `json:"subject"`
 	Unread     bool                 `json:"unread"`
 	Pinned     bool                 `json:"pinned"`
