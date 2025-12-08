@@ -32,3 +32,5 @@ coverage.out
 #integrations
 test
 test-cache
+compare
+swagger.v1.json

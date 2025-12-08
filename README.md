@@ -10,7 +10,9 @@
 [![Go Report Card](https://goreportcard.com/badge/codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2)](https://goreportcard.com/report/codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2)
 [![GoDoc](https://godoc.org/codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2?status.svg)](https://godoc.org/codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2)
 
-This project acts as a client SDK implementation written in Go to interact with the Forgejo API implementation. For further informations take a look at the current [documentation](https://pkg.go.dev/codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2).
+This project acts as a client SDK implementation written in Go to interact with
+the Forgejo API implementation. For further informations take a look at the current
+[documentation](https://pkg.go.dev/codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2).
 
 Note: function arguments are escaped by the SDK.
 
@@ -21,10 +23,11 @@ import "codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2"
 ```
 
 ## Version Requirements
- * go >= 1.23
- * forgejo >= 9.0.3
+ * go >= 1.24
+ * forgejo >= 13.0.3
  
- **Please note:** that the SDK might or might not work with lower versions of Forgejo depending on what part of the SDK you use, but it was tested against this one. Starting with release v2 of the SDK, Forgejo versions below 7.x.x will not be supported.
+ **Please note:** that the SDK might or might not work with lower versions of Forgejo
+ depending on what part of the SDK you use, but it was tested against this one.
 
 ## Contributing
 
@@ -32,4 +35,5 @@ Fork -> Patch -> Push -> Pull Request
 
 ## License
 
-This project is under the MIT License. See the [LICENSE](LICENSE) file for the full license text.
+This project is under the MIT License. See the [LICENSE](LICENSE) file for the
+full license text.
