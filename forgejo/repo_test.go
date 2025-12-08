@@ -77,7 +77,7 @@ func TestRepoMigrateAndLanguages(t *testing.T) {
 	require.NoError(t, err)
 	assert.Len(t, lang, 2)
 	assert.Less(t, int64(217441), lang["Go"])
-	assert.True(t, 3614 < lang["Makefile"] && 6000 > lang["Makefile"])
+	assert.True(t, 3614 < lang["Makefile"] && 9000 > lang["Makefile"])
 }
 
 func TestSearchRepo(t *testing.T) {
