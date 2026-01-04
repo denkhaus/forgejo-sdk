@@ -5,6 +5,8 @@
 package forgejo
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 
 	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
@@ -47,4 +49,38 @@ func (c *Client) ListBlockingIssues(owner, repo string, index int64) ([]*models.
 	issues := make([]*models.Issue, 0, 5)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/issues/%d/blocking", owner, repo, index), nil, nil, &issues)
 	return issues, resp, err
+}
+
+// CreateIssueDependencyOption options for creating an issue dependency
+type CreateIssueDependencyOption struct {
+	// NewDependency is the issue index (number) of the blocking issue
+	NewDependency int64 `json:"newDependency"`
+}
+
+// Validate the CreateIssueDependencyOption struct
+func (opt CreateIssueDependencyOption) Validate() error {
+	if opt.NewDependency <= 0 {
+		return fmt.Errorf("newDependency must be a positive issue number")
+	}
+	return nil
+}
+
+// CreateIssueDependency adds a dependency relationship to an issue
+// The dependency issue (specified by NewDependency) must be completed
+// before this issue can be worked on
+func (c *Client) CreateIssueDependency(owner, repo string, index int64, opt CreateIssueDependencyOption) (*Response, error) {
+	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
+		return nil, err
+	}
+	if err := opt.Validate(); err != nil {
+		return nil, err
+	}
+	body, err := json.Marshal(&opt)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.getParsedResponse("POST",
+		fmt.Sprintf("/repos/%s/%s/issues/%d/dependencies", owner, repo, index),
+		jsonHeader, bytes.NewReader(body), nil)
+	return resp, err
 }
