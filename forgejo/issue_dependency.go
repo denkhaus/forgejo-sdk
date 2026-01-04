@@ -29,26 +29,22 @@ func (c *Client) ListIssueDependencies(owner, repo string, index int64, opt List
 	return dependencies, resp, err
 }
 
-// ListBlockedIssues list all issues that block the given issue
-// Blocked issues are issues that must be completed before this issue can be worked on
+// ListBlockedIssues list all issues that are blocked by this issue
+// These issues cannot be worked on until this issue is completed
 func (c *Client) ListBlockedIssues(owner, repo string, index int64) ([]*models.Issue, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
 	issues := make([]*models.Issue, 0, 5)
-	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/issues/%d/blocked", owner, repo, index), nil, nil, &issues)
+	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/issues/%d/blocks", owner, repo, index), nil, nil, &issues)
 	return issues, resp, err
 }
 
-// ListBlockingIssues list all issues that are blocked by the given issue
-// Blocking issues are issues that cannot be worked on until this issue is completed
+// ListBlockingIssues list all issues that block this issue
+// These issues must be completed before this issue can be worked on
+// This is an alias for ListIssueDependencies with default options
 func (c *Client) ListBlockingIssues(owner, repo string, index int64) ([]*models.Issue, *Response, error) {
-	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
-		return nil, nil, err
-	}
-	issues := make([]*models.Issue, 0, 5)
-	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/issues/%d/blocking", owner, repo, index), nil, nil, &issues)
-	return issues, resp, err
+	return c.ListIssueDependencies(owner, repo, index, ListDependenciesOptions{})
 }
 
 // CreateIssueDependencyOption options for creating an issue dependency
@@ -75,13 +71,19 @@ func (c *Client) CreateIssueDependency(owner, repo string, index int64, opt Crea
 	if err := opt.Validate(); err != nil {
 		return nil, err
 	}
-	body, err := json.Marshal(&opt)
+	// API expects IssueMeta with index, owner, and repo fields
+	meta := models.IssueMeta{
+		Index: opt.NewDependency,
+		Owner: owner,
+		Name:  repo,
+	}
+	body, err := json.Marshal(&meta)
 	if err != nil {
 		return nil, err
 	}
-	resp, err := c.getParsedResponse("POST",
+	_, resp, err := c.getResponse("POST",
 		fmt.Sprintf("/repos/%s/%s/issues/%d/dependencies", owner, repo, index),
-		jsonHeader, bytes.NewReader(body), nil)
+		jsonHeader, bytes.NewReader(body))
 	return resp, err
 }
 
@@ -91,8 +93,18 @@ func (c *Client) RemoveIssueDependency(owner, repo string, index, dependency int
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, err
 	}
+	// API expects IssueMeta with index, owner, and repo fields in body
+	meta := models.IssueMeta{
+		Index: dependency,
+		Owner: owner,
+		Name:  repo,
+	}
+	body, err := json.Marshal(&meta)
+	if err != nil {
+		return nil, err
+	}
 	_, resp, err := c.getResponse("DELETE",
-		fmt.Sprintf("/repos/%s/%s/issues/%d/dependencies/%d", owner, repo, index, dependency),
-		nil, nil)
+		fmt.Sprintf("/repos/%s/%s/issues/%d/dependencies", owner, repo, index),
+		jsonHeader, bytes.NewReader(body))
 	return resp, err
 }
