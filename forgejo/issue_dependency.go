@@ -84,3 +84,15 @@ func (c *Client) CreateIssueDependency(owner, repo string, index int64, opt Crea
 		jsonHeader, bytes.NewReader(body), nil)
 	return resp, err
 }
+
+// RemoveIssueDependency removes a dependency relationship from an issue
+// The dependency issue is specified by its index (number)
+func (c *Client) RemoveIssueDependency(owner, repo string, index, dependency int64) (*Response, error) {
+	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
+		return nil, err
+	}
+	_, resp, err := c.getResponse("DELETE",
+		fmt.Sprintf("/repos/%s/%s/issues/%d/dependencies/%d", owner, repo, index, dependency),
+		nil, nil)
+	return resp, err
+}
