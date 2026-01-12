@@ -18,6 +18,10 @@ func TestWorkflowDispatch(t *testing.T) {
 
 	user := createTestUser(t, "workflow_user", c)
 	c.SetSudo(user.UserName)
+
+	// Pre-cleanup: delete existing repo from previous test runs
+	c.DeleteRepo(user.UserName, "test-workflow-dispatch")
+
 	newRepo, _, err := c.CreateRepo(CreateRepoOption{
 		Name: "test-workflow-dispatch",
 	})
@@ -42,6 +46,10 @@ func TestWorkflowDispatchWithInputs(t *testing.T) {
 
 	user := createTestUser(t, "workflow_user2", c)
 	c.SetSudo(user.UserName)
+
+	// Pre-cleanup: delete existing repo from previous test runs
+	c.DeleteRepo(user.UserName, "test-workflow-inputs")
+
 	newRepo, _, err := c.CreateRepo(CreateRepoOption{
 		Name: "test-workflow-inputs",
 	})
@@ -68,6 +76,10 @@ func TestWorkflowDispatchWithRef(t *testing.T) {
 
 	user := createTestUser(t, "workflow_user3", c)
 	c.SetSudo(user.UserName)
+
+	// Pre-cleanup: delete existing repo from previous test runs
+	c.DeleteRepo(user.UserName, "test-workflow-ref")
+
 	newRepo, _, err := c.CreateRepo(CreateRepoOption{
 		Name: "test-workflow-ref",
 	})
