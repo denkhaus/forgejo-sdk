@@ -31,3 +31,20 @@ func TestGetOrgRunnerRegistrationToken(t *testing.T) {
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.NotEmpty(t, token.Token)
 }
+
+func TestSearchOrgRunnerJobs(t *testing.T) {
+	log.Println("== TestSearchOrgRunnerJobs ==")
+	c := newTestClient()
+
+	org, _, err := c.CreateOrg(CreateOrgOption{
+		Name:     "test-runner-org-search",
+		FullName: "Test Runner Org Search",
+	})
+	require.NoError(t, err)
+	assert.NotNil(t, org)
+
+	// Search org runner jobs (may be empty for new org)
+	jobs, _, err := c.SearchOrgRunnerJobs(org.UserName, SearchOrgRunnerJobsOption{})
+	require.NoError(t, err)
+	assert.NotNil(t, jobs)
+}
