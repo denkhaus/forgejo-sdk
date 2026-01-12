@@ -91,3 +91,75 @@ func (c *Client) CreateOrgActionSecret(org string, opt CreateSecretOption) (*Res
 		return resp, fmt.Errorf("unexpected Status: %d", status)
 	}
 }
+
+// UpdateOrgActionSecretOption options for updating a secret
+type UpdateOrgActionSecretOption struct {
+	Name  string `json:"name"`
+	Value string `json:"data"` // Use "data" for consistency with CreateSecretOption
+}
+
+// UpdateOrgActionSecret updates an organization action secret
+func (c *Client) UpdateOrgActionSecret(org, name string, opt UpdateOrgActionSecretOption) (*Response, error) {
+	if err := escapeValidatePathSegments(&org, &name); err != nil {
+		return nil, err
+	}
+	if len(opt.Name) == 0 {
+		opt.Name = name
+	}
+	// Reuse CreateSecretOption for validation
+	createOpt := CreateSecretOption{Name: opt.Name, Data: opt.Value}
+	if err := (&createOpt).Validate(); err != nil {
+		return nil, err
+	}
+	body, err := json.Marshal(&createOpt)
+	if err != nil {
+		return nil, err
+	}
+
+	status, resp, err := c.getStatusCode("PUT", fmt.Sprintf("/orgs/%s/actions/secrets/%s", org, name), jsonHeader, bytes.NewReader(body))
+	if err != nil {
+		return nil, err
+	}
+
+	switch status {
+	case http.StatusOK:
+		return resp, nil
+	case http.StatusCreated:
+		return resp, nil
+	case http.StatusNoContent:
+		return resp, nil
+	case http.StatusNotFound:
+		return resp, fmt.Errorf("organization or secret not found")
+	case http.StatusForbidden:
+		return resp, fmt.Errorf("forbidden: permission denied")
+	case http.StatusBadRequest:
+		return resp, fmt.Errorf("bad request: invalid secret data")
+	default:
+		return resp, fmt.Errorf("unexpected Status: %d", status)
+	}
+}
+
+// DeleteOrgActionSecret deletes an organization action secret
+func (c *Client) DeleteOrgActionSecret(org, name string) (*Response, error) {
+	if err := escapeValidatePathSegments(&org, &name); err != nil {
+		return nil, err
+	}
+
+	status, resp, err := c.getStatusCode("DELETE", fmt.Sprintf("/orgs/%s/actions/secrets/%s", org, name), jsonHeader, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	switch status {
+	case http.StatusOK:
+		return resp, nil
+	case http.StatusNoContent:
+		return resp, nil
+	case http.StatusNotFound:
+		return resp, fmt.Errorf("organization or secret not found")
+	case http.StatusForbidden:
+		return resp, fmt.Errorf("forbidden: permission denied")
+	default:
+		return resp, fmt.Errorf("unexpected Status: %d", status)
+	}
+}

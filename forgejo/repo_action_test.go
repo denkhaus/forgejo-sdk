@@ -40,3 +40,76 @@ func TestCreateRepoActionSecret(t *testing.T) {
 	require.NoError(t, err)
 	assert.Len(t, secrets, 1)
 }
+
+func TestUpdateRepoActionSecret(t *testing.T) {
+	log.Println("== TestUpdateRepoActionSecret ==")
+	c := newTestClient()
+
+	user := createTestUser(t, "repo_action_update_user", c)
+	c.SetSudo(user.UserName)
+
+	// Pre-cleanup: delete existing repo from previous test runs
+	c.DeleteRepo(user.UserName, "test-update")
+
+	newRepo, _, err := c.CreateRepo(CreateRepoOption{
+		Name: "test-update",
+	})
+	require.NoError(t, err)
+	assert.NotNil(t, newRepo)
+
+	// Pre-cleanup: delete any existing secret from previous test runs
+	c.DeleteRepoActionSecret(newRepo.Owner.UserName, newRepo.Name, "test_update")
+
+	// create secret first
+	resp, err := c.CreateRepoActionSecret(newRepo.Owner.UserName, newRepo.Name, CreateSecretOption{Name: "test_update", Data: "initial_value"})
+	require.NoError(t, err)
+	assert.Equal(t, http.StatusCreated, resp.StatusCode)
+
+	// update secret using UpdateRepoActionSecret
+	resp, err = c.UpdateRepoActionSecret(newRepo.Owner.UserName, newRepo.Name, "test_update", UpdateRepoActionSecretOption{
+		Name:  "test_update",
+		Value: "updated_value",
+	})
+	require.NoError(t, err)
+	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
+
+	// verify update by listing secrets
+	secrets, _, err := c.ListRepoActionSecret(newRepo.Owner.UserName, newRepo.Name, ListRepoActionSecretOption{})
+	require.NoError(t, err)
+	assert.Len(t, secrets, 1)
+
+	// Cleanup
+	c.DeleteRepoActionSecret(newRepo.Owner.UserName, newRepo.Name, "test_update")
+}
+
+func TestDeleteRepoActionSecret(t *testing.T) {
+	log.Println("== TestDeleteRepoActionSecret ==")
+	c := newTestClient()
+
+	user := createTestUser(t, "repo_action_delete_user", c)
+	c.SetSudo(user.UserName)
+
+	// Pre-cleanup: delete existing repo from previous test runs
+	c.DeleteRepo(user.UserName, "test-delete")
+
+	newRepo, _, err := c.CreateRepo(CreateRepoOption{
+		Name: "test-delete",
+	})
+	require.NoError(t, err)
+	assert.NotNil(t, newRepo)
+
+	// create secret first
+	resp, err := c.CreateRepoActionSecret(newRepo.Owner.UserName, newRepo.Name, CreateSecretOption{Name: "test_delete", Data: "delete_me"})
+	require.NoError(t, err)
+	assert.Equal(t, http.StatusCreated, resp.StatusCode)
+
+	// delete secret
+	resp, err = c.DeleteRepoActionSecret(newRepo.Owner.UserName, newRepo.Name, "test_delete")
+	require.NoError(t, err)
+	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
+
+	// verify deletion - list should be empty
+	secrets, _, err := c.ListRepoActionSecret(newRepo.Owner.UserName, newRepo.Name, ListRepoActionSecretOption{})
+	require.NoError(t, err)
+	assert.Len(t, secrets, 0)
+}

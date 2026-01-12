@@ -18,32 +18,24 @@ import (
 	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
-// ListRepoActionSecretOption list RepoActionSecret options
-type ListRepoActionSecretOption struct {
+// ListUserActionSecretOption list UserActionSecret options
+type ListUserActionSecretOption struct {
 	ListOptions
 }
 
-// ListRepoActionSecret list a repository's secrets
-func (c *Client) ListRepoActionSecret(user, repo string, opt ListRepoActionSecretOption) ([]*models.Secret, *Response, error) {
-	if err := escapeValidatePathSegments(&user, &repo); err != nil {
-		return nil, nil, err
-	}
+// ListUserActionSecret lists the current user's action secrets
+func (c *Client) ListUserActionSecret(opt ListUserActionSecretOption) ([]*models.Secret, *Response, error) {
 	opt.setDefaults()
 	secrets := make([]*models.Secret, 0, opt.PageSize)
 
-	link, _ := url.Parse(fmt.Sprintf("/repos/%s/%s/actions/secrets", user, repo))
+	link, _ := url.Parse("/user/actions/secrets")
 	link.RawQuery = opt.getURLQuery().Encode()
 	resp, err := c.getParsedResponse("GET", link.String(), jsonHeader, nil, &secrets)
 	return secrets, resp, err
 }
 
-// CreateRepoActionSecret creates a secret for the specified repository in the Gitea Actions.
-// It takes the organization name and the secret options as parameters.
-// The function returns the HTTP response and an error, if any.
-func (c *Client) CreateRepoActionSecret(user, repo string, opt CreateSecretOption) (*Response, error) {
-	if err := escapeValidatePathSegments(&user, &repo); err != nil {
-		return nil, err
-	}
+// CreateUserActionSecret creates a user action secret
+func (c *Client) CreateUserActionSecret(opt CreateSecretOption) (*Response, error) {
 	if err := (&opt).Validate(); err != nil {
 		return nil, err
 	}
@@ -52,7 +44,7 @@ func (c *Client) CreateRepoActionSecret(user, repo string, opt CreateSecretOptio
 		return nil, err
 	}
 
-	status, resp, err := c.getStatusCode("PUT", fmt.Sprintf("/repos/%s/%s/actions/secrets/%s", user, repo, opt.Name), jsonHeader, bytes.NewReader(body))
+	status, resp, err := c.getStatusCode("PUT", fmt.Sprintf("/user/actions/secrets/%s", opt.Name), jsonHeader, bytes.NewReader(body))
 	if err != nil {
 		return nil, err
 	}
@@ -63,23 +55,25 @@ func (c *Client) CreateRepoActionSecret(user, repo string, opt CreateSecretOptio
 	case http.StatusNoContent:
 		return resp, nil
 	case http.StatusNotFound:
-		return resp, fmt.Errorf("forbidden")
+		return resp, fmt.Errorf("user not found or secret name invalid")
+	case http.StatusForbidden:
+		return resp, fmt.Errorf("forbidden: permission denied")
 	case http.StatusBadRequest:
-		return resp, fmt.Errorf("bad request")
+		return resp, fmt.Errorf("bad request: invalid secret data")
 	default:
 		return resp, fmt.Errorf("unexpected Status: %d", status)
 	}
 }
 
-// UpdateRepoActionSecretOption options for updating a secret
-type UpdateRepoActionSecretOption struct {
+// UpdateUserActionSecretOption options for updating a user secret
+type UpdateUserActionSecretOption struct {
 	Name  string `json:"name"`
 	Value string `json:"data"` // Use "data" for consistency with CreateSecretOption
 }
 
-// UpdateRepoActionSecret updates a repository action secret
-func (c *Client) UpdateRepoActionSecret(owner, repo, name string, opt UpdateRepoActionSecretOption) (*Response, error) {
-	if err := escapeValidatePathSegments(&owner, &repo, &name); err != nil {
+// UpdateUserActionSecret updates a user action secret
+func (c *Client) UpdateUserActionSecret(name string, opt UpdateUserActionSecretOption) (*Response, error) {
+	if err := escapeValidatePathSegments(&name); err != nil {
 		return nil, err
 	}
 	if len(opt.Name) == 0 {
@@ -95,7 +89,7 @@ func (c *Client) UpdateRepoActionSecret(owner, repo, name string, opt UpdateRepo
 		return nil, err
 	}
 
-	status, resp, err := c.getStatusCode("PUT", fmt.Sprintf("/repos/%s/%s/actions/secrets/%s", owner, repo, name), jsonHeader, bytes.NewReader(body))
+	status, resp, err := c.getStatusCode("PUT", fmt.Sprintf("/user/actions/secrets/%s", name), jsonHeader, bytes.NewReader(body))
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +102,7 @@ func (c *Client) UpdateRepoActionSecret(owner, repo, name string, opt UpdateRepo
 	case http.StatusNoContent:
 		return resp, nil
 	case http.StatusNotFound:
-		return resp, fmt.Errorf("repository or secret not found")
+		return resp, fmt.Errorf("user or secret not found")
 	case http.StatusForbidden:
 		return resp, fmt.Errorf("forbidden: permission denied")
 	case http.StatusBadRequest:
@@ -118,13 +112,13 @@ func (c *Client) UpdateRepoActionSecret(owner, repo, name string, opt UpdateRepo
 	}
 }
 
-// DeleteRepoActionSecret deletes a repository action secret
-func (c *Client) DeleteRepoActionSecret(owner, repo, name string) (*Response, error) {
-	if err := escapeValidatePathSegments(&owner, &repo, &name); err != nil {
+// DeleteUserActionSecret deletes a user action secret
+func (c *Client) DeleteUserActionSecret(name string) (*Response, error) {
+	if err := escapeValidatePathSegments(&name); err != nil {
 		return nil, err
 	}
 
-	status, resp, err := c.getStatusCode("DELETE", fmt.Sprintf("/repos/%s/%s/actions/secrets/%s", owner, repo, name), jsonHeader, nil)
+	status, resp, err := c.getStatusCode("DELETE", fmt.Sprintf("/user/actions/secrets/%s", name), jsonHeader, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -135,7 +129,7 @@ func (c *Client) DeleteRepoActionSecret(owner, repo, name string) (*Response, er
 	case http.StatusNoContent:
 		return resp, nil
 	case http.StatusNotFound:
-		return resp, fmt.Errorf("repository or secret not found")
+		return resp, fmt.Errorf("user or secret not found")
 	case http.StatusForbidden:
 		return resp, fmt.Errorf("forbidden: permission denied")
 	default:
