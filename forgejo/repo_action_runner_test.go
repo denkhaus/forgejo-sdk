@@ -84,6 +84,24 @@ func TestSearchRunnerJobs(t *testing.T) {
 	assert.NotNil(t, jobs)
 }
 
+func TestListRunnerJobs(t *testing.T) {
+	log.Println("== TestListRunnerJobs ==")
+	c := newTestClient()
+
+	user := createTestUser(t, "action_runner_user_list", c)
+	c.SetSudo(user.UserName)
+	newRepo, _, err := c.CreateRepo(CreateRepoOption{
+		Name: "test-list-runner-jobs",
+	})
+	require.NoError(t, err)
+	assert.NotNil(t, newRepo)
+
+	// List runner jobs (may be empty for new repo)
+	jobs, _, err := c.ListRunnerJobs(newRepo.Owner.UserName, newRepo.Name, ListRunnerJobsOption{})
+	require.NoError(t, err)
+	assert.NotNil(t, jobs)
+}
+
 func TestGetRepoRunnerRegistrationToken(t *testing.T) {
 	log.Println("== TestGetRepoRunnerRegistrationToken ==")
 	c := newTestClient()
