@@ -113,6 +113,30 @@ func (c *Client) SearchRunnerJobs(owner, repo string, opt SearchRunnerJobsOption
 	link.RawQuery = query.Encode()
 	jobs := make([]*models.ActionRunJob, 0, 10)
 	resp, err := c.getParsedResponse("GET", link.String(), jsonHeader, nil, &jobs)
+	if jobs == nil {
+		jobs = make([]*models.ActionRunJob, 0, 10)
+	}
+	return jobs, resp, err
+}
+
+// ListRunnerJobsOption options for listing runner jobs
+type ListRunnerJobsOption struct {
+	ListOptions
+}
+
+// ListRunnerJobs lists a repository's runner jobs
+func (c *Client) ListRunnerJobs(owner, repo string, opt ListRunnerJobsOption) ([]*models.ActionRunJob, *Response, error) {
+	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
+		return nil, nil, err
+	}
+	opt.setDefaults()
+	link, _ := url.Parse(fmt.Sprintf("/repos/%s/%s/actions/runners/jobs", owner, repo))
+	link.RawQuery = opt.getURLQuery().Encode()
+	jobs := make([]*models.ActionRunJob, 0, opt.PageSize)
+	resp, err := c.getParsedResponse("GET", link.String(), jsonHeader, nil, &jobs)
+	if jobs == nil {
+		jobs = make([]*models.ActionRunJob, 0, opt.PageSize)
+	}
 	return jobs, resp, err
 }
 

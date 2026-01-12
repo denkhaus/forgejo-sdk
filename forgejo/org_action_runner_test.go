@@ -18,7 +18,7 @@ func TestGetOrgRunnerRegistrationToken(t *testing.T) {
 	c := newTestClient()
 
 	org, _, err := c.CreateOrg(CreateOrgOption{
-		Name:    "test-runner-org",
+		Name:     "test-runner-org",
 		FullName: "Test Runner Org",
 	})
 	require.NoError(t, err)
