@@ -44,7 +44,7 @@ func TestGetActionRun(t *testing.T) {
 
 	// Try to get a non-existent run (should return 404 or error)
 	_, resp, err := c.GetActionRun(newRepo.Owner.UserName, newRepo.Name, 999999)
-	assert.Error(t, err)
+	require.Error(t, err)
 	assert.NotNil(t, resp)
 }
 

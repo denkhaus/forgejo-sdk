@@ -90,9 +90,9 @@ func TestWorkflowDispatchErrorHandling(t *testing.T) {
 
 	// Test with invalid owner/repo (should handle validation error)
 	_, _, err := c.WorkflowDispatch("", "repo", "test.yml", WorkflowDispatchOption{})
-	assert.Error(t, err)
+	require.Error(t, err)
 
 	// Test with invalid characters in owner/repo (should be escaped)
 	_, _, err = c.WorkflowDispatch("../evil", "repo", "test.yml", WorkflowDispatchOption{})
-	assert.Error(t, err)
+	require.Error(t, err)
 }
