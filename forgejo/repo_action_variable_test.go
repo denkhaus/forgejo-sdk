@@ -226,6 +226,10 @@ func TestRepoActionVariableErrorHandling(t *testing.T) {
 
 	user := createTestUser(t, "repo_action_variable_error_user", c)
 	c.SetSudo(user.UserName)
+
+	// Pre-cleanup: delete existing repo from previous test runs
+	c.DeleteRepo(user.UserName, "test-repo-error")
+
 	newRepo, _, err := c.CreateRepo(CreateRepoOption{
 		Name: "test-repo-error",
 	})
