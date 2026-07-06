@@ -5,7 +5,10 @@
 package forgejo
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"net/http"
 	"net/url"
 
 	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
@@ -148,4 +151,67 @@ func (c *Client) GetRepoRunnerRegistrationToken(owner, repo string) (*models.Reg
 	token := new(models.RegistrationToken)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/actions/runners/registration-token", owner, repo), jsonHeader, nil, &token)
 	return token, resp, err
+}
+
+// ListRepoRunners lists a repository's action runners
+func (c *Client) ListRepoRunners(owner, repo string, opt ListActionRunnersOption) ([]*models.ActionRunner, *Response, error) {
+	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
+		return nil, nil, err
+	}
+	opt.setDefaults()
+	link, _ := url.Parse(fmt.Sprintf("/repos/%s/%s/actions/runners", owner, repo))
+	link.RawQuery = opt.getURLQuery().Encode()
+	runners := make([]*models.ActionRunner, 0, opt.PageSize)
+	resp, err := c.getParsedResponse("GET", link.String(), jsonHeader, nil, &runners)
+	return runners, resp, err
+}
+
+// GetRepoRunner gets a repository's action runner by ID
+func (c *Client) GetRepoRunner(owner, repo string, runnerID int64) (*models.ActionRunner, *Response, error) {
+	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
+		return nil, nil, err
+	}
+	runner := new(models.ActionRunner)
+	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/repos/%s/%s/actions/runners/%d", owner, repo, runnerID), jsonHeader, nil, runner)
+	return runner, resp, err
+}
+
+// RegisterRepoRunner registers a new repository-level runner through the
+// interactive registration flow (Forgejo v15+). Set Ephemeral to register a
+// single-job runner.
+func (c *Client) RegisterRepoRunner(owner, repo string, opt models.RegisterRunnerOptions) (*models.RegisterRunnerResponse, *Response, error) {
+	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
+		return nil, nil, err
+	}
+	if err := (&opt).Validate(nil); err != nil {
+		return nil, nil, err
+	}
+	body, err := json.Marshal(&opt)
+	if err != nil {
+		return nil, nil, err
+	}
+	out := new(models.RegisterRunnerResponse)
+	resp, err := c.getParsedResponse("POST", fmt.Sprintf("/repos/%s/%s/actions/runners", owner, repo), jsonHeader, bytes.NewReader(body), out)
+	return out, resp, err
+}
+
+// DeleteRepoRunner deletes a repository's action runner by ID
+func (c *Client) DeleteRepoRunner(owner, repo string, runnerID int64) (*Response, error) {
+	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
+		return nil, err
+	}
+	status, resp, err := c.getStatusCode("DELETE", fmt.Sprintf("/repos/%s/%s/actions/runners/%d", owner, repo, runnerID), jsonHeader, nil)
+	if err != nil {
+		return resp, err
+	}
+	switch status {
+	case http.StatusNoContent, http.StatusOK:
+		return resp, nil
+	case http.StatusNotFound:
+		return resp, fmt.Errorf("runner not found")
+	case http.StatusForbidden:
+		return resp, fmt.Errorf("forbidden: permission denied")
+	default:
+		return resp, fmt.Errorf("unexpected Status: %d", status)
+	}
 }

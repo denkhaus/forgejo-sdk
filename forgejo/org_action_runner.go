@@ -5,7 +5,10 @@
 package forgejo
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"net/http"
 	"net/url"
 
 	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
@@ -54,4 +57,67 @@ func (c *Client) GetOrgRunnerRegistrationToken(org string) (*models.Registration
 	token := new(models.RegistrationToken)
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/orgs/%s/actions/runners/registration-token", org), jsonHeader, nil, &token)
 	return token, resp, err
+}
+
+// ListOrgRunners lists an organization's action runners
+func (c *Client) ListOrgRunners(org string, opt ListActionRunnersOption) ([]*models.ActionRunner, *Response, error) {
+	if err := escapeValidatePathSegments(&org); err != nil {
+		return nil, nil, err
+	}
+	opt.setDefaults()
+	link, _ := url.Parse(fmt.Sprintf("/orgs/%s/actions/runners", org))
+	link.RawQuery = opt.getURLQuery().Encode()
+	runners := make([]*models.ActionRunner, 0, opt.PageSize)
+	resp, err := c.getParsedResponse("GET", link.String(), jsonHeader, nil, &runners)
+	return runners, resp, err
+}
+
+// GetOrgRunner gets an organization's action runner by ID
+func (c *Client) GetOrgRunner(org string, runnerID int64) (*models.ActionRunner, *Response, error) {
+	if err := escapeValidatePathSegments(&org); err != nil {
+		return nil, nil, err
+	}
+	runner := new(models.ActionRunner)
+	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/orgs/%s/actions/runners/%d", org, runnerID), jsonHeader, nil, runner)
+	return runner, resp, err
+}
+
+// RegisterOrgRunner registers a new organization-level runner through the
+// interactive registration flow (Forgejo v15+). Set Ephemeral to register a
+// single-job runner.
+func (c *Client) RegisterOrgRunner(org string, opt models.RegisterRunnerOptions) (*models.RegisterRunnerResponse, *Response, error) {
+	if err := escapeValidatePathSegments(&org); err != nil {
+		return nil, nil, err
+	}
+	if err := (&opt).Validate(nil); err != nil {
+		return nil, nil, err
+	}
+	body, err := json.Marshal(&opt)
+	if err != nil {
+		return nil, nil, err
+	}
+	out := new(models.RegisterRunnerResponse)
+	resp, err := c.getParsedResponse("POST", fmt.Sprintf("/orgs/%s/actions/runners", org), jsonHeader, bytes.NewReader(body), out)
+	return out, resp, err
+}
+
+// DeleteOrgRunner deletes an organization's action runner by ID
+func (c *Client) DeleteOrgRunner(org string, runnerID int64) (*Response, error) {
+	if err := escapeValidatePathSegments(&org); err != nil {
+		return nil, err
+	}
+	status, resp, err := c.getStatusCode("DELETE", fmt.Sprintf("/orgs/%s/actions/runners/%d", org, runnerID), jsonHeader, nil)
+	if err != nil {
+		return resp, err
+	}
+	switch status {
+	case http.StatusNoContent, http.StatusOK:
+		return resp, nil
+	case http.StatusNotFound:
+		return resp, fmt.Errorf("runner not found")
+	case http.StatusForbidden:
+		return resp, fmt.Errorf("forbidden: permission denied")
+	default:
+		return resp, fmt.Errorf("unexpected Status: %d", status)
+	}
 }
