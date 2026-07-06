@@ -46,8 +46,8 @@ func TestCreateRepoActionVariable(t *testing.T) {
 	assert.Len(t, variables, 1)
 	// Variable names are uppercased by Forgejo
 	assert.Equal(t, "TEST", variables[0].Name)
-	// Data field is NOT returned in list operations (empty for security)
-	assert.Empty(t, variables[0].Data)
+	// Forgejo v15+ returns the variable Data in list operations
+	assert.Equal(t, testValue, variables[0].Data)
 
 	// get variable
 	variable, _, err := c.GetRepoActionVariable(newRepo.Owner.UserName, newRepo.Name, "TEST")

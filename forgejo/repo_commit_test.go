@@ -39,7 +39,7 @@ func TestListRepoCommits(t *testing.T) {
 
 	assert.EqualValues(t, "Initial commit\n", l[0].Commit.Message)
 	assert.EqualValues(t, "gpg.error.not_signed_commit", l[0].Commit.Verification.Reason)
-	assert.EqualValues(t, 100, l[0].Stats.Additions)
+	assert.EqualValues(t, 148, l[0].Stats.Additions)
 }
 
 func TestGetCommitDiffOrPatch(t *testing.T) {

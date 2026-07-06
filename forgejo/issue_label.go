@@ -14,6 +14,7 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+	"time"
 
 	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
@@ -153,12 +154,24 @@ func (c *Client) GetIssueLabels(owner, repo string, index int64, opts ListLabels
 	return labels, resp, err
 }
 
+// issueLabelsBody marshals IssueLabelsOption, omitting updated_at when unset.
+// Forgejo v15+ rejects a zero updated_at ("unallowed update date"), so it is
+// only sent when the caller sets it explicitly for optimistic concurrency.
+func issueLabelsBody(opt models.IssueLabelsOption) ([]byte, error) {
+	if time.Time(opt.Updated).IsZero() {
+		return json.Marshal(struct {
+			Labels []any `json:"labels"`
+		}{Labels: opt.Labels})
+	}
+	return json.Marshal(&opt)
+}
+
 // AddIssueLabels add one or more labels to one issue
 func (c *Client) AddIssueLabels(owner, repo string, index int64, opt models.IssueLabelsOption) ([]*models.Label, *Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
-	body, err := json.Marshal(&opt)
+	body, err := issueLabelsBody(opt)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -172,7 +185,7 @@ func (c *Client) ReplaceIssueLabels(owner, repo string, index int64, opt models.
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
-	body, err := json.Marshal(&opt)
+	body, err := issueLabelsBody(opt)
 	if err != nil {
 		return nil, nil, err
 	}
