@@ -26,7 +26,9 @@ func (c *Client) SearchTopics(opt SearchTopicOption) ([]*models.TopicResponse, *
 		query.Set("q", opt.Query)
 	}
 	link.RawQuery = query.Encode()
-	topics := make([]*models.TopicResponse, 0, opt.PageSize)
-	resp, err := c.getParsedResponse("GET", link.String(), jsonHeader, nil, &topics)
-	return topics, resp, err
+	var result struct {
+		Topics []*models.TopicResponse `json:"topics"`
+	}
+	resp, err := c.getParsedResponse("GET", link.String(), jsonHeader, nil, &result)
+	return result.Topics, resp, err
 }
