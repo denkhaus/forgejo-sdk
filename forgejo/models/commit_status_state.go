@@ -12,7 +12,7 @@ import (
 )
 
 // CommitStatusState CommitStatusState holds the state of a CommitStatus
-// It can be "pending", "success", "error" and "failure"
+// It can be "pending", "success", "error", "failure" and "warning"
 //
 // swagger:model CommitStatusState
 type CommitStatusState string

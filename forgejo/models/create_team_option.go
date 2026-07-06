@@ -42,7 +42,7 @@ type CreateTeamOption struct {
 	Units []string `json:"units"`
 
 	// units map
-	// Example: {\"repo.actions\",\"repo.packages\",\"repo.code\":\"read\",\"repo.issues\":\"write\",\"repo.ext_issues\":\"none\",\"repo.wiki\":\"admin\",\"repo.pulls\":\"owner\",\"repo.releases\":\"none\",\"repo.projects\":\"none\",\"repo.ext_wiki\":\"none\"}
+	// Example: {"repo.actions":"none","repo.code":"read","repo.ext_issues":"none","repo.ext_wiki":"none","repo.issues":"write","repo.packages":"none","repo.projects":"none","repo.pulls":"owner","repo.releases":"none","repo.wiki":"admin"}
 	UnitsMap map[string]string `json:"units_map,omitempty"`
 }
 

@@ -44,6 +44,9 @@ type EditUserOption struct {
 	// full name
 	FullName string `json:"full_name,omitempty"`
 
+	// hide email
+	HideEmail bool `json:"hide_email,omitempty"`
+
 	// location
 	Location string `json:"location,omitempty"`
 

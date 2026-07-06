@@ -21,35 +21,35 @@ import (
 // swagger:model Comment
 type Comment struct {
 
-	// attachments
+	// The attachments to the comment
 	Attachments []*Attachment `json:"assets"`
 
-	// body
+	// The body of the comment
 	Body string `json:"body,omitempty"`
 
-	// created
+	// The time of the comment's creation
 	// Format: date-time
 	Created strfmt.DateTime `json:"created_at,omitempty"`
 
-	// HTML URL
+	// The HTML URL of the comment
 	HTMLURL string `json:"html_url,omitempty"`
 
-	// ID
+	// The identifier of the comment
 	ID int64 `json:"id,omitempty"`
 
-	// issue URL
+	// The HTML URL of the issue if the comment is posted on an issue, else empty string
 	IssueURL string `json:"issue_url,omitempty"`
 
-	// original author
+	// The original author that posted the comment if it was not posted locally, else empty string
 	OriginalAuthor string `json:"original_author,omitempty"`
 
-	// original author ID
+	// The ID of the original author that posted the comment if it was not posted locally, else 0
 	OriginalAuthorID int64 `json:"original_author_id,omitempty"`
 
-	// p r URL
+	// The HTML URL of the pull request if the comment is posted on a pull request, else empty string
 	PRURL string `json:"pull_request_url,omitempty"`
 
-	// updated
+	// The time of the comment's update
 	// Format: date-time
 	Updated strfmt.DateTime `json:"updated_at,omitempty"`
 

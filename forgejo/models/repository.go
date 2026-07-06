@@ -110,8 +110,11 @@ type Repository struct {
 	// has releases
 	HasReleases bool `json:"has_releases,omitempty"`
 
-	// has wiki
+	// is the wiki enabled
 	HasWiki bool `json:"has_wiki,omitempty"`
+
+	// have wiki pages ever been created
+	HasWikiContents bool `json:"has_wiki_contents,omitempty"`
 
 	// ID
 	ID int64 `json:"id,omitempty"`
@@ -193,6 +196,12 @@ type Repository struct {
 
 	// wiki branch
 	WikiBranch string `json:"wiki_branch,omitempty"`
+
+	// wiki clone URL
+	WikiCloneURL string `json:"wiki_clone_url,omitempty"`
+
+	// wiki SSH URL
+	WikiSSHURL string `json:"wiki_ssh_url,omitempty"`
 
 	// external tracker
 	ExternalTracker *ExternalTracker `json:"external_tracker,omitempty"`

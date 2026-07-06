@@ -7,7 +7,10 @@ package models
 
 import (
 	"context"
+	stderrors "errors"
+	"strconv"
 
+	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
 )
@@ -23,6 +26,10 @@ type AccessToken struct {
 	// name
 	Name string `json:"name,omitempty"`
 
+	// Indicates that an access token only has access to the specified repositories.  Will be null if the access token
+	// is not limited to a set of specified repositories.
+	Repositories []*RepositoryMeta `json:"repositories"`
+
 	// scopes
 	Scopes []string `json:"scopes"`
 
@@ -35,11 +42,88 @@ type AccessToken struct {
 
 // Validate validates this access token
 func (m *AccessToken) Validate(formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.validateRepositories(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
 	return nil
 }
 
-// ContextValidate validates this access token based on context it is used
+func (m *AccessToken) validateRepositories(formats strfmt.Registry) error {
+	if swag.IsZero(m.Repositories) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.Repositories); i++ {
+		if swag.IsZero(m.Repositories[i]) { // not required
+			continue
+		}
+
+		if m.Repositories[i] != nil {
+			if err := m.Repositories[i].Validate(formats); err != nil {
+				ve := new(errors.Validation)
+				if stderrors.As(err, &ve) {
+					return ve.ValidateName("repositories" + "." + strconv.Itoa(i))
+				}
+				ce := new(errors.CompositeError)
+				if stderrors.As(err, &ce) {
+					return ce.ValidateName("repositories" + "." + strconv.Itoa(i))
+				}
+
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
+// ContextValidate validate this access token based on the context it is used
 func (m *AccessToken) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.contextValidateRepositories(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (m *AccessToken) contextValidateRepositories(ctx context.Context, formats strfmt.Registry) error {
+
+	for i := 0; i < len(m.Repositories); i++ {
+
+		if m.Repositories[i] != nil {
+
+			if swag.IsZero(m.Repositories[i]) { // not required
+				return nil
+			}
+
+			if err := m.Repositories[i].ContextValidate(ctx, formats); err != nil {
+				ve := new(errors.Validation)
+				if stderrors.As(err, &ve) {
+					return ve.ValidateName("repositories" + "." + strconv.Itoa(i))
+				}
+				ce := new(errors.CompositeError)
+				if stderrors.As(err, &ce) {
+					return ce.ValidateName("repositories" + "." + strconv.Itoa(i))
+				}
+
+				return err
+			}
+		}
+
+	}
+
 	return nil
 }
 

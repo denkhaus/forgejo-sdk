@@ -17,7 +17,13 @@ import (
 // swagger:model ActionRunJob
 type ActionRunJob struct {
 
-	// the action run job id
+	// How many times the job has been attempted including the current attempt.
+	Attempt int64 `json:"attempt,omitempty"`
+
+	// Opaque identifier that uniquely identifies a single attempt of a job.
+	Handle string `json:"handle,omitempty"`
+
+	// Identifier of this job.
 	ID int64 `json:"id,omitempty"`
 
 	// the action run job name

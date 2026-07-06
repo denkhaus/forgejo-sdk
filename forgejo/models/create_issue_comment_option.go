@@ -19,11 +19,11 @@ import (
 // swagger:model CreateIssueCommentOption
 type CreateIssueCommentOption struct {
 
-	// body
+	// The body of the comment
 	// Required: true
 	Body *string `json:"body"`
 
-	// updated
+	// The time of the comment's update, needs admin or repository owner permission
 	// Format: date-time
 	Updated strfmt.DateTime `json:"updated_at,omitempty"`
 }

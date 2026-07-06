@@ -14,12 +14,13 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// CreateVariableOption CreateVariableOption the option when creating variable
+// CreateVariableOption CreateVariableOption defines the properties of the variable to create.
 //
 // swagger:model CreateVariableOption
 type CreateVariableOption struct {
 
-	// Value of the variable to create
+	// Value of the variable to create. Special characters will be retained. Line endings will be normalized to LF to
+	// match the behaviour of browsers. Encode the data with Base64 if line endings should be retained.
 	// Required: true
 	Value *string `json:"value"`
 }

@@ -14,15 +14,17 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// UpdateVariableOption UpdateVariableOption the option when updating variable
+// UpdateVariableOption UpdateVariableOption defines the properties of the variable to update.
 //
 // swagger:model UpdateVariableOption
 type UpdateVariableOption struct {
 
-	// New name for the variable. If the field is empty, the variable name won't be updated.
+	// New name for the variable. If the field is empty, the variable name won't be updated. Forgejo will convert it to
+	// uppercase.
 	Name string `json:"name,omitempty"`
 
-	// Value of the variable to update
+	// Value of the variable to update. Special characters will be retained. Line endings will be normalized to LF to
+	// match the behaviour of browsers. Encode the data with Base64 if line endings should be retained.
 	// Required: true
 	Value *string `json:"value"`
 }

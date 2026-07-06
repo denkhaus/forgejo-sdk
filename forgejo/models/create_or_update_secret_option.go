@@ -14,12 +14,13 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// CreateOrUpdateSecretOption CreateOrUpdateSecretOption options when creating or updating secret
+// CreateOrUpdateSecretOption CreateOrUpdateSecretOption defines the properties of the secret to create or update.
 //
 // swagger:model CreateOrUpdateSecretOption
 type CreateOrUpdateSecretOption struct {
 
-	// Data of the secret to update
+	// Data of the secret. Special characters will be retained. Line endings will be normalized to LF to match the
+	// behaviour of browsers. Encode the data with Base64 if line endings should be retained.
 	// Required: true
 	Data *string `json:"data"`
 }
