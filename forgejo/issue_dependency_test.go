@@ -7,7 +7,9 @@ package forgejo
 import (
 	"log"
 	"testing"
+	"time"
 
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -68,9 +70,17 @@ func TestIssueDependencies(t *testing.T) {
 	assert.Len(t, blocked, 0)
 
 	// Test 5: List blocking issues (issues that block THIS issue)
-	// This is an alias for ListIssueDependencies
-	blocking, _, err := c.ListBlockingIssues(repo.Owner.UserName, repo.Name, issue1.Index)
-	require.NoError(t, err)
+	// This is an alias for ListIssueDependencies. Poll briefly: Forgejo's
+	// dependency indexer can lag behind a rapid create+list under load.
+	var blocking []*models.Issue
+	for i := 0; i < 10; i++ {
+		blocking, _, err = c.ListBlockingIssues(repo.Owner.UserName, repo.Name, issue1.Index)
+		require.NoError(t, err)
+		if len(blocking) == 2 {
+			break
+		}
+		time.Sleep(500 * time.Millisecond)
+	}
 	assert.Len(t, blocking, 2)
 	// Issue 2 should be in the list
 	assert.EqualValues(t, issue2.Index, blocking[0].Index)
