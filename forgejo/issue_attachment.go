@@ -50,21 +50,7 @@ func (c *Client) CreateIssueAttachment(owner, repo string, index int64, file io.
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
-	body := new(bytes.Buffer)
-	writer := multipart.NewWriter(body)
-	part, err := writer.CreateFormFile("attachment", filename)
-	if err != nil {
-		return nil, nil, err
-	}
-	if _, err = io.Copy(part, file); err != nil {
-		return nil, nil, err
-	}
-	if err = writer.Close(); err != nil {
-		return nil, nil, err
-	}
-	a := new(models.Attachment)
-	resp, err := c.getParsedResponse("POST", fmt.Sprintf("/repos/%s/%s/issues/%d/assets", owner, repo, index), http.Header{"Content-Type": []string{writer.FormDataContentType()}}, body, a)
-	return a, resp, err
+	return c.uploadIssueAsset(fmt.Sprintf("/repos/%s/%s/issues/%d/assets", owner, repo, index), file, filename)
 }
 
 // EditIssueAttachment updates an issue attachment
@@ -72,13 +58,7 @@ func (c *Client) EditIssueAttachment(owner, repo string, index, attachmentID int
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
-	body, err := json.Marshal(&form)
-	if err != nil {
-		return nil, nil, err
-	}
-	a := new(models.Attachment)
-	resp, err := c.getParsedResponse("PATCH", fmt.Sprintf("/repos/%s/%s/issues/%d/assets/%d", owner, repo, index, attachmentID), jsonHeader, bytes.NewReader(body), a)
-	return a, resp, err
+	return c.editIssueAsset(fmt.Sprintf("/repos/%s/%s/issues/%d/assets/%d", owner, repo, index, attachmentID), form)
 }
 
 // DeleteIssueAttachment deletes an issue attachment
@@ -120,6 +100,30 @@ func (c *Client) CreateIssueCommentAttachment(owner, repo string, commentID int6
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, nil, err
 	}
+	return c.uploadIssueAsset(fmt.Sprintf("/repos/%s/%s/issues/comments/%d/assets", owner, repo, commentID), file, filename)
+}
+
+// EditIssueCommentAttachment updates an issue comment attachment
+func (c *Client) EditIssueCommentAttachment(owner, repo string, commentID, attachmentID int64, form models.EditAttachmentOptions) (*models.Attachment, *Response, error) {
+	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
+		return nil, nil, err
+	}
+	return c.editIssueAsset(fmt.Sprintf("/repos/%s/%s/issues/comments/%d/assets/%d", owner, repo, commentID, attachmentID), form)
+}
+
+// DeleteIssueCommentAttachment deletes an issue comment attachment
+func (c *Client) DeleteIssueCommentAttachment(owner, repo string, commentID, attachmentID int64) (*Response, error) {
+	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
+		return nil, err
+	}
+	_, resp, err := c.getResponse("DELETE", fmt.Sprintf("/repos/%s/%s/issues/comments/%d/assets/%d", owner, repo, commentID, attachmentID), nil, nil)
+	return resp, err
+}
+
+// uploadIssueAsset builds the multipart form for an asset upload and POSTs it to
+// the given assets URL path, returning the created attachment. Callers are
+// responsible for escaping/interpolating owner and repo into urlPath.
+func (c *Client) uploadIssueAsset(urlPath string, file io.Reader, filename string) (*models.Attachment, *Response, error) {
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 	part, err := writer.CreateFormFile("attachment", filename)
@@ -133,29 +137,19 @@ func (c *Client) CreateIssueCommentAttachment(owner, repo string, commentID int6
 		return nil, nil, err
 	}
 	a := new(models.Attachment)
-	resp, err := c.getParsedResponse("POST", fmt.Sprintf("/repos/%s/%s/issues/comments/%d/assets", owner, repo, commentID), http.Header{"Content-Type": []string{writer.FormDataContentType()}}, body, a)
+	resp, err := c.getParsedResponse("POST", urlPath, http.Header{"Content-Type": []string{writer.FormDataContentType()}}, body, a)
 	return a, resp, err
 }
 
-// EditIssueCommentAttachment updates an issue comment attachment
-func (c *Client) EditIssueCommentAttachment(owner, repo string, commentID, attachmentID int64, form models.EditAttachmentOptions) (*models.Attachment, *Response, error) {
-	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
-		return nil, nil, err
-	}
+// editIssueAsset PATCHes the given attachment URL path with the provided form
+// and returns the updated attachment. Callers are responsible for escaping/
+// interpolating owner and repo into urlPath.
+func (c *Client) editIssueAsset(urlPath string, form models.EditAttachmentOptions) (*models.Attachment, *Response, error) {
 	body, err := json.Marshal(&form)
 	if err != nil {
 		return nil, nil, err
 	}
 	a := new(models.Attachment)
-	resp, err := c.getParsedResponse("PATCH", fmt.Sprintf("/repos/%s/%s/issues/comments/%d/assets/%d", owner, repo, commentID, attachmentID), jsonHeader, bytes.NewReader(body), a)
+	resp, err := c.getParsedResponse("PATCH", urlPath, jsonHeader, bytes.NewReader(body), a)
 	return a, resp, err
-}
-
-// DeleteIssueCommentAttachment deletes an issue comment attachment
-func (c *Client) DeleteIssueCommentAttachment(owner, repo string, commentID, attachmentID int64) (*Response, error) {
-	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
-		return nil, err
-	}
-	_, resp, err := c.getResponse("DELETE", fmt.Sprintf("/repos/%s/%s/issues/comments/%d/assets/%d", owner, repo, commentID, attachmentID), nil, nil)
-	return resp, err
 }

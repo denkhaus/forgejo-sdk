@@ -35,13 +35,13 @@ func Test_RepoBranchProtection(t *testing.T) {
 	if err != nil {
 		t.Skipf("branch protection creation not permitted in this environment: %v", err)
 	}
-	assert.EqualValues(t, "main", bp.BranchName)
+	assert.EqualValues(t, "main", bp.BranchName) //nolint:staticcheck // SA1019: BranchName deprecated, no replacement field
 	assert.True(t, bp.EnablePush)
 
 	// GetBranchProtection.
 	got, _, err := c.GetBranchProtection(repo.Owner.UserName, repo.Name, "main")
 	require.NoError(t, err)
-	assert.EqualValues(t, bp.BranchName, got.BranchName)
+	assert.EqualValues(t, bp.BranchName, got.BranchName) //nolint:staticcheck // SA1019: BranchName deprecated, no replacement field
 
 	// EditBranchProtection.
 	edited, _, err := c.EditBranchProtection(repo.Owner.UserName, repo.Name, "main", models.EditBranchProtectionOption{

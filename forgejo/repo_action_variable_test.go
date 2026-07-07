@@ -77,7 +77,7 @@ func TestCreateRepoActionVariable(t *testing.T) {
 	// verify deletion
 	variables, _, err = c.ListRepoActionVariables(newRepo.Owner.UserName, newRepo.Name, ListRepoActionVariablesOption{})
 	require.NoError(t, err)
-	assert.Len(t, variables, 0)
+	assert.Empty(t, variables)
 }
 
 func TestListRepoActionVariables(t *testing.T) {
@@ -228,7 +228,7 @@ func TestRepoActionVariableErrorHandling(t *testing.T) {
 	c.SetSudo(user.UserName)
 
 	// Pre-cleanup: delete existing repo from previous test runs
-	c.DeleteRepo(user.UserName, "test-repo-error")
+	_, _ = c.DeleteRepo(user.UserName, "test-repo-error")
 
 	newRepo, _, err := c.CreateRepo(CreateRepoOption{
 		Name: "test-repo-error",

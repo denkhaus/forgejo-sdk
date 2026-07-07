@@ -9,8 +9,6 @@
 package forgejo
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -39,33 +37,7 @@ func (c *Client) CreateUserActionVariable(name string, opt models.CreateVariable
 	if err := escapeValidatePathSegments(&name); err != nil {
 		return nil, err
 	}
-	if err := (&opt).Validate(nil); err != nil {
-		return nil, err
-	}
-	body, err := json.Marshal(&opt)
-	if err != nil {
-		return nil, err
-	}
-
-	status, resp, err := c.getStatusCode("POST", fmt.Sprintf("/user/actions/variables/%s", name), jsonHeader, bytes.NewReader(body))
-	if err != nil {
-		return nil, err
-	}
-
-	switch status {
-	case http.StatusCreated:
-		return resp, nil
-	case http.StatusNoContent:
-		return resp, nil
-	case http.StatusNotFound:
-		return resp, fmt.Errorf("user not found or variable name invalid")
-	case http.StatusForbidden:
-		return resp, fmt.Errorf("forbidden: permission denied")
-	case http.StatusBadRequest:
-		return resp, fmt.Errorf("bad request: invalid variable data")
-	default:
-		return resp, fmt.Errorf("unexpected Status: %d", status)
-	}
+	return c.submitActionVariable("POST", fmt.Sprintf("/user/actions/variables/%s", name), &opt, http.StatusCreated, "user not found or variable name invalid")
 }
 
 // GetUserActionVariable gets a user action variable by name
@@ -84,33 +56,7 @@ func (c *Client) UpdateUserActionVariable(name string, opt models.UpdateVariable
 	if err := escapeValidatePathSegments(&name); err != nil {
 		return nil, err
 	}
-	if err := (&opt).Validate(nil); err != nil {
-		return nil, err
-	}
-	body, err := json.Marshal(&opt)
-	if err != nil {
-		return nil, err
-	}
-
-	status, resp, err := c.getStatusCode("PUT", fmt.Sprintf("/user/actions/variables/%s", name), jsonHeader, bytes.NewReader(body))
-	if err != nil {
-		return nil, err
-	}
-
-	switch status {
-	case http.StatusOK:
-		return resp, nil
-	case http.StatusNoContent:
-		return resp, nil
-	case http.StatusNotFound:
-		return resp, fmt.Errorf("user or variable not found")
-	case http.StatusForbidden:
-		return resp, fmt.Errorf("forbidden: permission denied")
-	case http.StatusBadRequest:
-		return resp, fmt.Errorf("bad request: invalid variable data")
-	default:
-		return resp, fmt.Errorf("unexpected Status: %d", status)
-	}
+	return c.submitActionVariable("PUT", fmt.Sprintf("/user/actions/variables/%s", name), &opt, http.StatusOK, "user or variable not found")
 }
 
 // DeleteUserActionVariable deletes a user action variable

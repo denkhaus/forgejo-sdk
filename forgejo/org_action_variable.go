@@ -15,6 +15,8 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/go-openapi/strfmt"
+
 	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
@@ -42,33 +44,7 @@ func (c *Client) CreateOrgActionVariable(org, name string, opt models.CreateVari
 	if err := escapeValidatePathSegments(&org, &name); err != nil {
 		return nil, err
 	}
-	if err := (&opt).Validate(nil); err != nil {
-		return nil, err
-	}
-	body, err := json.Marshal(&opt)
-	if err != nil {
-		return nil, err
-	}
-
-	status, resp, err := c.getStatusCode("POST", fmt.Sprintf("/orgs/%s/actions/variables/%s", org, name), jsonHeader, bytes.NewReader(body))
-	if err != nil {
-		return nil, err
-	}
-
-	switch status {
-	case http.StatusCreated:
-		return resp, nil
-	case http.StatusNoContent:
-		return resp, nil
-	case http.StatusNotFound:
-		return resp, fmt.Errorf("organization not found or variable name invalid")
-	case http.StatusForbidden:
-		return resp, fmt.Errorf("forbidden: permission denied")
-	case http.StatusBadRequest:
-		return resp, fmt.Errorf("bad request: invalid variable data")
-	default:
-		return resp, fmt.Errorf("unexpected Status: %d", status)
-	}
+	return c.submitActionVariable("POST", fmt.Sprintf("/orgs/%s/actions/variables/%s", org, name), &opt, http.StatusCreated, "organization not found or variable name invalid")
 }
 
 // GetOrgActionVariable gets an organization action variable by name
@@ -87,33 +63,7 @@ func (c *Client) UpdateOrgActionVariable(org, name string, opt models.UpdateVari
 	if err := escapeValidatePathSegments(&org, &name); err != nil {
 		return nil, err
 	}
-	if err := (&opt).Validate(nil); err != nil {
-		return nil, err
-	}
-	body, err := json.Marshal(&opt)
-	if err != nil {
-		return nil, err
-	}
-
-	status, resp, err := c.getStatusCode("PUT", fmt.Sprintf("/orgs/%s/actions/variables/%s", org, name), jsonHeader, bytes.NewReader(body))
-	if err != nil {
-		return nil, err
-	}
-
-	switch status {
-	case http.StatusOK:
-		return resp, nil
-	case http.StatusNoContent:
-		return resp, nil
-	case http.StatusNotFound:
-		return resp, fmt.Errorf("organization or variable not found")
-	case http.StatusForbidden:
-		return resp, fmt.Errorf("forbidden: permission denied")
-	case http.StatusBadRequest:
-		return resp, fmt.Errorf("bad request: invalid variable data")
-	default:
-		return resp, fmt.Errorf("unexpected Status: %d", status)
-	}
+	return c.submitActionVariable("PUT", fmt.Sprintf("/orgs/%s/actions/variables/%s", org, name), &opt, http.StatusOK, "organization or variable not found")
 }
 
 // DeleteOrgActionVariable deletes an organization action variable
@@ -136,6 +86,47 @@ func (c *Client) DeleteOrgActionVariable(org, name string) (*Response, error) {
 		return resp, fmt.Errorf("organization or variable not found")
 	case http.StatusForbidden:
 		return resp, fmt.Errorf("forbidden: permission denied")
+	default:
+		return resp, fmt.Errorf("unexpected Status: %d", status)
+	}
+}
+
+// actionVariableOption is implemented by the create/update action variable
+// option types so they can share a common submit path.
+type actionVariableOption interface {
+	Validate(formats strfmt.Registry) error
+}
+
+// submitActionVariable validates opt, submits it with the given HTTP method and
+// URL path, and maps the response status to the appropriate error message.
+// successStatus is the status code that indicates success for this call
+// (http.StatusCreated for create, http.StatusOK for update) and notFoundMsg is
+// the entity-specific "not found" message returned for http.StatusNotFound.
+func (c *Client) submitActionVariable(method, urlPath string, opt actionVariableOption, successStatus int, notFoundMsg string) (*Response, error) {
+	if err := opt.Validate(nil); err != nil {
+		return nil, err
+	}
+	body, err := json.Marshal(opt)
+	if err != nil {
+		return nil, err
+	}
+
+	status, resp, err := c.getStatusCode(method, urlPath, jsonHeader, bytes.NewReader(body))
+	if err != nil {
+		return nil, err
+	}
+
+	switch status {
+	case successStatus:
+		return resp, nil
+	case http.StatusNoContent:
+		return resp, nil
+	case http.StatusNotFound:
+		return resp, fmt.Errorf("%s", notFoundMsg)
+	case http.StatusForbidden:
+		return resp, fmt.Errorf("forbidden: permission denied")
+	case http.StatusBadRequest:
+		return resp, fmt.Errorf("bad request: invalid variable data")
 	default:
 		return resp, fmt.Errorf("unexpected Status: %d", status)
 	}

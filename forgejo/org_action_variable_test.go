@@ -75,7 +75,7 @@ func TestCreateOrgActionVariable(t *testing.T) {
 	// verify deletion
 	variables, _, err = c.ListOrgActionVariables(newOrg.UserName, ListOrgActionVariablesOption{})
 	require.NoError(t, err)
-	assert.Len(t, variables, 0)
+	assert.Empty(t, variables)
 }
 
 func TestListOrgActionVariables(t *testing.T) {

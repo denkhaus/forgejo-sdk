@@ -49,7 +49,7 @@ func TestUpdateRepoActionSecret(t *testing.T) {
 	c.SetSudo(user.UserName)
 
 	// Pre-cleanup: delete existing repo from previous test runs
-	c.DeleteRepo(user.UserName, "test-update")
+	_, _ = c.DeleteRepo(user.UserName, "test-update")
 
 	newRepo, _, err := c.CreateRepo(CreateRepoOption{
 		Name: "test-update",
@@ -58,7 +58,7 @@ func TestUpdateRepoActionSecret(t *testing.T) {
 	assert.NotNil(t, newRepo)
 
 	// Pre-cleanup: delete any existing secret from previous test runs
-	c.DeleteRepoActionSecret(newRepo.Owner.UserName, newRepo.Name, "test_update")
+	_, _ = c.DeleteRepoActionSecret(newRepo.Owner.UserName, newRepo.Name, "test_update")
 
 	// create secret first
 	resp, err := c.CreateRepoActionSecret(newRepo.Owner.UserName, newRepo.Name, CreateSecretOption{Name: "test_update", Data: "initial_value"})
@@ -79,7 +79,7 @@ func TestUpdateRepoActionSecret(t *testing.T) {
 	assert.Len(t, secrets, 1)
 
 	// Cleanup
-	c.DeleteRepoActionSecret(newRepo.Owner.UserName, newRepo.Name, "test_update")
+	_, _ = c.DeleteRepoActionSecret(newRepo.Owner.UserName, newRepo.Name, "test_update")
 }
 
 func TestDeleteRepoActionSecret(t *testing.T) {
@@ -90,7 +90,7 @@ func TestDeleteRepoActionSecret(t *testing.T) {
 	c.SetSudo(user.UserName)
 
 	// Pre-cleanup: delete existing repo from previous test runs
-	c.DeleteRepo(user.UserName, "test-delete")
+	_, _ = c.DeleteRepo(user.UserName, "test-delete")
 
 	newRepo, _, err := c.CreateRepo(CreateRepoOption{
 		Name: "test-delete",
@@ -111,5 +111,5 @@ func TestDeleteRepoActionSecret(t *testing.T) {
 	// verify deletion - list should be empty
 	secrets, _, err := c.ListRepoActionSecret(newRepo.Owner.UserName, newRepo.Name, ListRepoActionSecretOption{})
 	require.NoError(t, err)
-	assert.Len(t, secrets, 0)
+	assert.Empty(t, secrets)
 }

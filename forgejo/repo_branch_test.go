@@ -95,7 +95,7 @@ func TestRepoBranchProtection(t *testing.T) {
 		BlockOnOutdatedBranch:   true,
 	})
 	require.NoError(t, err)
-	assert.EqualValues(t, "main", bp.BranchName)
+	assert.EqualValues(t, "main", bp.BranchName) //nolint:staticcheck // SA1019: BranchName deprecated, no replacement field
 	assert.False(t, bp.EnableStatusCheck)
 	assert.True(t, bp.EnablePush)
 	assert.True(t, bp.EnablePushWhitelist)
@@ -115,12 +115,12 @@ func TestRepoBranchProtection(t *testing.T) {
 	assert.Len(t, bpl, 2)
 
 	// GetBranchProtection
-	bp, _, err = c.GetBranchProtection(repo.Owner.UserName, repo.Name, bpl[0].BranchName)
+	bp, _, err = c.GetBranchProtection(repo.Owner.UserName, repo.Name, bpl[0].BranchName) //nolint:staticcheck // SA1019: BranchName deprecated, no replacement field
 	require.NoError(t, err)
 	assert.EqualValues(t, bpl[0], bp)
 
 	// EditBranchProtection
-	bp, _, err = c.EditBranchProtection(repo.Owner.UserName, repo.Name, bpl[0].BranchName, models.EditBranchProtectionOption{
+	bp, _, err = c.EditBranchProtection(repo.Owner.UserName, repo.Name, bpl[0].BranchName, models.EditBranchProtectionOption{ //nolint:staticcheck // SA1019: BranchName deprecated, no replacement field
 		EnablePush:                  false,
 		EnablePushWhitelist:         false,
 		PushWhitelistUsernames:      nil,
@@ -130,12 +130,12 @@ func TestRepoBranchProtection(t *testing.T) {
 	})
 	require.NoError(t, err)
 	assert.NotEqual(t, bpl[0], bp)
-	assert.EqualValues(t, bpl[0].BranchName, bp.BranchName)
+	assert.EqualValues(t, bpl[0].BranchName, bp.BranchName) //nolint:staticcheck // SA1019: BranchName deprecated, no replacement field
 	assert.EqualValues(t, bpl[0].EnableMergeWhitelist, bp.EnableMergeWhitelist)
 	assert.EqualValues(t, bpl[0].Created, bp.Created)
 
 	// DeleteBranchProtection
-	_, err = c.DeleteBranchProtection(repo.Owner.UserName, repo.Name, bpl[1].BranchName)
+	_, err = c.DeleteBranchProtection(repo.Owner.UserName, repo.Name, bpl[1].BranchName) //nolint:staticcheck // SA1019: BranchName deprecated, no replacement field
 	require.NoError(t, err)
 	bpl, _, err = c.ListBranchProtections(repo.Owner.UserName, repo.Name, ListBranchProtectionsOptions{})
 	require.NoError(t, err)

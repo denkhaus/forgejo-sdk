@@ -51,14 +51,14 @@ func TestUpdateOrgActionSecret(t *testing.T) {
 	c.SetSudo(user.UserName)
 
 	// Pre-cleanup: delete existing org from previous test runs
-	c.DeleteOrg("ActionUpdateOrg")
+	_, _ = c.DeleteOrg("ActionUpdateOrg")
 
 	newOrg, _, err := c.CreateOrg(CreateOrgOption{Name: "ActionUpdateOrg"})
 	require.NoError(t, err)
 	assert.NotNil(t, newOrg)
 
 	// Pre-cleanup: delete any existing secret from previous test runs
-	c.DeleteOrgActionSecret(newOrg.UserName, "test_update")
+	_, _ = c.DeleteOrgActionSecret(newOrg.UserName, "test_update")
 
 	// create secret first
 	resp, err := c.CreateOrgActionSecret(newOrg.UserName, CreateSecretOption{Name: "test_update", Data: "initial_value"})
@@ -79,7 +79,7 @@ func TestUpdateOrgActionSecret(t *testing.T) {
 	assert.Len(t, secrets, 1)
 
 	// Cleanup
-	c.DeleteOrgActionSecret(newOrg.UserName, "test_update")
+	_, _ = c.DeleteOrgActionSecret(newOrg.UserName, "test_update")
 }
 
 func TestDeleteOrgActionSecret(t *testing.T) {
@@ -90,7 +90,7 @@ func TestDeleteOrgActionSecret(t *testing.T) {
 	c.SetSudo(user.UserName)
 
 	// Pre-cleanup: delete existing org from previous test runs
-	c.DeleteOrg("ActionDeleteOrg")
+	_, _ = c.DeleteOrg("ActionDeleteOrg")
 
 	newOrg, _, err := c.CreateOrg(CreateOrgOption{Name: "ActionDeleteOrg"})
 	require.NoError(t, err)
@@ -109,5 +109,5 @@ func TestDeleteOrgActionSecret(t *testing.T) {
 	// verify deletion - list should be empty
 	secrets, _, err := c.ListOrgActionSecret(newOrg.UserName, ListOrgActionSecretOption{})
 	require.NoError(t, err)
-	assert.Len(t, secrets, 0)
+	assert.Empty(t, secrets)
 }

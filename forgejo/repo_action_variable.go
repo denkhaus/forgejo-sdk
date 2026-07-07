@@ -9,8 +9,6 @@
 package forgejo
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -42,33 +40,7 @@ func (c *Client) CreateRepoActionVariable(owner, repo, name string, opt models.C
 	if err := escapeValidatePathSegments(&owner, &repo, &name); err != nil {
 		return nil, err
 	}
-	if err := (&opt).Validate(nil); err != nil {
-		return nil, err
-	}
-	body, err := json.Marshal(&opt)
-	if err != nil {
-		return nil, err
-	}
-
-	status, resp, err := c.getStatusCode("POST", fmt.Sprintf("/repos/%s/%s/actions/variables/%s", owner, repo, name), jsonHeader, bytes.NewReader(body))
-	if err != nil {
-		return nil, err
-	}
-
-	switch status {
-	case http.StatusCreated:
-		return resp, nil
-	case http.StatusNoContent:
-		return resp, nil
-	case http.StatusNotFound:
-		return resp, fmt.Errorf("repository not found or variable name invalid")
-	case http.StatusForbidden:
-		return resp, fmt.Errorf("forbidden: permission denied")
-	case http.StatusBadRequest:
-		return resp, fmt.Errorf("bad request: invalid variable data")
-	default:
-		return resp, fmt.Errorf("unexpected Status: %d", status)
-	}
+	return c.submitActionVariable("POST", fmt.Sprintf("/repos/%s/%s/actions/variables/%s", owner, repo, name), &opt, http.StatusCreated, "repository not found or variable name invalid")
 }
 
 // GetRepoActionVariable gets a repository action variable by name
@@ -87,33 +59,7 @@ func (c *Client) UpdateRepoActionVariable(owner, repo, name string, opt models.U
 	if err := escapeValidatePathSegments(&owner, &repo, &name); err != nil {
 		return nil, err
 	}
-	if err := (&opt).Validate(nil); err != nil {
-		return nil, err
-	}
-	body, err := json.Marshal(&opt)
-	if err != nil {
-		return nil, err
-	}
-
-	status, resp, err := c.getStatusCode("PUT", fmt.Sprintf("/repos/%s/%s/actions/variables/%s", owner, repo, name), jsonHeader, bytes.NewReader(body))
-	if err != nil {
-		return nil, err
-	}
-
-	switch status {
-	case http.StatusOK:
-		return resp, nil
-	case http.StatusNoContent:
-		return resp, nil
-	case http.StatusNotFound:
-		return resp, fmt.Errorf("repository or variable not found")
-	case http.StatusForbidden:
-		return resp, fmt.Errorf("forbidden: permission denied")
-	case http.StatusBadRequest:
-		return resp, fmt.Errorf("bad request: invalid variable data")
-	default:
-		return resp, fmt.Errorf("unexpected Status: %d", status)
-	}
+	return c.submitActionVariable("PUT", fmt.Sprintf("/repos/%s/%s/actions/variables/%s", owner, repo, name), &opt, http.StatusOK, "repository or variable not found")
 }
 
 // DeleteRepoActionVariable deletes a repository action variable

@@ -25,7 +25,7 @@ func TestCreateUserActionSecret(t *testing.T) {
 	c.SetSudo(user.UserName)
 
 	// Pre-cleanup: delete any existing secret from previous test runs
-	c.DeleteUserActionSecret("test")
+	_, _ = c.DeleteUserActionSecret("test")
 
 	// create secret
 	resp, err := c.CreateUserActionSecret(CreateSecretOption{Name: "test", Data: "test"})
@@ -42,7 +42,7 @@ func TestCreateUserActionSecret(t *testing.T) {
 	// The endpoint exists in swagger but is not implemented yet.
 
 	// Cleanup
-	c.DeleteUserActionSecret("test")
+	_, _ = c.DeleteUserActionSecret("test")
 }
 
 func TestUpdateUserActionSecret(t *testing.T) {
@@ -53,7 +53,7 @@ func TestUpdateUserActionSecret(t *testing.T) {
 	c.SetSudo(user.UserName)
 
 	// Pre-cleanup: delete any existing secret from previous test runs
-	c.DeleteUserActionSecret("test_update")
+	_, _ = c.DeleteUserActionSecret("test_update")
 
 	// create secret first
 	resp, err := c.CreateUserActionSecret(CreateSecretOption{Name: "test_update", Data: "initial_value"})
@@ -72,7 +72,7 @@ func TestUpdateUserActionSecret(t *testing.T) {
 	// Note: ListUserActionSecret endpoint returns 404 in Forgejo 13.0.3
 
 	// Cleanup
-	c.DeleteUserActionSecret("test_update")
+	_, _ = c.DeleteUserActionSecret("test_update")
 }
 
 func TestDeleteUserActionSecret(t *testing.T) {
@@ -83,7 +83,7 @@ func TestDeleteUserActionSecret(t *testing.T) {
 	c.SetSudo(user.UserName)
 
 	// Pre-cleanup: delete any existing secret from previous test runs
-	c.DeleteUserActionSecret("test_delete")
+	_, _ = c.DeleteUserActionSecret("test_delete")
 
 	// create secret first
 	resp, err := c.CreateUserActionSecret(CreateSecretOption{Name: "test_delete", Data: "delete_me"})

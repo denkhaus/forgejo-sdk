@@ -54,7 +54,7 @@ func TestIssueDependencies(t *testing.T) {
 	assert.EqualValues(t, issue2.Index, deps[0].Index)
 
 	// Test 3: Add second dependency
-	resp, err = c.CreateIssueDependency(repo.Owner.UserName, repo.Name, issue1.Index, CreateIssueDependencyOption{
+	_, err = c.CreateIssueDependency(repo.Owner.UserName, repo.Name, issue1.Index, CreateIssueDependencyOption{
 		NewDependency: issue3.Index,
 	})
 	require.NoError(t, err)
@@ -67,7 +67,7 @@ func TestIssueDependencies(t *testing.T) {
 	// Issue 1 doesn't block any other issues, so this should be empty
 	blocked, _, err := c.ListBlockedIssues(repo.Owner.UserName, repo.Name, issue1.Index)
 	require.NoError(t, err)
-	assert.Len(t, blocked, 0)
+	assert.Empty(t, blocked)
 
 	// Test 5: List blocking issues (issues that block THIS issue)
 	// This is an alias for ListIssueDependencies. Poll briefly: Forgejo's
@@ -86,7 +86,7 @@ func TestIssueDependencies(t *testing.T) {
 	assert.EqualValues(t, issue2.Index, blocking[0].Index)
 
 	// Test 6: Remove dependency
-	resp, err = c.RemoveIssueDependency(repo.Owner.UserName, repo.Name, issue1.Index, issue2.Index)
+	_, err = c.RemoveIssueDependency(repo.Owner.UserName, repo.Name, issue1.Index, issue2.Index)
 	require.NoError(t, err)
 
 	deps, _, err = c.ListIssueDependencies(repo.Owner.UserName, repo.Name, issue1.Index, ListDependenciesOptions{})
@@ -101,7 +101,7 @@ func TestIssueDependencies(t *testing.T) {
 	assert.Contains(t, err.Error(), "positive")
 
 	// Test 8: Remove non-existent dependency
-	resp, err = c.RemoveIssueDependency(repo.Owner.UserName, repo.Name, issue1.Index, 99999)
+	_, err = c.RemoveIssueDependency(repo.Owner.UserName, repo.Name, issue1.Index, 99999)
 	require.Error(t, err) // Should return error from server
 }
 

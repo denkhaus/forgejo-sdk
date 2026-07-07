@@ -72,7 +72,7 @@ func TestCreateUserActionVariable(t *testing.T) {
 	// verify deletion
 	variables, _, err = c.ListUserActionVariables(ListUserActionVariablesOption{})
 	require.NoError(t, err)
-	assert.Len(t, variables, 0)
+	assert.Empty(t, variables)
 }
 
 func TestListUserActionVariables(t *testing.T) {
@@ -83,15 +83,15 @@ func TestListUserActionVariables(t *testing.T) {
 	c.SetSudo(user.UserName)
 
 	// Pre-cleanup: delete any existing variables from previous test runs
-	c.DeleteUserActionVariable("VAR1")
-	c.DeleteUserActionVariable("VAR2")
-	c.DeleteUserActionVariable("VAR3")
+	_, _ = c.DeleteUserActionVariable("VAR1")
+	_, _ = c.DeleteUserActionVariable("VAR2")
+	_, _ = c.DeleteUserActionVariable("VAR3")
 
 	// Cleanup: delete variables at the end of the test
 	t.Cleanup(func() {
-		c.DeleteUserActionVariable("VAR1")
-		c.DeleteUserActionVariable("VAR2")
-		c.DeleteUserActionVariable("VAR3")
+		_, _ = c.DeleteUserActionVariable("VAR1")
+		_, _ = c.DeleteUserActionVariable("VAR2")
+		_, _ = c.DeleteUserActionVariable("VAR3")
 	})
 
 	// create multiple variables
@@ -137,11 +137,11 @@ func TestGetUserActionVariable(t *testing.T) {
 	c.SetSudo(user.UserName)
 
 	// Pre-cleanup: delete any existing variable from previous test runs
-	c.DeleteUserActionVariable("TEST_GET")
+	_, _ = c.DeleteUserActionVariable("TEST_GET")
 
 	// Cleanup: delete variable at the end of the test
 	t.Cleanup(func() {
-		c.DeleteUserActionVariable("TEST_GET")
+		_, _ = c.DeleteUserActionVariable("TEST_GET")
 	})
 
 	testValue := "get_test_value"
@@ -168,11 +168,11 @@ func TestUpdateUserActionVariable(t *testing.T) {
 	c.SetSudo(user.UserName)
 
 	// Pre-cleanup: delete any existing variable from previous test runs
-	c.DeleteUserActionVariable("TEST_UPDATE")
+	_, _ = c.DeleteUserActionVariable("TEST_UPDATE")
 
 	// Cleanup: delete variable at the end of the test
 	t.Cleanup(func() {
-		c.DeleteUserActionVariable("TEST_UPDATE")
+		_, _ = c.DeleteUserActionVariable("TEST_UPDATE")
 	})
 
 	originalValue := "original_value"
