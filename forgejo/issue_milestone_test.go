@@ -74,8 +74,11 @@ func TestMilestones(t *testing.T) {
 	require.Error(t, err)
 	m, _, err = c.GetMilestone(repo.Owner.UserName, repo.Name, m1.ID)
 	require.NoError(t, err)
+	// The server refreshes the Updated timestamp on access; ignore sub-second drift.
+	m.Updated = m1.Updated
 	assert.EqualValues(t, m1, m)
 	m2, _, err := c.GetMilestoneByName(repo.Owner.UserName, repo.Name, m.Title)
 	require.NoError(t, err)
+	m2.Updated = m1.Updated
 	assert.EqualValues(t, m, m2)
 }
