@@ -34,3 +34,6 @@ test
 test-cache
 compare
 swagger.v1.json
+
+# tooling
+.codegraph/
