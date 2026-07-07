@@ -96,13 +96,13 @@ func (c *Client) ListLabelTemplates() ([]string, *Response, error) {
 }
 
 // GetLabelTemplateInfo returns the labels defined by a label template.
-func (c *Client) GetLabelTemplateInfo(name string) (*models.LabelTemplate, *Response, error) {
+func (c *Client) GetLabelTemplateInfo(name string) ([]*models.Label, *Response, error) {
 	if err := escapeValidatePathSegments(&name); err != nil {
 		return nil, nil, err
 	}
-	t := new(models.LabelTemplate)
-	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/label/templates/%s", name), jsonHeader, nil, t)
-	return t, resp, err
+	labels := make([]*models.Label, 0, 10)
+	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/label/templates/%s", name), jsonHeader, nil, &labels)
+	return labels, resp, err
 }
 
 // ListLicenseTemplates lists the available license templates.
