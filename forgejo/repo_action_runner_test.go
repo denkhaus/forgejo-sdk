@@ -8,6 +8,7 @@ import (
 	"log"
 	"testing"
 
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -119,4 +120,24 @@ func TestGetRepoRunnerRegistrationToken(t *testing.T) {
 	require.NoError(t, err)
 	assert.NotNil(t, resp)
 	assert.NotEmpty(t, token.Token)
+}
+
+// TestRepoRunnersV15 exercises repo-level v15 interactive runner registration+management.
+func TestRepoRunnersV15(t *testing.T) {
+	log.Println("== TestRepoRunnersV15 ==")
+	c := newTestClient()
+
+	repo, err := createTestRepo(t, "v15-repo-runners", c)
+	require.NoError(t, err)
+
+	rrr, _, err := c.RegisterRepoRunner(repo.Owner.UserName, repo.Name, models.RegisterRunnerOptions{Name: OptionalString("repo-runner"), Ephemeral: true})
+	require.NoError(t, err)
+	require.NotZero(t, rrr.ID)
+
+	_, _, err = c.GetRepoRunner(repo.Owner.UserName, repo.Name, rrr.ID)
+	require.NoError(t, err)
+	_, _, err = c.ListRepoRunners(repo.Owner.UserName, repo.Name, ListActionRunnersOption{ListOptions: ListOptions{PageSize: 5}})
+	require.NoError(t, err)
+	_, err = c.DeleteRepoRunner(repo.Owner.UserName, repo.Name, rrr.ID)
+	require.NoError(t, err)
 }

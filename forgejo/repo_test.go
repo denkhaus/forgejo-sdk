@@ -12,6 +12,7 @@ import (
 	"bytes"
 	"io"
 	"log"
+	"strings"
 	"testing"
 	"time"
 
@@ -59,7 +60,15 @@ func TestRepoMigrateAndLanguages(t *testing.T) {
 		Private:     false,
 		Description: "mirror sdk",
 	})
-	require.NoError(t, err)
+	if err != nil {
+		// Migration depends on external network + the instance's migration
+		// domain allow-list (Forgejo v15+ restricts these by default); skip
+		// when the environment blocks it rather than failing the suite.
+		if strings.Contains(err.Error(), "not allowed") {
+			t.Skip("external migration to codeberg.org is not allowed on this instance")
+		}
+		require.NoError(t, err)
+	}
 
 	repoG, _, err := c.GetRepo(repoM.Owner.UserName, repoM.Name)
 	require.NoError(t, err)

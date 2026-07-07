@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"testing"
 
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -47,4 +48,27 @@ func TestSearchOrgRunnerJobs(t *testing.T) {
 	jobs, _, err := c.SearchOrgRunnerJobs(org.UserName, SearchOrgRunnerJobsOption{})
 	require.NoError(t, err)
 	assert.NotNil(t, jobs)
+}
+
+// TestOrgRunnersV15 exercises org-level v15 interactive runner registration+management.
+func TestOrgRunnersV15(t *testing.T) {
+	log.Println("== TestOrgRunnersV15 ==")
+	c := newTestClient()
+
+	org, _, err := c.CreateOrg(CreateOrgOption{Name: "v15-org-runners"})
+	require.NoError(t, err)
+	defer func() { _, _ = c.DeleteOrg("v15-org-runners") }()
+
+	orr, _, err := c.RegisterOrgRunner(org.UserName, models.RegisterRunnerOptions{Name: OptionalString("org-runner"), Ephemeral: true})
+	require.NoError(t, err)
+	require.NotZero(t, orr.ID)
+	assert.NotEmpty(t, orr.Token)
+	assert.NotEmpty(t, orr.UUID)
+
+	_, _, err = c.GetOrgRunner(org.UserName, orr.ID)
+	require.NoError(t, err)
+	_, _, err = c.ListOrgRunners(org.UserName, ListActionRunnersOption{ListOptions: ListOptions{PageSize: 5}})
+	require.NoError(t, err)
+	_, err = c.DeleteOrgRunner(org.UserName, orr.ID)
+	require.NoError(t, err)
 }
