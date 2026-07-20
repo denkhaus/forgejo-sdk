@@ -6,6 +6,8 @@ package forgejo
 
 import (
 	"log"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -107,4 +109,33 @@ func TestWorkflowDispatchErrorHandling(t *testing.T) {
 	// Test with invalid characters in owner/repo (should be escaped)
 	_, _, err = c.WorkflowDispatch("../evil", "repo", "test.yml", WorkflowDispatchOption{})
 	require.Error(t, err)
+}
+
+// TestWorkflowDispatchNoContent verifies that WorkflowDispatch tolerates the
+// 204 No Content (empty body) response Forgejo returns on a successful
+// workflow_dispatch. Regression test: getParsedResponse previously failed with
+// "unexpected end of JSON input" on the empty body.
+func TestWorkflowDispatchNoContent(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/api/v1/version" {
+			w.Header().Set("Content-Type", "application/json")
+			_, _ = w.Write([]byte(`{"version":"15.0.3"}`))
+			return
+		}
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/api/v1/repos/owner/repo/actions/workflows/test.yml/dispatches", r.URL.Path)
+		w.WriteHeader(http.StatusNoContent) // empty body, as Forgejo does
+	}))
+	defer server.Close()
+
+	c, err := NewClient(server.URL, SetToken("token"))
+	require.NoError(t, err)
+
+	run, resp, err := c.WorkflowDispatch("owner", "repo", "test.yml", WorkflowDispatchOption{Ref: "main"})
+	require.NoError(t, err)
+	require.NotNil(t, resp)
+	assert.Equal(t, http.StatusNoContent, resp.StatusCode)
+	// No body returned -> run is non-nil but zero-valued.
+	require.NotNil(t, run)
+	assert.Zero(t, run.ID)
 }
