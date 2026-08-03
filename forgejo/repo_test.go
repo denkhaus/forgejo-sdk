@@ -51,7 +51,8 @@ func TestRepoMigrateAndLanguages(t *testing.T) {
 		_, _ = c.DeleteRepo(user.UserName, "sdk-mirror")
 	}
 
-	// TODO: replace by proper url for forgejo
+	// Mirror the SDK's own repository (matches the module path); it is small
+	// and Go-focused, which keeps the language-stats assertion below stable.
 	repoM, _, err := c.MigrateRepo(MigrateRepoOption{
 		CloneAddr:   "https://codeberg.org/mvdkleijn/forgejo-sdk.git",
 		RepoName:    "sdk-mirror",

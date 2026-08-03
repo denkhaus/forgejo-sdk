@@ -10,7 +10,6 @@ package forgejo
 
 import (
 	"log"
-	"os"
 	"testing"
 
 	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
@@ -21,14 +20,11 @@ import (
 func TestMyUser(t *testing.T) {
 	log.Println("== TestMyUser ==")
 
-	var expectedAvatarURL, expectedHTMLURL string
-	if os.Getenv("CI") != "" {
-		expectedAvatarURL = "http://forgejo:3000/avatars/90e9f0102fc2832d69ae59a1214601c0"
-		expectedHTMLURL = "http://forgejo:3000/test01"
-	} else {
-		expectedAvatarURL = "http://localhost:3000/avatars/90e9f0102fc2832d69ae59a1214601c0"
-		expectedHTMLURL = "http://localhost:3000/test01"
-	}
+	// The instance (Makefile test-instance or a CI service) serves avatar/html
+	// URLs under FORGEJO_SDK_TEST_URL; compare against that base instead of a
+	// hardcoded host that assumes a specific CI topology.
+	expectedAvatarURL := getForgejoURL() + "/avatars/90e9f0102fc2832d69ae59a1214601c0"
+	expectedHTMLURL := getForgejoURL() + "/test01"
 
 	c := newTestClient()
 	user, _, err := c.GetMyUserInfo()

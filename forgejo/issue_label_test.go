@@ -125,3 +125,59 @@ func TestLabels(t *testing.T) {
 	labels, _, _ = c.ListRepoLabels(repo.Owner.UserName, repo.Name, ListLabelsOptions{})
 	assert.Len(t, labels, 10)
 }
+
+// Test_Labels_Negative covers client-side validation and server-side not-found
+// error paths for both repo labels and issue labels.
+func Test_Labels_Negative(t *testing.T) {
+	log.Println("== Test_Labels_Negative ==")
+	c := newTestClient()
+	repo, err := createTestRepo(t, "LabelNegativeRepo", c)
+	require.NoError(t, err)
+	owner, name := repo.Owner.UserName, repo.Name
+
+	// --- client-side validation (no server round-trip) ---
+	t.Run("CreateLabelOption.Validate", func(t *testing.T) {
+		require.Error(t, CreateLabelOption{Name: "x", Color: "nope"}.Validate())    // bad color
+		require.Error(t, CreateLabelOption{Name: " ", Color: "#00aabb"}.Validate()) // empty name
+		require.NoError(t, CreateLabelOption{Name: "x", Color: "#00aabb"}.Validate())
+		require.NoError(t, CreateLabelOption{Name: "x", Color: "00aabb"}.Validate()) // '#' optional
+	})
+	t.Run("EditLabelOption.Validate", func(t *testing.T) {
+		badColor := "nope"
+		emptyName := "  "
+		require.Error(t, EditLabelOption{Color: &badColor}.Validate())
+		require.Error(t, EditLabelOption{Name: &emptyName}.Validate())
+		require.NoError(t, EditLabelOption{}.Validate()) // nil fields = no-op, valid
+	})
+
+	// --- server-side not-found paths ---
+	const ghostID int64 = 999999
+
+	// repo label operations on a non-existent label id -> error (get/edit)
+	_, _, err = c.GetRepoLabel(owner, name, ghostID)
+	require.Error(t, err)
+	_, _, err = c.EditLabel(owner, name, ghostID, EditLabelOption{})
+	require.Error(t, err)
+	// DeleteLabel is idempotent on a valid repo: a non-existent label id is a
+	// no-op and returns no error.
+	_, err = c.DeleteLabel(owner, name, ghostID)
+	require.NoError(t, err)
+
+	// non-existent repo -> error for get and delete
+	_, _, err = c.GetRepoLabel(owner, "no-such-repo", 1)
+	require.Error(t, err)
+	_, err = c.DeleteLabel(owner, "no-such-repo", ghostID)
+	require.Error(t, err)
+
+	// issue-label operations on a non-existent issue -> error
+	_, _, err = c.GetIssueLabels(owner, name, ghostID, ListLabelsOptions{})
+	require.Error(t, err)
+	_, _, err = c.AddIssueLabels(owner, name, ghostID, models.IssueLabelsOption{Labels: []any{int64(1)}})
+	require.Error(t, err)
+	_, _, err = c.ReplaceIssueLabels(owner, name, ghostID, models.IssueLabelsOption{Labels: []any{int64(1)}})
+	require.Error(t, err)
+	_, err = c.DeleteIssueLabel(owner, name, ghostID, 1)
+	require.Error(t, err)
+	_, err = c.ClearIssueLabels(owner, name, ghostID)
+	require.Error(t, err)
+}

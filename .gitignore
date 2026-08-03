@@ -37,3 +37,6 @@ swagger.v1.json
 
 # tooling
 .codegraph/
+
+# stray test output logs
+sdktest*.log

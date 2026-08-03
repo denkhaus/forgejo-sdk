@@ -17,10 +17,15 @@ func (c *Client) GetMyQuota() (*models.QuotaInfo, *Response, error) {
 	return info, resp, err
 }
 
-// CheckMyQuota reports whether the current user is within their quota
-func (c *Client) CheckMyQuota() (bool, *Response, error) {
+// CheckMyQuota reports whether the current user may perform an action that
+// would consume quota for the given subject (e.g. "size:all").
+func (c *Client) CheckMyQuota(subject string) (bool, *Response, error) {
 	var ok bool
-	resp, err := c.getParsedResponse("GET", "/user/quota/check", jsonHeader, nil, &ok)
+	link, _ := url.Parse("/user/quota/check")
+	q := link.Query()
+	q.Set("subject", subject)
+	link.RawQuery = q.Encode()
+	resp, err := c.getParsedResponse("GET", link.String(), jsonHeader, nil, &ok)
 	return ok, resp, err
 }
 

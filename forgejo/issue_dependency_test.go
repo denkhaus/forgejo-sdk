@@ -82,8 +82,16 @@ func TestIssueDependencies(t *testing.T) {
 		time.Sleep(500 * time.Millisecond)
 	}
 	assert.Len(t, blocking, 2)
-	// Issue 2 should be in the list
-	assert.EqualValues(t, issue2.Index, blocking[0].Index)
+	// Issue 2 should be among the blocking issues. The dependency indexer
+	// does not guarantee a stable ordering, so check membership, not position.
+	found := false
+	for _, b := range blocking {
+		if b.Index == issue2.Index {
+			found = true
+			break
+		}
+	}
+	assert.True(t, found, "issue2 should be among the blocking issues")
 
 	// Test 6: Remove dependency
 	_, err = c.RemoveIssueDependency(repo.Owner.UserName, repo.Name, issue1.Index, issue2.Index)

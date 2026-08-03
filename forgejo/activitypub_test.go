@@ -9,6 +9,8 @@ import (
 	"strings"
 	"testing"
 
+	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -21,4 +23,14 @@ func Test_ActivityPub(t *testing.T) {
 		t.Skip("activitypub/federation disabled on this instance")
 	}
 	require.NoError(t, err)
+}
+
+func TestFollowActivityPub(t *testing.T) {
+	log.Println("== TestFollowActivityPub ==")
+	c := newTestClient()
+
+	// Following a non-resolvable target cannot succeed; we only assert the
+	// call fails cleanly (no panic) regardless of federation configuration.
+	_, err := c.FollowActivityPub(models.APRemoteFollowOption{Target: "https://example.invalid/does/not/exist"})
+	assert.Error(t, err)
 }

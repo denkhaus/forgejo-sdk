@@ -21,7 +21,8 @@
       "mcp__forgejo__get_my_user_info",
       "mcp__forgejo__list_my_repos",
       "mcp__forgejo__list_repo_issues",
-      "mcp__forgejo__list_issue_dependencies"
+      "mcp__forgejo__list_issue_dependencies",
+      "mcp__plugin_context-mode_context-mode__ctx_batch_execute"
     ]
   }
 }

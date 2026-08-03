@@ -26,7 +26,7 @@ func TestUserQuotaV15(t *testing.T) {
 	require.NotNil(t, q)
 	assert.NotNil(t, q.Used)
 
-	ok, _, err := c.CheckMyQuota()
+	ok, _, err := c.CheckMyQuota("size:all")
 	require.NoError(t, err)
 	_ = ok // bool: within quota
 

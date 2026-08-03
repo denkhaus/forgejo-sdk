@@ -25,9 +25,10 @@ func TestUserSettings(t *testing.T) {
 	require.NoError(t, err)
 	assert.NotNil(t, userConf)
 	assert.EqualValues(t, models.UserSettings{
-		Theme:        "forgejo-auto",
-		HideEmail:    false,
-		HideActivity: false,
+		Theme:               "forgejo-auto",
+		HideEmail:           false,
+		HideActivity:        false,
+		EnableRepoUnitHints: true, // default flipped to true in Forgejo 16
 	}, *userConf)
 
 	userConf, _, err = c.UpdateUserSettings(UserSettingsOptions{
@@ -38,11 +39,12 @@ func TestUserSettings(t *testing.T) {
 	require.NoError(t, err)
 	assert.NotNil(t, userConf)
 	assert.EqualValues(t, models.UserSettings{
-		FullName:     "Admin User on Test",
-		Theme:        "forgejo-auto",
-		Language:     "de_de",
-		HideEmail:    true,
-		HideActivity: false,
+		FullName:            "Admin User on Test",
+		Theme:               "forgejo-auto",
+		Language:            "de_de",
+		HideEmail:           true,
+		HideActivity:        false,
+		EnableRepoUnitHints: true, // default flipped to true in Forgejo 16
 	}, *userConf)
 
 	_, _, err = c.UpdateUserSettings(UserSettingsOptions{

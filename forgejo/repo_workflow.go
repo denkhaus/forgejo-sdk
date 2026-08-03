@@ -32,6 +32,18 @@ func (c *Client) WorkflowDispatch(owner, repo, workflowFilename string, opt Work
 	}
 
 	run := new(models.ActionRun)
-	resp, err := c.getParsedResponse("POST", fmt.Sprintf("/repos/%s/%s/actions/workflows/%s/dispatches", owner, repo, workflowFilename), jsonHeader, bytes.NewReader(body), &run)
-	return run, resp, err
+	// Forgejo responds with 204 No Content (empty body) on a successful
+	// workflow_dispatch, so the created run is not returned here and run stays
+	// zero-valued. Parse the body only when present — forward-compatible if a
+	// future Forgejo returns the created run.
+	data, resp, err := c.getResponse("POST", fmt.Sprintf("/repos/%s/%s/actions/workflows/%s/dispatches", owner, repo, workflowFilename), jsonHeader, bytes.NewReader(body))
+	if err != nil {
+		return nil, resp, err
+	}
+	if len(data) > 0 {
+		if err := json.Unmarshal(data, run); err != nil {
+			return nil, resp, err
+		}
+	}
+	return run, resp, nil
 }

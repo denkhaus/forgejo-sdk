@@ -39,24 +39,27 @@ type MigrateRepoOption struct {
 	RepoName  string `json:"repo_name"`
 	RepoOwner string `json:"repo_owner"`
 	// Deprecated: use RepoOwner
-	RepoOwnerID    int64          `json:"uid"`
-	CloneAddr      string         `json:"clone_addr"`
-	Service        GitServiceType `json:"service"`
-	AuthUsername   string         `json:"auth_username"`
-	AuthPassword   string         `json:"auth_password"`
-	AuthToken      string         `json:"auth_token"`
-	Mirror         bool           `json:"mirror"`
-	Private        bool           `json:"private"`
-	Description    string         `json:"description"`
-	Wiki           bool           `json:"wiki"`
-	Milestones     bool           `json:"milestones"`
-	Labels         bool           `json:"labels"`
-	Issues         bool           `json:"issues"`
-	PullRequests   bool           `json:"pull_requests"`
-	Releases       bool           `json:"releases"`
-	MirrorInterval string         `json:"mirror_interval"`
-	LFS            bool           `json:"lfs"`
-	LFSEndpoint    string         `json:"lfs_endpoint"`
+	RepoOwnerID  int64          `json:"uid"`
+	CloneAddr    string         `json:"clone_addr"`
+	Service      GitServiceType `json:"service"`
+	AuthUsername string         `json:"auth_username"`
+	AuthPassword string         `json:"auth_password"`
+	AuthToken    string         `json:"auth_token"`
+	// Mirror sets up a pull mirror. Since Forgejo v16.0 the server no longer
+	// follows HTTP redirects while mirroring; a renamed/transferred remote is
+	// an error, not a redirect to follow (see MigrateRepo).
+	Mirror         bool   `json:"mirror"`
+	Private        bool   `json:"private"`
+	Description    string `json:"description"`
+	Wiki           bool   `json:"wiki"`
+	Milestones     bool   `json:"milestones"`
+	Labels         bool   `json:"labels"`
+	Issues         bool   `json:"issues"`
+	PullRequests   bool   `json:"pull_requests"`
+	Releases       bool   `json:"releases"`
+	MirrorInterval string `json:"mirror_interval"`
+	LFS            bool   `json:"lfs"`
+	LFSEndpoint    string `json:"lfs_endpoint"`
 }
 
 // Validate the MigrateRepoOption struct
@@ -102,6 +105,12 @@ func (opt *MigrateRepoOption) Validate(c *Client) error {
 //
 // To migrate a repository for a organization, the authenticated user must be a
 // owner of the specified organization.
+//
+// Since Forgejo v16.0, mirroring (Mirror: true) no longer follows HTTP
+// redirects as an SSRF hardening measure (the server now sets
+// http.followRedirects=false for Git). When the remote repository has been
+// renamed or transferred, the redirect it returns is treated as an error
+// rather than followed; update CloneAddr to the new location in that case.
 func (c *Client) MigrateRepo(opt MigrateRepoOption) (*models.Repository, *Response, error) {
 	if err := opt.Validate(c); err != nil {
 		return nil, nil, err

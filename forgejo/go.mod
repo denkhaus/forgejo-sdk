@@ -9,6 +9,8 @@ require (
 	github.com/go-openapi/errors v0.22.5
 	github.com/go-openapi/strfmt v0.25.0
 	github.com/go-openapi/swag v0.25.4
+	github.com/go-openapi/swag/jsonutils v0.25.4
+	github.com/go-openapi/swag/typeutils v0.25.4
 	github.com/go-openapi/validate v0.25.1
 	github.com/hashicorp/go-version v1.7.0
 	github.com/stretchr/testify v1.11.1
@@ -26,12 +28,10 @@ require (
 	github.com/go-openapi/swag/conv v0.25.4 // indirect
 	github.com/go-openapi/swag/fileutils v0.25.4 // indirect
 	github.com/go-openapi/swag/jsonname v0.25.4 // indirect
-	github.com/go-openapi/swag/jsonutils v0.25.4 // indirect
 	github.com/go-openapi/swag/loading v0.25.4 // indirect
 	github.com/go-openapi/swag/mangling v0.25.4 // indirect
 	github.com/go-openapi/swag/netutils v0.25.4 // indirect
 	github.com/go-openapi/swag/stringutils v0.25.4 // indirect
-	github.com/go-openapi/swag/typeutils v0.25.4 // indirect
 	github.com/go-openapi/swag/yamlutils v0.25.4 // indirect
 	github.com/go-viper/mapstructure/v2 v2.4.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect

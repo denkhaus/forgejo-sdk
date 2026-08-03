@@ -48,7 +48,11 @@ func (c *Client) DeletePushMirror(owner, repo, name string) (*Response, error) {
 	return resp, err
 }
 
-// SyncPushMirrors syncs all push mirrors of a repository immediately
+// SyncPushMirrors syncs all push mirrors of a repository immediately.
+//
+// Since Forgejo v16.0 the server no longer follows HTTP redirects during Git
+// mirroring (SSRF hardening); a sync against a renamed/transferred remote
+// fails and the error is recorded in the push mirror's LastError.
 func (c *Client) SyncPushMirrors(owner, repo string) (*Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, err
