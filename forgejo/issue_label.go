@@ -194,8 +194,10 @@ func (c *Client) ReplaceIssueLabels(owner, repo string, index int64, opt models.
 	return labels, resp, err
 }
 
-// DeleteIssueLabel delete one label of one issue by issue id and label id
-// TODO: maybe we need delete by label name and issue id
+// DeleteIssueLabel delete one label of one issue by issue id and label id.
+// The Forgejo API only exposes deletion by label id (DELETE
+// /repos/{owner}/{repo}/issues/{index}/labels/{id}); it has no endpoint to
+// remove a label by name, so no name-based variant is provided here.
 func (c *Client) DeleteIssueLabel(owner, repo string, index, label int64) (*Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, err
