@@ -52,6 +52,8 @@ help:
 	@echo " - vet               examines Go source code and reports"
 	@echo " - test              run unit tests (need a running forgejo)"
 	@echo " - test-instance     start a forgejo instance for test"
+	@echo " - test-instance-start start a forgejo instance for test in background"
+	@echo " - test-instance-stop  stop the forgejo test instance"
 
 
 .PHONY: clean
@@ -84,15 +86,8 @@ ci-lint:
 	fi; echo " done"; \
 	cd -; \
 
-.PHONY: test
-test:
-	@export FORGEJO_SDK_TEST_URL=${FORGEJO_SDK_TEST_URL}; export FORGEJO_SDK_TEST_USERNAME=${FORGEJO_SDK_TEST_USERNAME}; export FORGEJO_SDK_TEST_PASSWORD=${FORGEJO_SDK_TEST_PASSWORD}; \
-	if [ -z "$(shell curl --noproxy "*" "${FORGEJO_SDK_TEST_URL}/api/v1/version" 2> /dev/null)" ]; then \echo "No test-instance detected!"; exit 1; else \
-	    cd forgejo && $(GO) test -race -cover -coverprofile coverage.out; \
-	fi
-
-.PHONY: test-instance
-test-instance:
+.PHONY: test-instance-start
+test-instance-start: test-instance-stop
 	rm -f -r ${WORK_DIR}/test 2> /dev/null; \
 	mkdir -p ${WORK_DIR}/test/conf/ ${WORK_DIR}/test/data/ ${WORK_DIR}/test-cache
 	[ -f ${WORK_DIR}/test-cache/forgejo-main ] || { wget ${FORGEJO_DL} -O ${WORK_DIR}/test-cache/forgejo-main; }
@@ -109,9 +104,33 @@ test-instance:
 	echo "ROOT = ${WORK_DIR}/test/data/" >> ${WORK_DIR}/test/conf/app.ini; \
 	echo "[server]" >> ${WORK_DIR}/test/conf/app.ini; \
 	echo "ROOT_URL = ${FORGEJO_SDK_TEST_URL}" >> ${WORK_DIR}/test/conf/app.ini; \
+	echo "[quota]" >> ${WORK_DIR}/test/conf/app.ini; \
+	echo "ENABLED = true" >> ${WORK_DIR}/test/conf/app.ini; \
 	${WORK_DIR}/test/forgejo-main migrate -c ${WORK_DIR}/test/conf/app.ini; \
 	${WORK_DIR}/test/forgejo-main admin user create --username=${FORGEJO_SDK_TEST_USERNAME} --password=${FORGEJO_SDK_TEST_PASSWORD} --email=test01@forgejo.org --admin=true --must-change-password=false --access-token -c ${WORK_DIR}/test/conf/app.ini; \
-	${WORK_DIR}/test/forgejo-main web -c ${WORK_DIR}/test/conf/app.ini
+	${WORK_DIR}/test/forgejo-main web -c ${WORK_DIR}/test/conf/app.ini & \
+	echo $$! > ${WORK_DIR}/test/forgejo.pid
+
+.PHONY: test-instance-stop
+test-instance-stop:
+	@if [ -f ${WORK_DIR}/test/forgejo.pid ]; then \
+		kill `cat ${WORK_DIR}/test/forgejo.pid` 2>/dev/null || true; \
+		rm -f ${WORK_DIR}/test/forgejo.pid; \
+	fi
+
+.PHONY: test
+test: test-instance-start
+	@export FORGEJO_SDK_TEST_URL=${FORGEJO_SDK_TEST_URL}; export FORGEJO_SDK_TEST_USERNAME=${FORGEJO_SDK_TEST_USERNAME}; export FORGEJO_SDK_TEST_PASSWORD=${FORGEJO_SDK_TEST_PASSWORD}; \
+	$(MAKE) test-instance-stop; \
+	$(MAKE) test-instance-start; \
+	for i in $$(seq 1 30); do \
+		if curl --noproxy "*" -s "${FORGEJO_SDK_TEST_URL}/api/v1/version" > /dev/null 2>&1; then \
+			break; \
+		fi; \
+		sleep 1; \
+	done; \
+	cd forgejo && $(GO) test -race -cover -coverprofile coverage.out; \
+	cd .. && $(MAKE) test-instance-stop
 
 .PHONY: bench
 bench:
