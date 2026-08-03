@@ -107,3 +107,18 @@ func (c *Client) GetPersonActivity(userID int64, activityID string) (*models.Act
 	resp, err := c.getParsedResponse("GET", fmt.Sprintf("/activitypub/user-id/%d/activities/%s/activity", userID, activityID), jsonHeader, nil, actor)
 	return actor, resp, err
 }
+
+// ---------------------------------------------------------------------------
+// Remote follow
+// ---------------------------------------------------------------------------
+
+// FollowActivityPub follows a remote ActivityPub account identified by the
+// Target URI in opt (e.g. an actor or repository inbox URL).
+func (c *Client) FollowActivityPub(opt models.APRemoteFollowOption) (*Response, error) {
+	body, err := json.Marshal(&opt)
+	if err != nil {
+		return nil, err
+	}
+	_, resp, err := c.getResponse("POST", "/user/activitypub/follow", jsonHeader, bytes.NewReader(body))
+	return resp, err
+}

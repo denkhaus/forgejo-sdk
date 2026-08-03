@@ -425,8 +425,8 @@ func statusCodeToErr(resp *Response) (body []byte, err error) {
 	return data, fmt.Errorf("%s: %s", resp.Status, string(data))
 }
 
-func (c *Client) getResponseReader(method, path string, header http.Header, body io.Reader) (io.ReadCloser, *Response, error) {
-	resp, err := c.doRequest(method, path, header, body)
+func (c *Client) getResponseReader(path string, header http.Header) (io.ReadCloser, *Response, error) {
+	resp, err := c.doRequest("GET", path, header, nil)
 	if err != nil {
 		return nil, resp, err
 	}

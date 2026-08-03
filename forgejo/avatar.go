@@ -12,7 +12,11 @@ import (
 	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 )
 
-// UpdateUserAvatar updates the avatar of the current authenticated user
+// UpdateUserAvatar updates the avatar of the current authenticated user.
+//
+// Since Forgejo v16.0 the server no longer strips EXIF metadata from the
+// uploaded image (the dependency was removed for license compliance). The
+// image is stored as-is; strip EXIF data client-side before uploading if needed.
 func (c *Client) UpdateUserAvatar(opt models.UpdateUserAvatarOption) (*Response, error) {
 	body, err := json.Marshal(&opt)
 	if err != nil {
@@ -28,7 +32,10 @@ func (c *Client) DeleteUserAvatar() (*Response, error) {
 	return resp, err
 }
 
-// UpdateOrgAvatar updates the avatar of an organization
+// UpdateOrgAvatar updates the avatar of an organization.
+//
+// Since Forgejo v16.0 the server no longer strips EXIF metadata from the
+// uploaded image; the image is stored as-is (see UpdateUserAvatar).
 func (c *Client) UpdateOrgAvatar(org string, opt models.UpdateUserAvatarOption) (*Response, error) {
 	if err := escapeValidatePathSegments(&org); err != nil {
 		return nil, err
@@ -50,7 +57,10 @@ func (c *Client) DeleteOrgAvatar(org string) (*Response, error) {
 	return resp, err
 }
 
-// UpdateRepoAvatar updates the avatar of a repository
+// UpdateRepoAvatar updates the avatar of a repository.
+//
+// Since Forgejo v16.0 the server no longer strips EXIF metadata from the
+// uploaded image; the image is stored as-is (see UpdateUserAvatar).
 func (c *Client) UpdateRepoAvatar(owner, repo string, opt models.UpdateRepoAvatarOption) (*Response, error) {
 	if err := escapeValidatePathSegments(&owner, &repo); err != nil {
 		return nil, err

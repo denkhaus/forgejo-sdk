@@ -1,0 +1,316 @@
+2026/08/03 11:02:58 testing with http://localhost:3000, test01, test01
+2026/08/03 11:02:58 == TestGetActionsRun ==
+2026/08/03 11:02:58 == TestActivityFeedsV15 ==
+2026/08/03 11:03:00 == Test_ActivityPub ==
+2026/08/03 11:03:00 == TestFollowActivityPub ==
+2026/08/03 11:03:00 == TestGetAdminRunnerRegistrationToken ==
+2026/08/03 11:03:00 == TestRunnersV15 ==
+2026/08/03 11:03:01 == Test_AdminCron ==
+2026/08/03 11:03:01 == TestAdminEmailsV15 ==
+2026/08/03 11:03:02 == Test_AdminHooks ==
+2026/08/03 11:03:03 == Test_AdminOrg ==
+2026/08/03 11:03:04 == Test_AdminQuota ==
+2026/08/03 11:03:04 == Test_AdminRepo ==
+2026/08/03 11:03:07 == TestAdminRunnerJobsV15 ==
+2026/08/03 11:03:08 == TestAdminUnadoptedV15 ==
+2026/08/03 11:03:08 == Test_AdminUserEmails ==
+2026/08/03 11:03:09 == TestAdminRenameUserV15 ==
+2026/08/03 11:03:10 == Test_AdminUser ==
+2026/08/03 11:03:10 == TestAdminUserAccessTokens ==
+2026/08/03 11:03:11 == TestAdminCreateUserAccessTokenValidation ==
+2026/08/03 11:03:12 == Test_Agent ==
+2026/08/03 11:03:12 == Test_Attachment ==
+2026/08/03 11:03:14 == TestAvatarsV15 ==
+2026/08/03 11:03:16 == Test_Doc ==
+2026/08/03 11:03:16 == Test_Fork ==
+2026/08/03 11:03:20 == Test_GitBlob ==
+2026/08/03 11:03:21 == Test_GitHook ==
+2026/08/03 11:03:23 == Test_Hook ==
+2026/08/03 11:03:25 == Test_HTTPSign ==
+2026/08/03 11:03:25 == TestIssueAttachmentsV15 ==
+2026/08/03 11:03:28 == TestIssueComment ==
+2026/08/03 11:03:31 == TestIssueDeadlineV15 ==
+2026/08/03 11:03:33 == TestIssueDependencies ==
+2026/08/03 11:03:35 == TestIssueDependenciesEmpty ==
+2026/08/03 11:03:37 == TestIssueDependencyValidation ==
+2026/08/03 11:03:37 == TestLabels ==
+2026/08/03 11:03:40 == TestMilestones ==
+2026/08/03 11:03:43 == TestIssuePinningV15 ==
+2026/08/03 11:03:45 == Test_IssueReaction ==
+2026/08/03 11:03:47 == Test_IssueStopWatch ==
+2026/08/03 11:03:49 == TestIssueSubscription ==
+2026/08/03 11:03:53 == Test_IssueTemplate ==
+2026/08/03 11:03:55 == TestCreateIssues ==
+2026/08/03 11:03:58 == TestEditIssues ==
+2026/08/03 11:03:59 == TestListIssues ==
+2026/08/03 11:03:59 == TestDeleteIssues ==
+2026/08/03 11:04:01 == TestIssueTimelineV15 ==
+2026/08/03 11:04:02 == Test_IssueTrackedTime ==
+2026/08/03 11:04:04 == TestMiscV15 ==
+2026/08/03 11:04:05 == TestMiscMoreV15 ==
+2026/08/03 11:04:06 == TestNotifications ==
+--- FAIL: TestNotifications (14.65s)
+    notifications_test.go:127: 
+        	Error Trace:	/home/denkhaus/dev/gomodules/forgejo-sdk/forgejo/notifications_test.go:127
+        	Error:      	"[0xd83994ba370 0xd83994bac80 0xd83994bb590 0xd83994bbea0]" should have 2 item(s), but has 4
+        	Test:       	TestNotifications
+    notifications_test.go:130: 
+        	Error Trace:	/home/denkhaus/dev/gomodules/forgejo-sdk/forgejo/notifications_test.go:130
+        	Error:      	"[0xd83995149b0 0xd83995152c0 0xd8399515bd0 0xd83995c25f0]" should have 2 item(s), but has 4
+        	Test:       	TestNotifications
+    notifications_test.go:141: 
+        	Error Trace:	/home/denkhaus/dev/gomodules/forgejo-sdk/forgejo/notifications_test.go:141
+        	Error:      	"[]" should have 2 item(s), but has 0
+        	Test:       	TestNotifications
+2026/08/03 11:04:21 == TestOauth2Application ==
+2026/08/03 11:04:25 == TestGetOrgRunnerRegistrationToken ==
+--- FAIL: TestGetOrgRunnerRegistrationToken (0.21s)
+    org_action_runner_test.go:25: 
+        	Error Trace:	/home/denkhaus/dev/gomodules/forgejo-sdk/forgejo/org_action_runner_test.go:25
+        	Error:      	Received unexpected error:
+        	            	user already exists [name: test-runner-org]
+        	Test:       	TestGetOrgRunnerRegistrationToken
+2026/08/03 11:04:25 == TestSearchOrgRunnerJobs ==
+--- FAIL: TestSearchOrgRunnerJobs (0.22s)
+    org_action_runner_test.go:44: 
+        	Error Trace:	/home/denkhaus/dev/gomodules/forgejo-sdk/forgejo/org_action_runner_test.go:44
+        	Error:      	Received unexpected error:
+        	            	user already exists [name: test-runner-org-search]
+        	Test:       	TestSearchOrgRunnerJobs
+2026/08/03 11:04:25 == TestOrgRunnersV15 ==
+2026/08/03 11:04:26 == TestCreateOrgActionSecret ==
+--- FAIL: TestCreateOrgActionSecret (0.32s)
+    org_action_test.go:27: 
+        	Error Trace:	/home/denkhaus/dev/gomodules/forgejo-sdk/forgejo/org_action_test.go:27
+        	Error:      	Received unexpected error:
+        	            	user already exists [name: ActionOrg]
+        	Test:       	TestCreateOrgActionSecret
+2026/08/03 11:04:26 == TestUpdateOrgActionSecret ==
+2026/08/03 11:04:28 == TestDeleteOrgActionSecret ==
+2026/08/03 11:04:28 == TestCreateOrgActionVariable ==
+--- FAIL: TestCreateOrgActionVariable (0.33s)
+    org_action_variable_test.go:29: 
+        	Error Trace:	/home/denkhaus/dev/gomodules/forgejo-sdk/forgejo/org_action_variable_test.go:29
+        	Error:      	Received unexpected error:
+        	            	user already exists [name: TestVariableOrg]
+        	Test:       	TestCreateOrgActionVariable
+2026/08/03 11:04:29 == TestListOrgActionVariables ==
+--- FAIL: TestListOrgActionVariables (0.33s)
+    org_action_variable_test.go:88: 
+        	Error Trace:	/home/denkhaus/dev/gomodules/forgejo-sdk/forgejo/org_action_variable_test.go:88
+        	Error:      	Received unexpected error:
+        	            	user already exists [name: TestVariableListOrg]
+        	Test:       	TestListOrgActionVariables
+2026/08/03 11:04:29 == TestGetOrgActionVariable ==
+--- FAIL: TestGetOrgActionVariable (0.32s)
+    org_action_variable_test.go:133: 
+        	Error Trace:	/home/denkhaus/dev/gomodules/forgejo-sdk/forgejo/org_action_variable_test.go:133
+        	Error:      	Received unexpected error:
+        	            	user already exists [name: TestVariableGetOrg]
+        	Test:       	TestGetOrgActionVariable
+2026/08/03 11:04:29 == TestUpdateOrgActionVariable ==
+--- FAIL: TestUpdateOrgActionVariable (0.32s)
+    org_action_variable_test.go:159: 
+        	Error Trace:	/home/denkhaus/dev/gomodules/forgejo-sdk/forgejo/org_action_variable_test.go:159
+        	Error:      	Received unexpected error:
+        	            	user already exists [name: TestVariableUpdateOrg]
+        	Test:       	TestUpdateOrgActionVariable
+2026/08/03 11:04:30 == TestDeleteOrgActionVariable ==
+--- FAIL: TestDeleteOrgActionVariable (0.34s)
+    org_action_variable_test.go:191: 
+        	Error Trace:	/home/denkhaus/dev/gomodules/forgejo-sdk/forgejo/org_action_variable_test.go:191
+        	Error:      	Received unexpected error:
+        	            	user already exists [name: TestVariableDeleteOrg]
+        	Test:       	TestDeleteOrgActionVariable
+2026/08/03 11:04:30 == TestOrgActionVariableErrorHandling ==
+--- FAIL: TestOrgActionVariableErrorHandling (0.33s)
+    org_action_variable_test.go:220: 
+        	Error Trace:	/home/denkhaus/dev/gomodules/forgejo-sdk/forgejo/org_action_variable_test.go:220
+        	Error:      	Received unexpected error:
+        	            	user already exists [name: TestVariableErrorOrg]
+        	Test:       	TestOrgActionVariableErrorHandling
+2026/08/03 11:04:30 == TestOrgBlockV15 ==
+2026/08/03 11:04:31 == TestOrgLabelsV15 ==
+2026/08/03 11:04:32 == TestOrgMembership ==
+2026/08/03 11:04:34 == Test_OrgQuota ==
+2026/08/03 11:04:34 == TestOrgRenameV15 ==
+2026/08/03 11:04:35 == TestTeamSearch ==
+2026/08/03 11:04:36 == Test_PackageLink ==
+2026/08/03 11:04:36 == TestListPackages ==
+2026/08/03 11:04:37 == TestGetPackage ==
+2026/08/03 11:04:37 == TestDeletePackage ==
+2026/08/03 11:04:38 == TestListPackageFiles ==
+2026/08/03 11:04:39 == Test_PullReviewComment ==
+2026/08/03 11:04:42 == TestPullReview ==
+2026/08/03 11:04:48 == TestPull ==
+2026/08/03 11:04:59 == TestRelease ==
+2026/08/03 11:05:02 == TestRepoActionArtifacts ==
+2026/08/03 11:05:03 == TestRepoActionRuns ==
+2026/08/03 11:05:04 == TestListActionRuns ==
+--- FAIL: TestListActionRuns (0.32s)
+    repo_action_runner_test.go:25: 
+        	Error Trace:	/home/denkhaus/dev/gomodules/forgejo-sdk/forgejo/repo_action_runner_test.go:25
+        	Error:      	Received unexpected error:
+        	            	The repository with the same name already exists.
+        	Test:       	TestListActionRuns
+2026/08/03 11:05:05 == TestGetActionRun ==
+--- FAIL: TestGetActionRun (0.33s)
+    repo_action_runner_test.go:43: 
+        	Error Trace:	/home/denkhaus/dev/gomodules/forgejo-sdk/forgejo/repo_action_runner_test.go:43
+        	Error:      	Received unexpected error:
+        	            	The repository with the same name already exists.
+        	Test:       	TestGetActionRun
+2026/08/03 11:05:05 == TestListActionTasks ==
+--- FAIL: TestListActionTasks (0.33s)
+    repo_action_runner_test.go:61: 
+        	Error Trace:	/home/denkhaus/dev/gomodules/forgejo-sdk/forgejo/repo_action_runner_test.go:61
+        	Error:      	Received unexpected error:
+        	            	The repository with the same name already exists.
+        	Test:       	TestListActionTasks
+2026/08/03 11:05:05 == TestSearchRunnerJobs ==
+--- FAIL: TestSearchRunnerJobs (0.35s)
+    repo_action_runner_test.go:79: 
+        	Error Trace:	/home/denkhaus/dev/gomodules/forgejo-sdk/forgejo/repo_action_runner_test.go:79
+        	Error:      	Received unexpected error:
+        	            	The repository with the same name already exists.
+        	Test:       	TestSearchRunnerJobs
+2026/08/03 11:05:06 == TestListRunnerJobs ==
+--- FAIL: TestListRunnerJobs (0.36s)
+    repo_action_runner_test.go:97: 
+        	Error Trace:	/home/denkhaus/dev/gomodules/forgejo-sdk/forgejo/repo_action_runner_test.go:97
+        	Error:      	Received unexpected error:
+        	            	The repository with the same name already exists.
+        	Test:       	TestListRunnerJobs
+2026/08/03 11:05:06 == TestGetRepoRunnerRegistrationToken ==
+--- FAIL: TestGetRepoRunnerRegistrationToken (0.32s)
+    repo_action_runner_test.go:115: 
+        	Error Trace:	/home/denkhaus/dev/gomodules/forgejo-sdk/forgejo/repo_action_runner_test.go:115
+        	Error:      	Received unexpected error:
+        	            	The repository with the same name already exists.
+        	Test:       	TestGetRepoRunnerRegistrationToken
+2026/08/03 11:05:06 == TestRepoRunnersV15 ==
+2026/08/03 11:05:08 == TestCreateRepoActionSecret ==
+--- FAIL: TestCreateRepoActionSecret (0.32s)
+    repo_action_test.go:25: 
+        	Error Trace:	/home/denkhaus/dev/gomodules/forgejo-sdk/forgejo/repo_action_test.go:25
+        	Error:      	Received unexpected error:
+        	            	The repository with the same name already exists.
+        	Test:       	TestCreateRepoActionSecret
+2026/08/03 11:05:08 == TestUpdateRepoActionSecret ==
+2026/08/03 11:05:09 == TestDeleteRepoActionSecret ==
+2026/08/03 11:05:10 == TestCreateRepoActionVariable ==
+--- FAIL: TestCreateRepoActionVariable (0.32s)
+    repo_action_variable_test.go:31: 
+        	Error Trace:	/home/denkhaus/dev/gomodules/forgejo-sdk/forgejo/repo_action_variable_test.go:31
+        	Error:      	Received unexpected error:
+        	            	The repository with the same name already exists.
+        	Test:       	TestCreateRepoActionVariable
+2026/08/03 11:05:10 == TestListRepoActionVariables ==
+--- FAIL: TestListRepoActionVariables (0.31s)
+    repo_action_variable_test.go:92: 
+        	Error Trace:	/home/denkhaus/dev/gomodules/forgejo-sdk/forgejo/repo_action_variable_test.go:92
+        	Error:      	Received unexpected error:
+        	            	The repository with the same name already exists.
+        	Test:       	TestListRepoActionVariables
+2026/08/03 11:05:11 == TestGetRepoActionVariable ==
+--- FAIL: TestGetRepoActionVariable (0.31s)
+    repo_action_variable_test.go:139: 
+        	Error Trace:	/home/denkhaus/dev/gomodules/forgejo-sdk/forgejo/repo_action_variable_test.go:139
+        	Error:      	Received unexpected error:
+        	            	The repository with the same name already exists.
+        	Test:       	TestGetRepoActionVariable
+2026/08/03 11:05:11 == TestUpdateRepoActionVariable ==
+--- FAIL: TestUpdateRepoActionVariable (0.31s)
+    repo_action_variable_test.go:167: 
+        	Error Trace:	/home/denkhaus/dev/gomodules/forgejo-sdk/forgejo/repo_action_variable_test.go:167
+        	Error:      	Received unexpected error:
+        	            	The repository with the same name already exists.
+        	Test:       	TestUpdateRepoActionVariable
+2026/08/03 11:05:11 == TestDeleteRepoActionVariable ==
+--- FAIL: TestDeleteRepoActionVariable (0.31s)
+    repo_action_variable_test.go:201: 
+        	Error Trace:	/home/denkhaus/dev/gomodules/forgejo-sdk/forgejo/repo_action_variable_test.go:201
+        	Error:      	Received unexpected error:
+        	            	The repository with the same name already exists.
+        	Test:       	TestDeleteRepoActionVariable
+2026/08/03 11:05:12 == TestRepoActionVariableErrorHandling ==
+2026/08/03 11:05:12 == Test_RepoBranchProtection ==
+2026/08/03 11:05:14 == TestRepoBranches ==
+2026/08/03 11:05:19 == TestRepoBranchProtection ==
+2026/08/03 11:05:23 == TestRepoCollaborator ==
+2026/08/03 11:05:28 == Test_RepoCommitPull ==
+2026/08/03 11:05:29 == TestListRepoCommits ==
+2026/08/03 11:05:30 == TestGetCommitDiffOrPatch ==
+2026/08/03 11:05:32 == Test_RepoCompare ==
+2026/08/03 11:05:33 == Test_RepoConvert ==
+2026/08/03 11:05:34 == Test_RepoDiffPatch ==
+2026/08/03 11:05:36 == TestRepoEditorConfigV15 ==
+2026/08/03 11:05:37 == TestFileCRUD ==
+2026/08/03 11:05:42 == Test_RepoFlag ==
+2026/08/03 11:05:43 == Test_RepoKey ==
+2026/08/03 11:05:44 == Test_RepoMigrate ==
+2026/08/03 11:05:46 == Test_RepoMirror ==
+2026/08/03 11:05:59 == TestRepoIssueConfigV15 ==
+2026/08/03 11:06:01 == TestGitNotesV15 ==
+2026/08/03 11:06:02 == Test_RepoPushMirror ==
+2026/08/03 11:06:04 == Test_RepoRefs ==
+2026/08/03 11:06:05 == TestRepoStaring ==
+2026/08/03 11:06:07 == TestRepoSubscribersV15 ==
+2026/08/03 11:06:09 == Test_RepoSyncFork ==
+2026/08/03 11:06:11 == TestTagProtectionsV15 ==
+2026/08/03 11:06:13 == TestTags ==
+2026/08/03 11:06:15 == TestRepoTeamManagement ==
+2026/08/03 11:06:17 == TestRepoFromTemplate ==
+2026/08/03 11:06:19 == TestCreateRepo ==
+2026/08/03 11:06:20 == TestMigrateRepo ==
+2026/08/03 11:06:21 == TestRepoLanguages ==
+2026/08/03 11:06:23 == TestSearchRepo ==
+2026/08/03 11:06:26 == TestDeleteRepo ==
+2026/08/03 11:06:27 == TestGetArchive ==
+2026/08/03 11:06:33 == TestGetArchiveReader ==
+2026/08/03 11:06:37 == TestGetRepoByID ==
+2026/08/03 11:06:38 == TestRepoTopics ==
+2026/08/03 11:06:40 == TestRepoTransfer ==
+2026/08/03 11:06:43 == TestRepoTrees ==
+2026/08/03 11:06:58 == TestRepoWatch ==
+2026/08/03 11:07:01 == Test_RepoWiki ==
+2026/08/03 11:07:04 == TestWorkflowDispatch ==
+2026/08/03 11:07:05 == TestWorkflowDispatchWithInputs ==
+2026/08/03 11:07:06 == TestWorkflowDispatchWithRef ==
+2026/08/03 11:07:06 == TestWorkflowDispatchErrorHandling ==
+2026/08/03 11:07:06 == TestGetGlobalSettings ==
+2026/08/03 11:07:07 == TestCommitStatus ==
+2026/08/03 11:07:10 == Test_Topic ==
+2026/08/03 11:07:12 == TestSearchUserRunnerJobs ==
+2026/08/03 11:07:12 == TestUserRunnersV15 ==
+2026/08/03 11:07:13 == TestUserRunnerRegistrationTokenV15 ==
+2026/08/03 11:07:13 == TestCreateUserActionSecret ==
+2026/08/03 11:07:14 == TestUpdateUserActionSecret ==
+2026/08/03 11:07:15 == TestDeleteUserActionSecret ==
+2026/08/03 11:07:16 == TestCreateUserActionVariable ==
+2026/08/03 11:07:17 == TestListUserActionVariables ==
+2026/08/03 11:07:19 == TestGetUserActionVariable ==
+2026/08/03 11:07:19 == TestUpdateUserActionVariable ==
+2026/08/03 11:07:21 == TestDeleteUserActionVariable ==
+2026/08/03 11:07:21 == TestUserActionVariableErrorHandling ==
+2026/08/03 11:07:22 == Test_UserApp ==
+2026/08/03 11:07:22 == TestUserBlockV15 ==
+2026/08/03 11:07:23 == Test_UserEmail ==
+2026/08/03 11:07:24 == Test_UserFollow ==
+2026/08/03 11:07:24 == TestUserGPGKeyVerificationV15 ==
+2026/08/03 11:07:25 == Test_UserGpgKey ==
+2026/08/03 11:07:25 == TestUserHeatmapV15 ==
+2026/08/03 11:07:25 == Test_UserKey ==
+2026/08/03 11:07:26 == TestUserQuotaV15 ==
+2026/08/03 11:07:26 == Test_UserSearch ==
+2026/08/03 11:07:26 == TestUserSettings ==
+2026/08/03 11:07:27 == TestMyUser ==
+2026/08/03 11:07:27 == TestUserApp ==
+2026/08/03 11:07:28 == TestUserSearch ==
+2026/08/03 11:07:30 == TestUserFollow ==
+2026/08/03 11:07:32 == TestUserEmail ==
+2026/08/03 11:07:36 == TestGetUserByID ==
+2026/08/03 11:07:36 == TestVersion ==
+FAIL
+FAIL	codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2	260.016s
+FAIL

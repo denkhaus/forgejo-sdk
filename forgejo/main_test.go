@@ -9,6 +9,7 @@
 package forgejo
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"log"
@@ -43,7 +44,19 @@ func enableRunForgejo() bool {
 }
 
 func newTestClient() *Client {
-	c, _ := NewClient(getForgejoURL(), newTestClientAuth())
+	c, err := NewClient(getForgejoURL(), newTestClientAuth())
+	if err != nil {
+		// Without a live server NewClient fails its version check and returns
+		// (nil, err). A nil client dereferences its RWMutex on the first request
+		// and panics (see TestGetActionsRun for the same rationale). Fall back to
+		// a minimal, non-nil client so the suite never panics — callers that
+		// genuinely need a server get a clean request error instead.
+		c = &Client{
+			url:    getForgejoURL(),
+			client: &http.Client{},
+			ctx:    context.Background(),
+		}
+	}
 	return c
 }
 

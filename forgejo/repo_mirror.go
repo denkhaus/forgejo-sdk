@@ -28,7 +28,11 @@ type PushMirrorResponse struct {
 	SyncONCommit  bool   `json:"sync_on_commit"`
 }
 
-// PushMirrors add a push mirror to the repository
+// PushMirrors add a push mirror to the repository.
+//
+// Since Forgejo v16.0 the server no longer follows HTTP redirects during Git
+// mirroring (SSRF hardening). If the remote push target responds with a
+// redirect it is treated as an error and surfaces in LastError.
 func (c *Client) PushMirrors(user, repo string, opt models.CreatePushMirrorOption) (*PushMirrorResponse, *Response, error) {
 	if err := escapeValidatePathSegments(&user, &repo); err != nil {
 		return nil, nil, err
