@@ -90,7 +90,7 @@ ci-lint:
 test-instance-start: test-instance-stop
 	rm -f -r ${WORK_DIR}/test 2> /dev/null; \
 	mkdir -p ${WORK_DIR}/test/conf/ ${WORK_DIR}/test/data/ ${WORK_DIR}/test-cache
-	[ -f ${WORK_DIR}/test-cache/forgejo-main ] || { wget ${FORGEJO_DL} -O ${WORK_DIR}/test-cache/forgejo-main; }
+	[ -f ${WORK_DIR}/test-cache/forgejo-main ] || { wget --no-verbose ${FORGEJO_DL} -O ${WORK_DIR}/test-cache/forgejo-main; }
 	cp ${WORK_DIR}/test-cache/forgejo-main ${WORK_DIR}/test/forgejo-main; \
 	chmod +x ${WORK_DIR}/test/forgejo-main; \
 	echo "I_AM_BEING_UNSAFE_RUNNING_AS_ROOT = true" > ${WORK_DIR}/test/conf/app.ini; \
@@ -120,7 +120,7 @@ test-instance-stop:
 	fi
 
 .PHONY: test
-test: test-instance-start
+test: 
 	@export FORGEJO_SDK_TEST_URL=${FORGEJO_SDK_TEST_URL}; export FORGEJO_SDK_TEST_USERNAME=${FORGEJO_SDK_TEST_USERNAME}; export FORGEJO_SDK_TEST_PASSWORD=${FORGEJO_SDK_TEST_PASSWORD}; \
 	$(MAKE) test-instance-stop; \
 	$(MAKE) test-instance-start; \
