@@ -11,6 +11,7 @@ package forgejo
 import (
 	"log"
 	"testing"
+	"time"
 
 	"codeberg.org/mvdkleijn/forgejo-sdk/forgejo/v2/models"
 	"github.com/stretchr/testify/assert"
@@ -88,9 +89,19 @@ func TestPull(t *testing.T) {
 	assert.EqualValues(t, 21, file.Changes)
 
 	// test Update pull
+	// preparePullTest's rapid CreateFile/UpdateFile chain races the
+	// mergeable-status computation on sqlite (eventual consistency); poll until
+	// Forgejo reports the PR mergeable before merging, otherwise the merge
+	// intermittently fails on a not-yet-mergeable PR (CI #11/#13 green vs
+	// #12/#14 flake, identical code).
 	pr, _, err := c.GetPullRequest(user.UserName, repoName, pullUpdateFile.Index)
 	require.NoError(t, err)
-	assert.NotNil(t, pr)
+	deadline := time.Now().Add(10 * time.Second)
+	for !pr.Mergeable && time.Now().Before(deadline) {
+		time.Sleep(250 * time.Millisecond)
+		pr, _, err = c.GetPullRequest(user.UserName, repoName, pullUpdateFile.Index)
+		require.NoError(t, err)
+	}
 
 	// These expectations are about the *initial* state
 	assert.False(t, pullUpdateFile.HasMerged)
