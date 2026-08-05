@@ -128,14 +128,27 @@ func (c *Client) CreateRelease(owner, repo string, opt CreateReleaseOption) (*mo
 	return r, resp, err
 }
 
-// EditReleaseOption options when editing a release
+// EditReleaseOption options when editing a release.
+//
+// Developer note — hand-written, not swagger-generated. `make swagger` runs
+// `swagger generate model`, which regenerates ONLY forgejo/models/*.go (those
+// files carry the "Code generated ... DO NOT EDIT" header). The root-package
+// option structs and client methods in this file are maintained by hand, so
+// edits here survive a swagger regen. EditRelease (below) takes THIS hand-written
+// type, not the generated models.EditReleaseOption — that split is why the
+// *string + omitempty fix on Note is regen-safe.
+//
+// Note is *string + omitempty so an unset note is OMITTED from the PATCH body
+// (preserving the release's existing notes) instead of being sent as "body":""
+// (which the Forgejo API treats as "clear the notes"). OptionalString("") still
+// clears deliberately. See forgejo-cli #138.
 type EditReleaseOption struct {
-	TagName      string `json:"tag_name"`
-	Target       string `json:"target_commitish"`
-	Title        string `json:"name"`
-	Note         string `json:"body"`
-	IsDraft      *bool  `json:"draft"`
-	IsPrerelease *bool  `json:"prerelease"`
+	TagName      string  `json:"tag_name"`
+	Target       string  `json:"target_commitish"`
+	Title        string  `json:"name"`
+	Note         *string `json:"body,omitempty"` // unset = omit (preserve existing); OptionalString("") = deliberate clear
+	IsDraft      *bool   `json:"draft"`
+	IsPrerelease *bool   `json:"prerelease"`
 }
 
 // EditRelease edit a release

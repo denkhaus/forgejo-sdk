@@ -68,10 +68,12 @@ func TestRelease(t *testing.T) {
 	require.NoError(t, err)
 	assert.EqualValues(t, r, r2)
 
-	// EditRelease
+	// EditRelease — Note is intentionally left unset: with the *string + omitempty
+	// type, an unset Note is omitted from the PATCH body so the release's existing
+	// notes are preserved (forgejo-cli #138). The assertion below confirms r2.Note
+	// still equals the created release's note.
 	r2, _, err = c.EditRelease(repo.Owner.UserName, repo.Name, r.ID, EditReleaseOption{
 		Title:        "Release Awesome",
-		Note:         "",
 		IsDraft:      OptionalBool(false),
 		IsPrerelease: OptionalBool(false),
 	})
